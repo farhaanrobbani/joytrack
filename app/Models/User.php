@@ -45,4 +45,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Vehicle::class);
     }
+
+    public function fuelRecords(): HasMany
+    {
+        return $this->hasMany(FuelRecord::class);
+    }
 }
