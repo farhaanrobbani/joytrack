@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FuelRecordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VehicleController;
@@ -30,6 +31,8 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('vehicles', VehicleController::class)->except(['update']);
     Route::patch('vehicles/{vehicle}', [VehicleController::class, 'update'])->name('vehicles.update');
+
+    Route::resource('fuel-records', FuelRecordController::class);
 });
 
 require __DIR__.'/auth.php';
