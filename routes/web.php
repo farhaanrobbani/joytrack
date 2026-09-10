@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('accounts', AccountController::class)->except(['update']);
     Route::patch('accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');
+
+    Route::resource('categories', CategoryController::class)->except(['update']);
+    Route::patch('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
 });
 
 require __DIR__.'/auth.php';
