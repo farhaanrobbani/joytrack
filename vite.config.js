@@ -10,7 +10,7 @@ export default defineConfig({
         }),
         VitePWA({
             registerType: 'autoUpdate',
-            includeAssets: ['favicon.ico', 'icons/*.png'],
+            includeAssets: ['favicon-32x32.png', 'icons/*.png'],
             manifest: {
                 name: 'JoyTrack',
                 short_name: 'JoyTrack',

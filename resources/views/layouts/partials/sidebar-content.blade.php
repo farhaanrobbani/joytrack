@@ -9,7 +9,7 @@
             @if($sidebarIconUrl)
                 <img src="{{ $sidebarIconUrl }}" alt="{{ $sidebarName }}" class="w-8 h-8 rounded-xl object-cover shadow-soft">
             @else
-                <span class="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-sm shadow-soft">JT</span>
+                <img src="/icons/icon-192x192.png?v=2" alt="{{ $sidebarName }}" class="w-8 h-8 rounded-xl object-cover shadow-soft">
             @endif
             <span class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ $sidebarName }}</span>
         </a>

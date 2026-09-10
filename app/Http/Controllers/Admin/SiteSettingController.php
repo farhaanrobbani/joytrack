@@ -40,12 +40,6 @@ class SiteSettingController extends Controller
         if ($request->boolean('remove_site_icon')) {
             $old = SiteSetting::get('site_icon');
             if ($old) Storage::disk('public')->delete($old);
-            // also delete generated icons
-            Storage::disk('public')->delete('icons/icon-192x192.png');
-            Storage::disk('public')->delete('icons/icon-512x512.png');
-            foreach (['public/icons/icon-192x192.png', 'public/icons/icon-512x512.png', 'public/favicon.ico', 'public/favicon.png'] as $p) {
-                @unlink(public_path($p));
-            }
             SiteSetting::set('site_icon', null);
             $this->generateDefaultIcons();
         } elseif ($request->hasFile('site_icon')) {
@@ -54,24 +48,43 @@ class SiteSettingController extends Controller
             $path = $request->file('site_icon')->store('settings', 'public');
             SiteSetting::set('site_icon', $path);
 
-            // Generate PWA icons 192 and 512 from uploaded icon
+            // Generate favicon/tab/PWA icons 32/192/512/apple-touch from uploaded icon
             $this->generateIcons(Storage::disk('public')->path($path));
         }
 
         return back()->with('status', __('Pengaturan berhasil diperbarui.'));
     }
 
+    private function saveGenerated(\GdImage $image, int $size): void
+    {
+        $destDir = public_path('icons');
+        if (! is_dir($destDir)) mkdir($destDir, 0755, true);
+
+        $name = match ($size) {
+            32 => 'icon-32x32.png',
+            180 => 'apple-touch-icon.png',
+            default => "icon-{$size}x{$size}.png",
+        };
+
+        imagepng($image, $destDir . '/' . $name);
+
+        $storageDir = storage_path('app/public/icons');
+        if (! is_dir($storageDir)) mkdir($storageDir, 0755, true);
+        imagepng($image, $storageDir . '/' . $name);
+    }
+
     private function generateDefaultIcons(): void
     {
         if (! extension_loaded('gd')) return;
-        foreach ([32, 192, 512] as $size) {
+        foreach ([32, 192, 512, 180] as $size) {
             $img = imagecreatetruecolor($size, $size);
-            $bg = imagecolorallocate($img, 5, 150, 105);
+            // emerald-500 #10b981 (terang, terbaca di tab kecil)
+            $bg = imagecolorallocate($img, 16, 185, 129);
             imagefill($img, 0, 0, $bg);
             $white = imagecolorallocate($img, 255, 255, 255);
             $fontFile = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
             if (file_exists($fontFile)) {
-                $fontSize = $size * 0.35;
+                $fontSize = $size * 0.38;
                 $bbox = imagettfbbox($fontSize, 0, $fontFile, 'JT');
                 $tw = $bbox[2] - $bbox[0];
                 $th = $bbox[1] - $bbox[7];
@@ -79,17 +92,7 @@ class SiteSettingController extends Controller
                 $y = ($size + $th) / 2 - $size * 0.05;
                 imagettftext($img, $fontSize, 0, (int) $x, (int) $y, $white, $fontFile, 'JT');
             }
-            if ($size === 32) {
-                imagepng($img, public_path('favicon.ico'));
-                imagepng($img, public_path('favicon.png'));
-            } else {
-                $destDir = public_path('icons');
-                if (! is_dir($destDir)) mkdir($destDir, 0755, true);
-                imagepng($img, $destDir . "/icon-{$size}x{$size}.png");
-                $storageDir = storage_path('app/public/icons');
-                if (! is_dir($storageDir)) mkdir($storageDir, 0755, true);
-                imagepng($img, $storageDir . "/icon-{$size}x{$size}.png");
-            }
+            $this->saveGenerated($img, $size);
             imagedestroy($img);
         }
     }
@@ -98,7 +101,7 @@ class SiteSettingController extends Controller
     {
         if (! extension_loaded('gd')) return;
 
-        foreach ([32, 192, 512] as $size) {
+        foreach ([32, 192, 512, 180] as $size) {
             $src = @imagecreatefromstring(file_get_contents($sourcePath));
             if (! $src) continue;
             $dst = imagecreatetruecolor($size, $size);
@@ -109,17 +112,7 @@ class SiteSettingController extends Controller
             $srcW = imagesx($src);
             $srcH = imagesy($src);
             imagecopyresampled($dst, $src, 0, 0, 0, 0, $size, $size, $srcW, $srcH);
-            if ($size === 32) {
-                imagepng($dst, public_path('favicon.ico'));
-                imagepng($dst, public_path('favicon.png'));
-            } else {
-                $destDir = public_path('icons');
-                if (! is_dir($destDir)) mkdir($destDir, 0755, true);
-                imagepng($dst, $destDir . "/icon-{$size}x{$size}.png");
-                $storageDir = storage_path('app/public/icons');
-                if (! is_dir($storageDir)) mkdir($storageDir, 0755, true);
-                imagepng($dst, $storageDir . "/icon-{$size}x{$size}.png");
-            }
+            $this->saveGenerated($dst, $size);
             imagedestroy($src);
             imagedestroy($dst);
         }

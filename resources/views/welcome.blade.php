@@ -8,15 +8,15 @@
         $siteName = \App\Models\SiteSetting::get('site_name', 'JoyTrack');
         $heroTitle = \App\Models\SiteSetting::get('hero_title', 'Kelola Keuangan & Kendaraan dalam Satu Tempat');
         $heroSubtitle = \App\Models\SiteSetting::get('hero_subtitle', 'Catat transaksi, pantau saldo, kelola BBM & servis, dapatkan laporan keuangan & kendaraan — semua dengan JoyTrack yang modern dan bisa di-install di HP.');
-        $siteIcon = \App\Models\SiteSetting::get('site_icon');
-        $iconUrl = $siteIcon ? \Illuminate\Support\Facades\Storage::disk('public')->url($siteIcon) : '/icons/icon-192x192.png';
+        $iconUrl = '/icons/icon-192x192.png?v=2';
     @endphp
     <title>{{ $siteName }} — Manajemen Keuangan & Kendaraan</title>
     <meta name="description" content="{{ $heroSubtitle }}">
     <meta name="theme-color" content="#059669">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="{{ $iconUrl }}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ $iconUrl }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png?v=2">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=2">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
     <script>
@@ -37,11 +37,7 @@
     <header class="fixed top-0 left-0 right-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-2">
-                @if($siteIcon)
-                    <img src="{{ $iconUrl }}" alt="icon" class="w-8 h-8 rounded-xl object-cover">
-                @else
-                    <span class="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-sm">JT</span>
-                @endif
+                <img src="{{ $iconUrl }}" alt="{{ $siteName }}" class="w-8 h-8 rounded-xl object-cover">
                 <span class="font-bold text-gray-900 dark:text-white">{{ $siteName }}</span>
             </a>
             <div class="flex items-center gap-2">
