@@ -56,4 +56,16 @@ class ServiceRecord extends Model
     {
         return $this->belongsTo(Account::class);
     }
+
+    public function attachments(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (ServiceRecord $r) {
+            $r->attachments()->each(fn ($att) => $att->delete());
+        });
+    }
 }

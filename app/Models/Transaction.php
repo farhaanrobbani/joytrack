@@ -51,6 +51,11 @@ class Transaction extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function attachments(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
+
     public function scopeIncome($query)
     {
         return $query->where('type', 'income');
@@ -79,5 +84,12 @@ class Transaction extends Model
     public function isTransfer(): bool
     {
         return $this->type === 'transfer';
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Transaction $tx) {
+            $tx->attachments()->each(fn ($att) => $att->delete());
+        });
     }
 }

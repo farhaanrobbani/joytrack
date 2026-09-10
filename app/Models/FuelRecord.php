@@ -53,6 +53,11 @@ class FuelRecord extends Model
         return $this->belongsTo(Account::class);
     }
 
+    public function attachments(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
+
     // Stats helpers (BUSINESS-RULES §11, §12)
     public static function efficiency(?int $distance, float $liters): ?float
     {
@@ -68,5 +73,12 @@ class FuelRecord extends Model
             return null;
         }
         return $totalCost / $distance;
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (FuelRecord $r) {
+            $r->attachments()->each(fn ($att) => $att->delete());
+        });
     }
 }
