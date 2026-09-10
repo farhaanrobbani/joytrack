@@ -6,6 +6,11 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'JoyTrack') }}</title>
+        <meta name="theme-color" content="#059669">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+        <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -29,10 +34,10 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
-    <body class="font-sans antialiased bg-gray-100 dark:bg-gray-950">
+    <body class="font-sans antialiased bg-slate-50 dark:bg-gray-950">
         <div x-data="{ sidebarOpen: false }" class="min-h-screen">
             <!-- Topbar -->
-            <header class="fixed top-0 left-0 right-0 z-30 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+            <header class="fixed top-0 left-0 right-0 z-30 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800">
                 <div class="flex items-center justify-between h-full px-4 sm:px-6">
                     <div class="flex items-center gap-3">
                         <!-- Hamburger (mobile) -->
