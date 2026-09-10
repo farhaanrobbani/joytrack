@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FuelRecordController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceRecordController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VehicleController;
@@ -36,6 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('fuel-records', FuelRecordController::class);
 
     Route::resource('service-records', ServiceRecordController::class);
+
+    Route::get('reports/finance', [ReportController::class, 'finance'])->name('reports.finance');
+    Route::get('reports/vehicle', [ReportController::class, 'vehicle'])->name('reports.vehicle');
 });
 
 require __DIR__.'/auth.php';
