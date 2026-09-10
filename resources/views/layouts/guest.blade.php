@@ -39,6 +39,13 @@
             <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-900 shadow-md overflow-hidden sm:rounded-lg border border-transparent dark:border-gray-800">
                 {{ $slot }}
             </div>
+
+            <div class="mt-6 text-center">
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
+                    <x-heroicon-o-arrow-left class="w-4 h-4" />
+                    {{ __('Kembali ke Beranda') }}
+                </a>
+            </div>
         </div>
     </body>
 </html>
