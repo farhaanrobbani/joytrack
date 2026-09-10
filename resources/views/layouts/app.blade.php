@@ -5,12 +5,19 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'JoyTrack') }}</title>
+        @php
+            $siteNameApp = \App\Models\SiteSetting::get('site_name', 'JoyTrack');
+            $siteIconApp = \App\Models\SiteSetting::get('site_icon');
+            $iconUrlApp = $siteIconApp ? \Illuminate\Support\Facades\Storage::disk('public')->url($siteIconApp) : '/icons/icon-192x192.png';
+        @endphp
+        <title>{{ $siteNameApp }}</title>
         <meta name="theme-color" content="#059669">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-        <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ $iconUrlApp }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ $iconUrlApp }}">
+        <link rel="apple-touch-icon" href="{{ $iconUrlApp }}">
+        <link rel="icon" href="/favicon.ico" sizes="any">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

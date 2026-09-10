@@ -5,9 +5,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'JoyTrack') }}</title>
+        @php
+            $siteNameGuest = \App\Models\SiteSetting::get('site_name', 'JoyTrack');
+            $siteIconGuest = \App\Models\SiteSetting::get('site_icon');
+            $iconUrlGuest = $siteIconGuest ? \Illuminate\Support\Facades\Storage::disk('public')->url($siteIconGuest) : '/icons/icon-192x192.png';
+        @endphp
+        <title>{{ $siteNameGuest }} — {{ __('Masuk') }}</title>
         <meta name="theme-color" content="#059669">
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ $iconUrlGuest }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ $iconUrlGuest }}">
+        <link rel="apple-touch-icon" href="{{ $iconUrlGuest }}">
+        <link rel="icon" href="/favicon.ico" sizes="any">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
