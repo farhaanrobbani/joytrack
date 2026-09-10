@@ -26,5 +26,13 @@
             ['label' => 'Laporan Keuangan', 'route' => 'reports.finance', 'icon' => 'chart-bar'],
             ['label' => 'Laporan Kendaraan', 'route' => 'reports.vehicle', 'icon' => 'document-chart-bar'],
         ]" :title="__('Laporan')" />
+
+        @if(auth()->check() && auth()->user()->isAdmin())
+            <x-sidebar-section :items="[
+                ['label' => 'Admin Dashboard', 'route' => 'admin.dashboard', 'icon' => 'shield-check'],
+                ['label' => 'Kelola User', 'route' => 'admin.users.index', 'icon' => 'users'],
+                ['label' => 'Kelola Beranda', 'route' => 'admin.settings.edit', 'icon' => 'photo'],
+            ]" :title="__('Admin')" />
+        @endif
     </div>
 </nav>

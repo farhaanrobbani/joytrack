@@ -4,12 +4,20 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>JoyTrack — Manajemen Keuangan & Kendaraan</title>
-    <meta name="description" content="Kelola keuangan, pantau saldo, catat BBM & servis kendaraan, dan dapatkan laporan keuangan & kendaraan dalam satu aplikasi.">
+    @php
+        $siteName = \App\Models\SiteSetting::get('site_name', 'JoyTrack');
+        $heroTitle = \App\Models\SiteSetting::get('hero_title', 'Kelola Keuangan & Kendaraan dalam Satu Tempat');
+        $heroSubtitle = \App\Models\SiteSetting::get('hero_subtitle', 'Catat transaksi, pantau saldo, kelola BBM & servis, dapatkan laporan keuangan & kendaraan — semua dengan JoyTrack yang modern dan bisa di-install di HP.');
+        $heroImage = \App\Models\SiteSetting::get('hero_image');
+        $siteIcon = \App\Models\SiteSetting::get('site_icon');
+        $iconUrl = $siteIcon ? \Illuminate\Support\Facades\Storage::disk('public')->url($siteIcon) : '/icons/icon-192x192.png';
+    @endphp
+    <title>{{ $siteName }} — Manajemen Keuangan & Kendaraan</title>
+    <meta name="description" content="{{ $heroSubtitle }}">
     <meta name="theme-color" content="#059669">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="{{ $iconUrl }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ $iconUrl }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
     <script>
@@ -30,8 +38,12 @@
     <header class="fixed top-0 left-0 right-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-2">
-                <span class="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-sm">JT</span>
-                <span class="font-bold text-gray-900 dark:text-white">JoyTrack</span>
+                @if($siteIcon)
+                    <img src="{{ $iconUrl }}" alt="icon" class="w-8 h-8 rounded-xl object-cover">
+                @else
+                    <span class="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-sm">JT</span>
+                @endif
+                <span class="font-bold text-gray-900 dark:text-white">{{ $siteName }}</span>
             </a>
             <div class="flex items-center gap-2">
                 <x-theme-toggle />
@@ -58,10 +70,10 @@
                         {{ __('PWA • Offline Ready • Installable') }}
                     </span>
                     <h1 class="mt-4 text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
-                        {{ __('Kelola Keuangan') }} <span class="text-brand-600">&</span> {{ __('Kendaraan') }} {{ __('dalam Satu Tempat') }}
+                        {{ $heroTitle }}
                     </h1>
                     <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
-                        {{ __('Catat transaksi, pantau saldo, kelola BBM & servis, dapatkan laporan keuangan & kendaraan — semua dengan JoyTrack yang modern dan bisa di-install di HP.') }}
+                        {{ $heroSubtitle }}
                     </p>
                     <div class="mt-8 flex flex-wrap gap-3">
                         @auth
@@ -80,21 +92,25 @@
                 </div>
                 <div class="relative">
                     <div class="absolute -inset-4 bg-gradient-to-br from-brand-100 to-emerald-50 dark:from-brand-900/20 dark:to-gray-800 rounded-3xl blur-2xl"></div>
-                    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-soft-lg border border-gray-100 dark:border-gray-700 p-4">
-                        <div class="flex items-center gap-2 mb-4">
-                            <span class="w-3 h-3 rounded-full bg-red-400"></span>
-                            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
-                            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
-                            <span class="ml-auto text-xs text-gray-400">JoyTrack Dashboard</span>
+                    @if($heroImage)
+                        <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($heroImage) }}" alt="Hero" class="relative rounded-2xl shadow-soft-lg border border-gray-100 dark:border-gray-700 w-full object-cover max-h-[420px]">
+                    @else
+                        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-soft-lg border border-gray-100 dark:border-gray-700 p-4">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="w-3 h-3 rounded-full bg-red-400"></span>
+                                <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                                <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                                <span class="ml-auto text-xs text-gray-400">JoyTrack Dashboard</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="rounded-xl bg-slate-50 dark:bg-gray-700 p-4"><p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Total Saldo') }}</p><p class="font-bold tabular-nums">Rp 12.500.000</p></div>
+                                <div class="rounded-xl bg-emerald-50 dark:bg-emerald-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Pemasukan') }}</p><p class="font-bold text-emerald-600">Rp 5.000.000</p></div>
+                                <div class="rounded-xl bg-red-50 dark:bg-red-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Pengeluaran') }}</p><p class="font-bold text-red-600">Rp 2.300.000</p></div>
+                                <div class="rounded-xl bg-brand-50 dark:bg-brand-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Kendaraan') }}</p><p class="font-bold">Vario 45.200 km</p></div>
+                            </div>
+                            <div class="mt-4 h-20 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-400 opacity-90"></div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="rounded-xl bg-slate-50 dark:bg-gray-700 p-4"><p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Total Saldo') }}</p><p class="font-bold tabular-nums">Rp 12.500.000</p></div>
-                            <div class="rounded-xl bg-emerald-50 dark:bg-emerald-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Pemasukan') }}</p><p class="font-bold text-emerald-600">Rp 5.000.000</p></div>
-                            <div class="rounded-xl bg-red-50 dark:bg-red-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Pengeluaran') }}</p><p class="font-bold text-red-600">Rp 2.300.000</p></div>
-                            <div class="rounded-xl bg-brand-50 dark:bg-brand-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Kendaraan') }}</p><p class="font-bold">Vario 45.200 km</p></div>
-                        </div>
-                        <div class="mt-4 h-20 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-400 opacity-90"></div>
-                    </div>
+                    @endif
                 </div>
             </div>
         </section>
@@ -148,7 +164,7 @@
 
     <footer class="border-t border-gray-200 dark:border-gray-800 py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
-            <span>© {{ date('Y') }} JoyTrack — {{ __('Manajemen Keuangan & Kendaraan') }}</span>
+            <span>© {{ date('Y') }} {{ $siteName }} — {{ __('Manajemen Keuangan & Kendaraan') }}</span>
             <div class="flex gap-4">
                 <a href="{{ route('login') }}" class="hover:text-gray-700 dark:hover:text-gray-200">{{ __('Masuk') }}</a>
                 @if (Route::has('register'))<a href="{{ route('register') }}" class="hover:text-gray-700 dark:hover:text-gray-200">{{ __('Daftar') }}</a>@endif
