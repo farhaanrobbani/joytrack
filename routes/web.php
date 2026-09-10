@@ -17,6 +17,8 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
+Route::view('/offline', 'offline')->name('offline');
+
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
