@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FuelRecordController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServiceRecordController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('vehicles/{vehicle}', [VehicleController::class, 'update'])->name('vehicles.update');
 
     Route::resource('fuel-records', FuelRecordController::class);
+
+    Route::resource('service-records', ServiceRecordController::class);
 });
 
 require __DIR__.'/auth.php';
