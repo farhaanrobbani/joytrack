@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreVehicleRequest;
 use App\Http\Requests\UpdateVehicleRequest;
 use App\Models\Vehicle;
+use App\Services\ServiceReminderService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -54,7 +55,19 @@ class VehicleController extends Controller
         $recentFuels = \App\Models\FuelRecord::where('vehicle_id', $vehicle->id)->orderByDesc('fuel_date')->limit(5)->get();
         $recentServices = \App\Models\ServiceRecord::where('vehicle_id', $vehicle->id)->orderByDesc('service_date')->limit(5)->get();
 
-        return view('vehicles.show', compact('vehicle', 'stats', 'recentFuels', 'recentServices'));
+        $reminder = null;
+        $lastService = \App\Models\ServiceRecord::where('vehicle_id', $vehicle->id)
+            ->where(function ($q) { $q->whereNotNull('next_service_date')->orWhereNotNull('next_service_odometer'); })
+            ->orderByDesc('service_date')->orderByDesc('id')->first();
+        if ($lastService) {
+            $reminderService = app(ServiceReminderService::class);
+            $status = $reminderService->getStatus($vehicle, $lastService);
+            if ($status !== 'ok') {
+                $reminder = ['status' => $status, 'record' => $lastService];
+            }
+        }
+
+        return view('vehicles.show', compact('vehicle', 'stats', 'recentFuels', 'recentServices', 'reminder'));
     }
 
     public function edit(Vehicle $vehicle): View

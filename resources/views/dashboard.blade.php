@@ -3,6 +3,29 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Dashboard') }}</h2>
     </x-slot>
 
+    @if(isset($reminders) && $reminders->isNotEmpty())
+        <div class="mb-6 space-y-3">
+            @foreach($reminders as $r)
+                <div class="rounded-lg border p-4 {{ $r['status']==='overdue' ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200' }}">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="font-semibold {{ $r['status']==='overdue' ? 'text-red-800' : 'text-amber-800' }}">
+                                {{ $r['status']==='overdue' ? __('Servis Terlambat') : __('Servis Segera Jatuh Tempo') }} — {{ $r['vehicle']->name }} ({{ $r['vehicle']->license_plate ?? '-' }})
+                            </p>
+                            <ul class="mt-1 list-disc list-inside text-sm {{ $r['status']==='overdue' ? 'text-red-700' : 'text-amber-700' }}">
+                                @foreach($r['messages'] as $msg)
+                                    <li>{{ $msg }}</li>
+                                @endforeach
+                            </ul>
+                            <p class="mt-1 text-xs text-gray-500">{{ __('Servis terakhir') }}: {{ $r['record']->service_date->format('d M Y') }} • {{ $r['record']->service_type }} • {{ $r['record']->workshop ?? '-' }}</p>
+                        </div>
+                        <a href="{{ route('vehicles.show', $r['vehicle']) }}" class="shrink-0 px-3 py-1.5 bg-white border rounded-lg text-sm font-medium hover:bg-gray-50">{{ __('Lihat') }}</a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white shadow sm:rounded-lg p-6">
             <p class="text-sm text-gray-500">{{ __('Total Saldo') }}</p>

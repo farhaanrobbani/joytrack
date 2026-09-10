@@ -9,6 +9,20 @@
         </div>
     </x-slot>
 
+    @if(isset($reminder) && $reminder)
+        <div class="rounded-lg border p-4 mb-6 {{ $reminder['status']==='overdue' ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200' }}">
+            <p class="font-semibold {{ $reminder['status']==='overdue' ? 'text-red-800' : 'text-amber-800' }}">
+                {{ $reminder['status']==='overdue' ? __('Servis Terlambat') : __('Servis Segera Jatuh Tempo') }}
+            </p>
+            <p class="text-sm {{ $reminder['status']==='overdue' ? 'text-red-700' : 'text-amber-700' }}">
+                @if($reminder['record']->next_service_date) {{ __('Tanggal: :date', ['date' => $reminder['record']->next_service_date->format('d M Y')]) }} @endif
+                @if($reminder['record']->next_service_date && $reminder['record']->next_service_odometer) • @endif
+                @if($reminder['record']->next_service_odometer) {{ __('KM: :km', ['km' => number_format($reminder['record']->next_service_odometer,0,',','.')]) }} @endif
+                — {{ $reminder['record']->service_type }} @if($reminder['record']->workshop) ({{ $reminder['record']->workshop }}) @endif
+            </p>
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
             <div class="bg-white shadow sm:rounded-lg p-6">

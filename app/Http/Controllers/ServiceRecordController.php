@@ -43,11 +43,7 @@ class ServiceRecordController extends Controller
         $vehicles = Vehicle::where('user_id', auth()->id())->orderBy('name')->get();
 
         // reminder stats: count upcoming via date/km
-        $upcoming = ServiceRecord::where('user_id', auth()->id())
-            ->where(function ($q) {
-                $q->whereNotNull('next_service_date')->where('next_service_date', '<=', now()->addDays(30))
-                  ->orWhereNotNull('next_service_odometer');
-            })->count();
+        $upcoming = app(\App\Services\ServiceReminderService::class)->getReminders(auth()->id())->count();
 
         return view('service-records.index', compact('records', 'vehicles', 'upcoming'));
     }
