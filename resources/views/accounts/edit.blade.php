@@ -49,9 +49,11 @@
                     </div>
 
                     <div class="flex items-center">
+                        <input type="hidden" name="is_active" value="0">
                         <input id="is_active" name="is_active" type="checkbox" value="1" class="rounded border-gray-300 text-emerald-600 shadow-sm focus:ring-emerald-500" {{ old('is_active', $account->is_active) ? 'checked' : '' }}>
                         <x-input-label for="is_active" :value="__('Akun Aktif')" class="ms-2" />
                     </div>
+                    <x-input-error :messages="$errors->get('is_active')" class="mt-2" />
 
                     <div class="flex gap-3">
                         <a href="{{ route('accounts.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 border border-transparent rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
