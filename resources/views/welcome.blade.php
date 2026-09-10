@@ -8,7 +8,6 @@
         $siteName = \App\Models\SiteSetting::get('site_name', 'JoyTrack');
         $heroTitle = \App\Models\SiteSetting::get('hero_title', 'Kelola Keuangan & Kendaraan dalam Satu Tempat');
         $heroSubtitle = \App\Models\SiteSetting::get('hero_subtitle', 'Catat transaksi, pantau saldo, kelola BBM & servis, dapatkan laporan keuangan & kendaraan — semua dengan JoyTrack yang modern dan bisa di-install di HP.');
-        $heroImage = \App\Models\SiteSetting::get('hero_image');
         $siteIcon = \App\Models\SiteSetting::get('site_icon');
         $iconUrl = $siteIcon ? \Illuminate\Support\Facades\Storage::disk('public')->url($siteIcon) : '/icons/icon-192x192.png';
     @endphp
@@ -92,25 +91,21 @@
                 </div>
                 <div class="relative">
                     <div class="absolute -inset-4 bg-gradient-to-br from-brand-100 to-emerald-50 dark:from-brand-900/20 dark:to-gray-800 rounded-3xl blur-2xl"></div>
-                    @if($heroImage)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($heroImage) }}" alt="Hero" class="relative rounded-2xl shadow-soft-lg border border-gray-100 dark:border-gray-700 w-full object-cover max-h-[420px]">
-                    @else
-                        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-soft-lg border border-gray-100 dark:border-gray-700 p-4">
-                            <div class="flex items-center gap-2 mb-4">
-                                <span class="w-3 h-3 rounded-full bg-red-400"></span>
-                                <span class="w-3 h-3 rounded-full bg-amber-400"></span>
-                                <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
-                                <span class="ml-auto text-xs text-gray-400">JoyTrack Dashboard</span>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="rounded-xl bg-slate-50 dark:bg-gray-700 p-4"><p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Total Saldo') }}</p><p class="font-bold tabular-nums">Rp 12.500.000</p></div>
-                                <div class="rounded-xl bg-emerald-50 dark:bg-emerald-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Pemasukan') }}</p><p class="font-bold text-emerald-600">Rp 5.000.000</p></div>
-                                <div class="rounded-xl bg-red-50 dark:bg-red-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Pengeluaran') }}</p><p class="font-bold text-red-600">Rp 2.300.000</p></div>
-                                <div class="rounded-xl bg-brand-50 dark:bg-brand-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Kendaraan') }}</p><p class="font-bold">Vario 45.200 km</p></div>
-                            </div>
-                            <div class="mt-4 h-20 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-400 opacity-90"></div>
+                    <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-soft-lg border border-gray-100 dark:border-gray-700 p-4">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="w-3 h-3 rounded-full bg-red-400"></span>
+                            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                            <span class="ml-auto text-xs text-gray-400">JoyTrack Dashboard</span>
                         </div>
-                    @endif
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="rounded-xl bg-slate-50 dark:bg-gray-700 p-4"><p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Total Saldo') }}</p><p class="font-bold tabular-nums">Rp 12.500.000</p></div>
+                            <div class="rounded-xl bg-emerald-50 dark:bg-emerald-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Pemasukan') }}</p><p class="font-bold text-emerald-600">Rp 5.000.000</p></div>
+                            <div class="rounded-xl bg-red-50 dark:bg-red-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Pengeluaran') }}</p><p class="font-bold text-red-600">Rp 2.300.000</p></div>
+                            <div class="rounded-xl bg-brand-50 dark:bg-brand-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Kendaraan') }}</p><p class="font-bold">Vario 45.200 km</p></div>
+                        </div>
+                        <div class="mt-4 h-20 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-400 opacity-90"></div>
+                    </div>
                 </div>
             </div>
         </section>

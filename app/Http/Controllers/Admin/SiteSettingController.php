@@ -17,7 +17,6 @@ class SiteSettingController extends Controller
             'site_name' => SiteSetting::get('site_name', config('app.name', 'JoyTrack')),
             'hero_title' => SiteSetting::get('hero_title', 'Kelola Keuangan & Kendaraan dalam Satu Tempat'),
             'hero_subtitle' => SiteSetting::get('hero_subtitle', 'Catat transaksi, pantau saldo, kelola BBM & servis, dapatkan laporan keuangan & kendaraan — semua dengan JoyTrack.'),
-            'hero_image' => SiteSetting::get('hero_image'),
             'site_icon' => SiteSetting::get('site_icon'),
         ];
 
@@ -30,26 +29,13 @@ class SiteSettingController extends Controller
             'site_name' => ['required', 'string', 'max:100'],
             'hero_title' => ['required', 'string', 'max:255'],
             'hero_subtitle' => ['required', 'string', 'max:500'],
-            'hero_image' => ['nullable', 'image', 'max:2048', 'mimes:jpg,jpeg,png,webp'],
             'site_icon' => ['nullable', 'image', 'max:2048', 'mimes:jpg,jpeg,png,webp', 'dimensions:ratio=1/1'],
-            'remove_hero_image' => ['sometimes', 'boolean'],
             'remove_site_icon' => ['sometimes', 'boolean'],
         ]);
 
         SiteSetting::set('site_name', $request->input('site_name'));
         SiteSetting::set('hero_title', $request->input('hero_title'));
         SiteSetting::set('hero_subtitle', $request->input('hero_subtitle'));
-
-        if ($request->boolean('remove_hero_image')) {
-            $old = SiteSetting::get('hero_image');
-            if ($old) Storage::disk('public')->delete($old);
-            SiteSetting::set('hero_image', null);
-        } elseif ($request->hasFile('hero_image')) {
-            $old = SiteSetting::get('hero_image');
-            if ($old) Storage::disk('public')->delete($old);
-            $path = $request->file('hero_image')->store('settings', 'public');
-            SiteSetting::set('hero_image', $path);
-        }
 
         if ($request->boolean('remove_site_icon')) {
             $old = SiteSetting::get('site_icon');

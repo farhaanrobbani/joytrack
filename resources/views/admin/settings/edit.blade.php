@@ -26,24 +26,8 @@
                 <x-input-error :messages="$errors->get('hero_subtitle')" class="mt-2" />
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                    <x-input-label for="hero_image" :value="__('Gambar Hero (jpg, png, webp, max 2MB)')" />
-                    @if($settings['hero_image'])
-                        <div class="mt-2">
-                            <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($settings['hero_image']) }}" alt="Hero" class="w-full h-48 object-cover rounded-xl border">
-                            <label class="mt-2 flex items-center gap-2 text-sm">
-                                <input type="checkbox" name="remove_hero_image" value="1" class="rounded border-gray-300 text-brand-600">
-                                <span>{{ __('Hapus gambar hero') }}</span>
-                            </label>
-                        </div>
-                    @endif
-                    <input id="hero_image" name="hero_image" type="file" accept="image/*" class="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
-                    <x-input-error :messages="$errors->get('hero_image')" class="mt-2" />
-                </div>
-
-                <div>
-                    <x-input-label for="site_icon" :value="__('Icon Website (persegi, 512x512, max 2MB) — akan generate 192 & 512')" />
+            <div>
+                <x-input-label for="site_icon" :value="__('Icon Website (persegi, 512x512, max 2MB) — akan generate 192 & 512')" />
                     @if($settings['site_icon'])
                         <div class="mt-2 flex items-center gap-3">
                             <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($settings['site_icon']) }}" alt="Icon" class="w-16 h-16 object-cover rounded-xl border">
@@ -61,7 +45,6 @@
                     @endif
                     <input id="site_icon" name="site_icon" type="file" accept="image/*" class="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
                     <x-input-error :messages="$errors->get('site_icon')" class="mt-2" />
-                </div>
             </div>
 
             <div class="flex gap-3">

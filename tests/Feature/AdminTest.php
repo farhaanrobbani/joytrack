@@ -65,21 +65,19 @@ class AdminTest extends TestCase
         $admin = User::factory()->admin()->create();
         $this->actingAs($admin);
 
-        $hero = UploadedFile::fake()->image('hero.jpg', 800, 400);
         $icon = UploadedFile::fake()->image('icon.png', 512, 512);
 
         $response = $this->patch(route('admin.settings.update'), [
             'site_name' => 'JoyTrack Custom',
             'hero_title' => 'Judul Baru',
             'hero_subtitle' => 'Subtitle baru',
-            'hero_image' => $hero,
             'site_icon' => $icon,
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('site_settings', ['key' => 'site_name', 'value' => 'JoyTrack Custom']);
         $this->assertDatabaseHas('site_settings', ['key' => 'hero_title', 'value' => 'Judul Baru']);
-        Storage::disk('public')->assertExists('settings/' . $hero->hashName());
+        Storage::disk('public')->assertExists('settings/' . $icon->hashName());
         // icons generated
         $this->assertFileExists(public_path('icons/icon-192x192.png'));
     }
