@@ -16,7 +16,7 @@ class FuelRecordTest extends TestCase
 
     private function seedFuelCategory(User $user): Category
     {
-        return Category::factory()->create(['user_id' => $user->id, 'type' => 'expense', 'name' => 'Bahan Bakar']);
+        return Category::factory()->create(['user_id' => $user->id, 'type' => 'expense', 'name' => 'Kendaraan']);
     }
 
     public function test_user_can_create_fuel_without_transaction(): void
@@ -61,7 +61,9 @@ class FuelRecordTest extends TestCase
         $this->assertEquals(800000, (float) $account->current_balance);
         $fuel = FuelRecord::first();
         $this->assertNotNull($fuel->transaction_id);
-        $this->assertDatabaseHas('transactions', ['id' => $fuel->transaction_id, 'amount' => 200000, 'type' => 'expense']);
+        $kendaraan = Category::where('user_id', $user->id)->where('name', 'Kendaraan')->first();
+        $this->assertNotNull($kendaraan);
+        $this->assertDatabaseHas('transactions', ['id' => $fuel->transaction_id, 'amount' => 200000, 'type' => 'expense', 'category_id' => $kendaraan->id]);
     }
 
     public function test_fuel_calculation(): void

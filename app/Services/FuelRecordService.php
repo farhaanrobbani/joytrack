@@ -26,10 +26,13 @@ class FuelRecordService
             if ($createTx) {
                 $category = Category::where('user_id', $data['user_id'])
                     ->where('type', 'expense')
-                    ->where('name', 'Bahan Bakar')
+                    ->where('name', 'Kendaraan')
                     ->first();
                 if (! $category) {
-                    $category = Category::where('user_id', $data['user_id'])->where('type', 'expense')->first();
+                    $category = Category::firstOrCreate(
+                        ['user_id' => $data['user_id'], 'name' => 'Kendaraan', 'type' => 'expense'],
+                        ['is_active' => true]
+                    );
                 }
                 $transaction = $this->transactionService->create([
                     'user_id' => $data['user_id'],
@@ -76,8 +79,8 @@ class FuelRecordService
             $shouldCreateTx = ! empty($data['account_id']);
             $newTransaction = null;
             if ($shouldCreateTx) {
-                $category = Category::where('user_id', $fuel->user_id)->where('type', 'expense')->where('name', 'Bahan Bakar')->first()
-                    ?? Category::where('user_id', $fuel->user_id)->where('type', 'expense')->first();
+                $category = Category::where('user_id', $fuel->user_id)->where('type', 'expense')->where('name', 'Kendaraan')->first()
+                    ?? Category::firstOrCreate(['user_id' => $fuel->user_id, 'name' => 'Kendaraan', 'type' => 'expense'], ['is_active' => true]);
                 $newTransaction = $this->transactionService->create([
                     'user_id' => $fuel->user_id,
                     'account_id' => $data['account_id'],

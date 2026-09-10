@@ -29,8 +29,8 @@ class ServiceRecordService
             }
 
             if ($createTx) {
-                $category = Category::where('user_id', $data['user_id'])->where('type', 'expense')->where('name', 'Servis')->first()
-                    ?? Category::where('user_id', $data['user_id'])->where('type', 'expense')->first();
+                $category = Category::where('user_id', $data['user_id'])->where('type', 'expense')->where('name', 'Kendaraan')->first()
+                    ?? Category::firstOrCreate(['user_id' => $data['user_id'], 'name' => 'Kendaraan', 'type' => 'expense'], ['is_active' => true]);
                 $tx = $this->transactionService->create([
                     'user_id' => $data['user_id'],
                     'account_id' => $accountId,
@@ -69,8 +69,8 @@ class ServiceRecordService
 
             $shouldCreateTx = ! empty($data['account_id']);
             if ($shouldCreateTx) {
-                $category = Category::where('user_id', $record->user_id)->where('type', 'expense')->where('name', 'Servis')->first()
-                    ?? Category::where('user_id', $record->user_id)->where('type', 'expense')->first();
+                $category = Category::where('user_id', $record->user_id)->where('type', 'expense')->where('name', 'Kendaraan')->first()
+                    ?? Category::firstOrCreate(['user_id' => $record->user_id, 'name' => 'Kendaraan', 'type' => 'expense'], ['is_active' => true]);
                 $tx = $this->transactionService->create([
                     'user_id' => $record->user_id,
                     'account_id' => $data['account_id'],

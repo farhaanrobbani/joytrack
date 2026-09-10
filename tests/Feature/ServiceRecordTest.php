@@ -16,7 +16,7 @@ class ServiceRecordTest extends TestCase
 
     private function seedServiceCategory(User $user): Category
     {
-        return Category::factory()->create(['user_id' => $user->id, 'type' => 'expense', 'name' => 'Servis']);
+        return Category::factory()->create(['user_id' => $user->id, 'type' => 'expense', 'name' => 'Kendaraan']);
     }
 
     public function test_user_can_create_service_without_transaction(): void
@@ -63,7 +63,9 @@ class ServiceRecordTest extends TestCase
         $this->assertEquals(700000, (float) $account->current_balance);
         $record = ServiceRecord::first();
         $this->assertNotNull($record->transaction_id);
-        $this->assertDatabaseHas('transactions', ['id' => $record->transaction_id, 'amount' => 300000]);
+        $kendaraan = Category::where('user_id', $user->id)->where('name', 'Kendaraan')->first();
+        $this->assertNotNull($kendaraan);
+        $this->assertDatabaseHas('transactions', ['id' => $record->transaction_id, 'amount' => 300000, 'category_id' => $kendaraan->id]);
     }
 
     public function test_next_service_validation(): void
