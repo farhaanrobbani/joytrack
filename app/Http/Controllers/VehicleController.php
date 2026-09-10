@@ -52,8 +52,9 @@ class VehicleController extends Controller
         ];
 
         $recentFuels = \App\Models\FuelRecord::where('vehicle_id', $vehicle->id)->orderByDesc('fuel_date')->limit(5)->get();
+        $recentServices = \App\Models\ServiceRecord::where('vehicle_id', $vehicle->id)->orderByDesc('service_date')->limit(5)->get();
 
-        return view('vehicles.show', compact('vehicle', 'stats', 'recentFuels'));
+        return view('vehicles.show', compact('vehicle', 'stats', 'recentFuels', 'recentServices'));
     }
 
     public function edit(Vehicle $vehicle): View

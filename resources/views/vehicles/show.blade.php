@@ -57,6 +57,26 @@
                     <a href="{{ route('fuel-records.create', ['vehicle_id' => $vehicle->id]) }}" class="mt-2 inline-block text-sm text-emerald-600 hover:underline">{{ __('Tambah BBM') }}</a>
                 </div>
             @endif
+
+            @if(isset($recentServices) && $recentServices->isNotEmpty())
+                <div class="bg-white shadow sm:rounded-lg p-6">
+                    <h3 class="font-semibold text-gray-800 mb-3">{{ __('Riwayat Servis Terbaru') }}</h3>
+                    <ul class="divide-y divide-gray-100 text-sm">
+                        @foreach($recentServices as $s)
+                            <li class="flex justify-between py-2">
+                                <span>{{ $s->service_date->format('d M Y') }} • {{ $s->service_type }}</span>
+                                <span class="font-medium">Rp {{ number_format($s->total_cost,0,',','.') }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                    <a href="{{ route('service-records.index', ['vehicle_id' => $vehicle->id]) }}" class="mt-3 inline-block text-sm text-emerald-600 hover:underline">{{ __('Lihat semua Servis') }}</a>
+                </div>
+            @else
+                <div class="bg-gray-50 border border-dashed rounded-lg p-4 text-center">
+                    <p class="text-sm text-gray-500">{{ __('Belum ada riwayat servis untuk kendaraan ini') }}</p>
+                    <a href="{{ route('service-records.create', ['vehicle_id' => $vehicle->id]) }}" class="mt-2 inline-block text-sm text-emerald-600 hover:underline">{{ __('Tambah Servis') }}</a>
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>
