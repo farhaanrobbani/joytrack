@@ -63,9 +63,12 @@
                                 <x-dropdown-link :href="route('profile.edit')">
                                     {{ __('Profil') }}
                                 </x-dropdown-link>
-                                <x-dropdown-link :href="route('logout')" method="post" as="button">
-                                    {{ __('Keluar') }}
-                                </x-dropdown-link>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="block w-full text-start px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">
+                                        {{ __('Keluar') }}
+                                    </button>
+                                </form>
                             </x-slot>
                         </x-dropdown>
                     </div>
