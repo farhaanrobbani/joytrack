@@ -39,15 +39,21 @@ class VehicleController extends Controller
     {
         $this->authorize('view', $vehicle);
 
-        // Placeholder stats until fuel/service modules exist
+        $fuelStats = \App\Models\FuelRecord::where('vehicle_id', $vehicle->id)->selectRaw('COUNT(*) as cnt, COALESCE(SUM(total_cost),0) as cost')->first();
+        $serviceStats = \Illuminate\Support\Facades\Schema::hasTable('service_records')
+            ? \App\Models\ServiceRecord::where('vehicle_id', $vehicle->id)->selectRaw('COUNT(*) as cnt, COALESCE(SUM(total_cost),0) as cost')->first()
+            : (object) ['cnt' => 0, 'cost' => 0];
+
         $stats = [
-            'total_fuel_cost' => 0,
-            'total_service_cost' => 0,
-            'fuel_count' => 0,
-            'service_count' => 0,
+            'total_fuel_cost' => (float) ($fuelStats->cost ?? 0),
+            'total_service_cost' => (float) ($serviceStats->cost ?? 0),
+            'fuel_count' => (int) ($fuelStats->cnt ?? 0),
+            'service_count' => (int) ($serviceStats->cnt ?? 0),
         ];
 
-        return view('vehicles.show', compact('vehicle', 'stats'));
+        $recentFuels = \App\Models\FuelRecord::where('vehicle_id', $vehicle->id)->orderByDesc('fuel_date')->limit(5)->get();
+
+        return view('vehicles.show', compact('vehicle', 'stats', 'recentFuels'));
     }
 
     public function edit(Vehicle $vehicle): View

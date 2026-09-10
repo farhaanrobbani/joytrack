@@ -38,9 +38,25 @@
                 </div>
             </div>
 
-            <div class="bg-gray-50 border border-dashed rounded-lg p-4 text-center">
-                <p class="text-sm text-gray-500">{{ __('Fitur BBM & Servis akan tersedia di Phase 7-8') }}</p>
-            </div>
+            @if(isset($recentFuels) && $recentFuels->isNotEmpty())
+                <div class="bg-white shadow sm:rounded-lg p-6">
+                    <h3 class="font-semibold text-gray-800 mb-3">{{ __('Riwayat BBM Terbaru') }}</h3>
+                    <ul class="divide-y divide-gray-100 text-sm">
+                        @foreach($recentFuels as $f)
+                            <li class="flex justify-between py-2">
+                                <span>{{ $f->fuel_date->format('d M Y') }} • {{ number_format($f->liters,2,',','.') }} L</span>
+                                <span class="font-medium">Rp {{ number_format($f->total_cost,0,',','.') }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                    <a href="{{ route('fuel-records.index', ['vehicle_id' => $vehicle->id]) }}" class="mt-3 inline-block text-sm text-emerald-600 hover:underline">{{ __('Lihat semua BBM') }}</a>
+                </div>
+            @else
+                <div class="bg-gray-50 border border-dashed rounded-lg p-4 text-center">
+                    <p class="text-sm text-gray-500">{{ __('Belum ada riwayat BBM untuk kendaraan ini') }}</p>
+                    <a href="{{ route('fuel-records.create', ['vehicle_id' => $vehicle->id]) }}" class="mt-2 inline-block text-sm text-emerald-600 hover:underline">{{ __('Tambah BBM') }}</a>
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>
