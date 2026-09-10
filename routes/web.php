@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FuelRecordController;
@@ -40,6 +41,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('reports/finance', [ReportController::class, 'finance'])->name('reports.finance');
     Route::get('reports/vehicle', [ReportController::class, 'vehicle'])->name('reports.vehicle');
+
+    Route::post('attachments', [AttachmentController::class, 'store'])->name('attachments.store');
+    Route::get('attachments/{attachment}', [AttachmentController::class, 'show'])->name('attachments.show');
+    Route::delete('attachments/{attachment}', [AttachmentController::class, 'destroy'])->name('attachments.destroy');
 });
 
 require __DIR__.'/auth.php';

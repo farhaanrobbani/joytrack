@@ -70,7 +70,7 @@ class ServiceRecordController extends Controller
     public function show(ServiceRecord $serviceRecord): View
     {
         $this->authorize('view', $serviceRecord);
-        $serviceRecord->load(['vehicle', 'account', 'transaction']);
+        $serviceRecord->load(['vehicle', 'account', 'transaction', 'attachments']);
 
         return view('service-records.show', compact('serviceRecord'));
     }

@@ -32,4 +32,8 @@
             <x-danger-button type="submit">{{ __('Hapus Transaksi') }}</x-danger-button>
         </form>
     </div>
+
+    <div class="max-w-2xl">
+        <x-attachment-list :model="$transaction" type="transaction" />
+    </div>
 </x-app-layout>

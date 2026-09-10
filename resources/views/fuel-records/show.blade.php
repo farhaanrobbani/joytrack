@@ -28,5 +28,6 @@
             </dl>
             @if($fuelRecord->notes)<p class="mt-4 text-sm text-gray-600 whitespace-pre-wrap border-t pt-4">{{ $fuelRecord->notes }}</p>@endif
         </div>
+        <x-attachment-list :model="$fuelRecord" type="fuel_record" />
     </div>
 </x-app-layout>

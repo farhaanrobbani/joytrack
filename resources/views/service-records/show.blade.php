@@ -27,5 +27,6 @@
             </dl>
             @if($serviceRecord->notes)<p class="mt-4 text-sm text-gray-600 whitespace-pre-wrap border-t pt-4">{{ $serviceRecord->notes }}</p>@endif
         </div>
+        <x-attachment-list :model="$serviceRecord" type="service_record" />
     </div>
 </x-app-layout>

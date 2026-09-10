@@ -73,7 +73,7 @@ class FuelRecordController extends Controller
     public function show(FuelRecord $fuelRecord): View
     {
         $this->authorize('view', $fuelRecord);
-        $fuelRecord->load(['vehicle', 'account', 'transaction']);
+        $fuelRecord->load(['vehicle', 'account', 'transaction', 'attachments']);
 
         // previous record for this vehicle
         $prev = FuelRecord::where('vehicle_id', $fuelRecord->vehicle_id)

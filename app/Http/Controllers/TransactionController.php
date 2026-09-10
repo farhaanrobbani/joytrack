@@ -87,7 +87,7 @@ class TransactionController extends Controller
     public function show(Transaction $transaction): View
     {
         $this->authorize('view', $transaction);
-        $transaction->load(['account', 'destinationAccount', 'category']);
+        $transaction->load(['account', 'destinationAccount', 'category', 'attachments']);
 
         return view('transactions.show', compact('transaction'));
     }
