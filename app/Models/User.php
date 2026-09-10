@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(FuelRecord::class);
     }
+
+    public function serviceRecords(): HasMany
+    {
+        return $this->hasMany(ServiceRecord::class);
+    }
 }

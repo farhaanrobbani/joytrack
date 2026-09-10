@@ -46,6 +46,11 @@ class Vehicle extends Model
         return $this->hasMany(FuelRecord::class);
     }
 
+    public function serviceRecords(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ServiceRecord::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
