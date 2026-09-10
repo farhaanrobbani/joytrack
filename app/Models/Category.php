@@ -27,6 +27,11 @@ class Category extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function transactions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
