@@ -56,6 +56,14 @@ Route::middleware('auth')->group(function () {
     Route::post('attachments', [AttachmentController::class, 'store'])->name('attachments.store');
     Route::get('attachments/{attachment}', [AttachmentController::class, 'show'])->name('attachments.show');
     Route::delete('attachments/{attachment}', [AttachmentController::class, 'destroy'])->name('attachments.destroy');
+
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+        Route::post('/users/{user}/toggle-role', [\App\Http\Controllers\Admin\UserController::class, 'toggleRole'])->name('users.toggle');
+        Route::get('/settings', [\App\Http\Controllers\Admin\SiteSettingController::class, 'edit'])->name('settings.edit');
+        Route::patch('/settings', [\App\Http\Controllers\Admin\SiteSettingController::class, 'update'])->name('settings.update');
+    });
 });
 
 require __DIR__.'/auth.php';
