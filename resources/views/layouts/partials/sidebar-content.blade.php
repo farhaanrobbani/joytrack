@@ -11,20 +11,20 @@
         ]" :title="__('Umum')" />
 
         <x-sidebar-section :items="[
-            ['label' => 'Transaksi', 'route' => 'transactions.index', 'icon' => 'arrows'],
+            ['label' => 'Transaksi', 'route' => 'transactions.index', 'icon' => 'banknotes'],
             ['label' => 'Akun', 'route' => 'accounts.index', 'icon' => 'wallet'],
             ['label' => 'Kategori', 'route' => 'categories.index', 'icon' => 'tag'],
         ]" :title="__('Keuangan')" />
 
         <x-sidebar-section :items="[
-            ['label' => 'Kendaraan', 'route' => 'vehicles.index', 'icon' => 'car'],
-            ['label' => 'Bahan Bakar', 'route' => 'fuel-records.index', 'icon' => 'fuel'],
+            ['label' => 'Kendaraan', 'route' => 'vehicles.index', 'icon' => 'truck'],
+            ['label' => 'Bahan Bakar', 'route' => 'fuel-records.index', 'icon' => 'beaker'],
             ['label' => 'Servis', 'route' => 'service-records.index', 'icon' => 'wrench'],
         ]" :title="__('Kendaraan')" />
 
         <x-sidebar-section :items="[
-            ['label' => 'Laporan Keuangan', 'route' => 'reports.finance', 'icon' => 'chart'],
-            ['label' => 'Laporan Kendaraan', 'route' => 'reports.vehicle', 'icon' => 'report'],
+            ['label' => 'Laporan Keuangan', 'route' => 'reports.finance', 'icon' => 'chart-bar'],
+            ['label' => 'Laporan Kendaraan', 'route' => 'reports.vehicle', 'icon' => 'document-chart-bar'],
         ]" :title="__('Laporan')" />
     </div>
 </nav>

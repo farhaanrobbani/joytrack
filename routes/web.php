@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,6 +24,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('categories', CategoryController::class)->except(['update']);
     Route::patch('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+
+    Route::resource('transactions', TransactionController::class)->except(['update']);
+    Route::patch('transactions/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
 });
 
 require __DIR__.'/auth.php';
