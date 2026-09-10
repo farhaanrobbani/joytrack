@@ -1,7 +1,17 @@
 <nav class="flex flex-col flex-1 min-h-0 py-6 overflow-y-auto">
     <div class="px-6 mb-8">
+        @php
+            $sidebarIcon = null; $sidebarIconUrl = null;
+            try { $sidebarIcon = \App\Models\SiteSetting::get('site_icon'); $sidebarIconUrl = $sidebarIcon ? \Illuminate\Support\Facades\Storage::disk('public')->url($sidebarIcon) : null; } catch (\Throwable $e) {}
+            $sidebarName = \App\Models\SiteSetting::get('site_name', config('app.name', 'JoyTrack'));
+        @endphp
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-            <span class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ config('app.name', 'JoyTrack') }}</span>
+            @if($sidebarIconUrl)
+                <img src="{{ $sidebarIconUrl }}" alt="{{ $sidebarName }}" class="w-8 h-8 rounded-xl object-cover shadow-soft">
+            @else
+                <span class="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-sm shadow-soft">JT</span>
+            @endif
+            <span class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ $sidebarName }}</span>
         </a>
     </div>
 

@@ -43,10 +43,11 @@ class SiteSettingController extends Controller
             // also delete generated icons
             Storage::disk('public')->delete('icons/icon-192x192.png');
             Storage::disk('public')->delete('icons/icon-512x512.png');
-            foreach (['public/icons/icon-192x192.png', 'public/icons/icon-512x512.png'] as $p) {
+            foreach (['public/icons/icon-192x192.png', 'public/icons/icon-512x512.png', 'public/favicon.ico', 'public/favicon.png'] as $p) {
                 @unlink(public_path($p));
             }
             SiteSetting::set('site_icon', null);
+            $this->generateDefaultIcons();
         } elseif ($request->hasFile('site_icon')) {
             $old = SiteSetting::get('site_icon');
             if ($old) Storage::disk('public')->delete($old);
@@ -60,11 +61,44 @@ class SiteSettingController extends Controller
         return back()->with('status', __('Pengaturan berhasil diperbarui.'));
     }
 
+    private function generateDefaultIcons(): void
+    {
+        if (! extension_loaded('gd')) return;
+        foreach ([32, 192, 512] as $size) {
+            $img = imagecreatetruecolor($size, $size);
+            $bg = imagecolorallocate($img, 5, 150, 105);
+            imagefill($img, 0, 0, $bg);
+            $white = imagecolorallocate($img, 255, 255, 255);
+            $fontFile = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
+            if (file_exists($fontFile)) {
+                $fontSize = $size * 0.35;
+                $bbox = imagettfbbox($fontSize, 0, $fontFile, 'JT');
+                $tw = $bbox[2] - $bbox[0];
+                $th = $bbox[1] - $bbox[7];
+                $x = ($size - $tw) / 2;
+                $y = ($size + $th) / 2 - $size * 0.05;
+                imagettftext($img, $fontSize, 0, (int) $x, (int) $y, $white, $fontFile, 'JT');
+            }
+            if ($size === 32) {
+                imagepng($img, public_path('favicon.ico'));
+                imagepng($img, public_path('favicon.png'));
+            } else {
+                $destDir = public_path('icons');
+                if (! is_dir($destDir)) mkdir($destDir, 0755, true);
+                imagepng($img, $destDir . "/icon-{$size}x{$size}.png");
+                $storageDir = storage_path('app/public/icons');
+                if (! is_dir($storageDir)) mkdir($storageDir, 0755, true);
+                imagepng($img, $storageDir . "/icon-{$size}x{$size}.png");
+            }
+            imagedestroy($img);
+        }
+    }
+
     private function generateIcons(string $sourcePath): void
     {
         if (! extension_loaded('gd')) return;
 
-        foreach ([192, 512] as $size) {
+        foreach ([32, 192, 512] as $size) {
             $src = @imagecreatefromstring(file_get_contents($sourcePath));
             if (! $src) continue;
             $dst = imagecreatetruecolor($size, $size);
@@ -75,13 +109,17 @@ class SiteSettingController extends Controller
             $srcW = imagesx($src);
             $srcH = imagesy($src);
             imagecopyresampled($dst, $src, 0, 0, 0, 0, $size, $size, $srcW, $srcH);
-            $destDir = public_path('icons');
-            if (! is_dir($destDir)) mkdir($destDir, 0755, true);
-            imagepng($dst, $destDir . "/icon-{$size}x{$size}.png");
-            // also store to storage for consistency
-            $storageDir = storage_path('app/public/icons');
-            if (! is_dir($storageDir)) mkdir($storageDir, 0755, true);
-            imagepng($dst, $storageDir . "/icon-{$size}x{$size}.png");
+            if ($size === 32) {
+                imagepng($dst, public_path('favicon.ico'));
+                imagepng($dst, public_path('favicon.png'));
+            } else {
+                $destDir = public_path('icons');
+                if (! is_dir($destDir)) mkdir($destDir, 0755, true);
+                imagepng($dst, $destDir . "/icon-{$size}x{$size}.png");
+                $storageDir = storage_path('app/public/icons');
+                if (! is_dir($storageDir)) mkdir($storageDir, 0755, true);
+                imagepng($dst, $storageDir . "/icon-{$size}x{$size}.png");
+            }
             imagedestroy($src);
             imagedestroy($dst);
         }
