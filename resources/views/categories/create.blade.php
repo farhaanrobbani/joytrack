@@ -24,6 +24,7 @@
                         <x-input-error :messages="$errors->get('icon')" class="mt-2" />
                     </div>
                     <div class="flex items-center">
+                        <input type="hidden" name="is_active" value="0">
                         <input id="is_active" name="is_active" type="checkbox" value="1" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" {{ old('is_active', true) ? 'checked' : '' }}>
                         <x-input-label for="is_active" :value="__('Aktif')" class="ms-2" />
                     </div>

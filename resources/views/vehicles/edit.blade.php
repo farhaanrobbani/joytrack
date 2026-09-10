@@ -67,6 +67,7 @@
                         <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg">{{ old('notes', $vehicle->notes) }}</textarea>
                     </div>
                     <div class="sm:col-span-2 flex items-center">
+                        <input type="hidden" name="is_active" value="0">
                         <input id="is_active" name="is_active" type="checkbox" value="1" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" {{ old('is_active', $vehicle->is_active) ? 'checked' : '' }}>
                         <x-input-label for="is_active" :value="__('Aktif')" class="ms-2" />
                     </div>
