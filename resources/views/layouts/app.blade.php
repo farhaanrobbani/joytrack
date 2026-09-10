@@ -11,34 +11,49 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <script>
+            (function() {
+                try {
+                    const stored = localStorage.getItem('theme');
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    if (stored === 'dark' || (!stored && prefersDark)) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                } catch (e) {}
+            })();
+        </script>
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
-    <body class="font-sans antialiased bg-gray-100">
+    <body class="font-sans antialiased bg-gray-100 dark:bg-gray-950">
         <div x-data="{ sidebarOpen: false }" class="min-h-screen">
             <!-- Topbar -->
-            <header class="fixed top-0 left-0 right-0 z-30 h-16 bg-white border-b border-gray-200">
+            <header class="fixed top-0 left-0 right-0 z-30 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
                 <div class="flex items-center justify-between h-full px-4 sm:px-6">
                     <div class="flex items-center gap-3">
                         <!-- Hamburger (mobile) -->
                         <button
                             @click="sidebarOpen = true"
-                            class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                            class="md:hidden p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
                             aria-label="{{ __('Buka menu') }}"
                         >
                             <x-heroicon-o-bars-3 class="w-6 h-6" />
                         </button>
 
-                        <a href="{{ route('dashboard') }}" class="md:hidden font-bold text-gray-800">
+                        <a href="{{ route('dashboard') }}" class="md:hidden font-bold text-gray-800 dark:text-gray-100">
                             {{ config('app.name', 'JoyTrack') }}
                         </a>
                     </div>
 
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <x-theme-toggle />
                         <x-dropdown align="right" width="48">
                             <x-slot name="trigger">
-                                <button class="flex items-center gap-2 p-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100">
+                                <button class="flex items-center gap-2 p-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
                                     <span class="hidden sm:inline">{{ auth()->user()->name }}</span>
                                     <x-heroicon-o-user-circle class="w-7 h-7 text-gray-400" />
                                 </button>
@@ -58,7 +73,7 @@
             </header>
 
             <!-- Sidebar (desktop) -->
-            <aside class="hidden md:block fixed top-16 bottom-0 left-0 w-60 bg-white border-r border-gray-200">
+            <aside class="hidden md:flex flex-col fixed top-16 bottom-0 left-0 w-60 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 overflow-y-auto">
                 @include('layouts.partials.sidebar-content')
             </aside>
 
@@ -79,11 +94,11 @@
                     x-transition:leave="transition-transform duration-200 ease-in"
                     x-transition:leave-start="translate-x-0"
                     x-transition:leave-end="-translate-x-full"
-                    class="absolute top-0 bottom-0 left-0 w-60 bg-white shadow-xl"
+                    class="absolute top-0 bottom-0 left-0 w-60 bg-white dark:bg-gray-900 shadow-xl flex flex-col overflow-y-auto"
                 >
-                    <div class="flex items-center justify-between px-4 pt-4">
-                        <span class="font-bold text-gray-800">{{ config('app.name', 'JoyTrack') }}</span>
-                        <button @click="sidebarOpen = false" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100" aria-label="{{ __('Tutup menu') }}">
+                    <div class="flex items-center justify-between px-4 pt-4 shrink-0">
+                        <span class="font-bold text-gray-800 dark:text-gray-100">{{ config('app.name', 'JoyTrack') }}</span>
+                        <button @click="sidebarOpen = false" class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="{{ __('Tutup menu') }}">
                             <x-heroicon-o-x-mark class="w-5 h-5" />
                         </button>
                     </div>
@@ -100,7 +115,7 @@
 
                     @isset($header)
                         <header class="mb-6">
-                            <h1 class="text-xl font-semibold text-gray-800">{{ $header }}</h1>
+                            <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-100">{{ $header }}</h1>
                         </header>
                     @endisset
 

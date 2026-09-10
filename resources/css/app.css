@@ -5,3 +5,49 @@
 [x-cloak] {
     display: none !important;
 }
+
+@layer base {
+    .dark {
+        color-scheme: dark;
+    }
+}
+
+/* Dark mode fallbacks for cards/tables that still use bg-white without explicit dark: */
+.dark .bg-white {
+    background-color: rgb(31 41 55);
+}
+.dark .bg-gray-50 {
+    background-color: rgb(31 41 55);
+}
+.dark .bg-gray-100 {
+    background-color: rgb(17 24 39);
+}
+.dark .text-gray-900,
+.dark .text-gray-800 {
+    color: rgb(243 244 246);
+}
+.dark .text-gray-600 {
+    color: rgb(209 213 219);
+}
+.dark .text-gray-500 {
+    color: rgb(156 163 175);
+}
+.dark .border-gray-200,
+.dark .border-gray-100 {
+    border-color: rgb(55 65 81);
+}
+.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: rgb(55 65 81);
+}
+.dark input,
+.dark select,
+.dark textarea {
+    background-color: rgb(31 41 55);
+    border-color: rgb(55 65 81);
+    color: rgb(243 244 246);
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: rgb(107 114 128);
+}

@@ -1,7 +1,7 @@
-<nav class="flex flex-col h-full py-6">
+<nav class="flex flex-col flex-1 min-h-0 py-6 overflow-y-auto">
     <div class="px-6 mb-8">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-            <span class="text-xl font-bold text-gray-800">{{ config('app.name', 'JoyTrack') }}</span>
+            <span class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ config('app.name', 'JoyTrack') }}</span>
         </a>
     </div>
 

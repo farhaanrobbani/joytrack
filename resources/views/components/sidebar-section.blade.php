@@ -1,7 +1,7 @@
 @props(['items', 'title'])
 
 <div>
-    <p class="px-2 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">{{ $title }}</p>
+    <p class="px-2 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">{{ $title }}</p>
     <ul class="space-y-1">
         @foreach ($items as $item)
             @if (Route::has($item['route']))
