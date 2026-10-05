@@ -19,7 +19,7 @@ cp .env.example .env && php artisan key:generate
 php artisan migrate --force
 php artisan storage:link
 npm install && npm run build
-php artisan serve --host=0.0.0.0 --port=7011
+php artisan serve --host=0.0.0.0 --port=7041
 ```
 
 ## Docs
