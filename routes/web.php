@@ -52,6 +52,11 @@ Route::middleware('auth')->group(function () {
     Route::get('export/vehicle', [ExportController::class, 'vehicle'])->name('export.vehicle');
     Route::get('export/fuel', [ExportController::class, 'fuel'])->name('export.fuel');
     Route::get('export/service', [ExportController::class, 'service'])->name('export.service');
+    Route::get('export/transactions/excel', [ExportController::class, 'transactionsExcel'])->name('export.transactions.excel');
+    Route::get('export/finance/excel', [ExportController::class, 'financeExcel'])->name('export.finance.excel');
+    Route::get('export/vehicle/excel', [ExportController::class, 'vehicleExcel'])->name('export.vehicle.excel');
+    Route::get('export/fuel/excel', [ExportController::class, 'fuelExcel'])->name('export.fuel.excel');
+    Route::get('export/service/excel', [ExportController::class, 'serviceExcel'])->name('export.service.excel');
     Route::get('export/finance/pdf', [ExportController::class, 'financePdf'])->name('export.finance.pdf');
     Route::get('export/vehicle/pdf', [ExportController::class, 'vehiclePdf'])->name('export.vehicle.pdf');
 

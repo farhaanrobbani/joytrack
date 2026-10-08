@@ -11,6 +11,8 @@ use App\Services\ReportService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
+use OpenSpout\Common\Entity\Row;
+use OpenSpout\Writer\XLSX\Writer as XlsxWriter;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportController extends Controller
@@ -156,6 +158,125 @@ class ExportController extends Controller
         }, $filename, ['Content-Type' => 'text/csv']);
     }
 
+    public function transactionsExcel(Request $request): StreamedResponse
+    {
+        $query = Transaction::where('user_id', auth()->id())
+            ->with(['account', 'destinationAccount', 'category'])
+            ->orderBy('transaction_date')->orderBy('id');
+
+        if ($request->filled('start_date')) {
+            $query->where('transaction_date', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->where('transaction_date', '<=', $request->end_date);
+        }
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        return $this->xlsxDownload('transactions-'.now()->format('Ymd-His').'.xlsx', function ($writer) use ($query) {
+            $writer->addRow(Row::fromValues(['Tanggal', 'Jenis', 'Akun', 'Tujuan', 'Kategori', 'Nominal', 'Deskripsi', 'Catatan']));
+            $this->eachChunk($query, function ($rows) use ($writer) {
+                foreach ($rows as $r) {
+                    $writer->addRow(Row::fromValues([
+                        $r->transaction_date->format('Y-m-d'),
+                        $r->type,
+                        $r->account->name ?? '',
+                        $r->destinationAccount->name ?? '',
+                        $r->category->name ?? '',
+                        (float) $r->amount,
+                        $r->description ?? '',
+                        $r->notes ?? '',
+                    ]));
+                }
+            });
+        });
+    }
+
+    public function financeExcel(Request $request): StreamedResponse
+    {
+        [$start, $end] = $this->resolvePreset($request);
+        $data = $this->reportService->finance(auth()->id(), $start, $end);
+
+        return $this->xlsxDownload('finance-'.$start.'_to_'.$end.'.xlsx', function ($writer) use ($data) {
+            $writer->addRow(Row::fromValues(['Ringkasan Keuangan', 'Periode: '.$data['start'].' - '.$data['end']]));
+            $writer->addRow(Row::fromValues(['Total Pemasukan', (float) $data['totalIncome']]));
+            $writer->addRow(Row::fromValues(['Total Pengeluaran', (float) $data['totalExpense']]));
+            $writer->addRow(Row::fromValues(['Net Cashflow', (float) $data['netCashflow']]));
+            $writer->addRow(Row::fromValues(['Total Saldo', (float) $data['totalBalance']]));
+            $writer->addRow(Row::fromValues([]));
+            $writer->addRow(Row::fromValues(['Pengeluaran per Kategori']));
+            $writer->addRow(Row::fromValues(['Kategori', 'Total']));
+            foreach ($data['expenseByCategory'] as $cat) {
+                $writer->addRow(Row::fromValues([$cat['name'], (float) $cat['total']]));
+            }
+        });
+    }
+
+    public function vehicleExcel(Request $request): StreamedResponse
+    {
+        [$start, $end] = $this->resolvePreset($request);
+        $data = $this->reportService->vehicle(auth()->id(), $start, $end, $request->vehicle_id ? (int) $request->vehicle_id : null);
+
+        return $this->xlsxDownload('vehicle-'.$start.'_to_'.$end.'.xlsx', function ($writer) use ($data) {
+            $writer->addRow(Row::fromValues(['Laporan Kendaraan', 'Periode: '.$data['start'].' - '.$data['end']]));
+            $writer->addRow(Row::fromValues(['Total BBM', (float) $data['fuelStats']['total']]));
+            $writer->addRow(Row::fromValues(['Total Servis', (float) $data['serviceStats']['total']]));
+            $writer->addRow(Row::fromValues(['Total Biaya', (float) $data['totalVehicleCost']]));
+            $writer->addRow(Row::fromValues([]));
+            $writer->addRow(Row::fromValues(['Per Kendaraan', 'BBM', 'Servis', 'Total']));
+            foreach ($data['perVehicle'] as $row) {
+                $writer->addRow(Row::fromValues([$row['vehicle']->name, (float) $row['fuel_total'], (float) $row['service_total'], (float) $row['total']]));
+            }
+        });
+    }
+
+    public function fuelExcel(Request $request): StreamedResponse
+    {
+        $query = FuelRecord::where('user_id', auth()->id())->with('vehicle')->orderBy('fuel_date')->orderBy('id');
+        if ($request->filled('vehicle_id')) {
+            $query->where('vehicle_id', $request->vehicle_id);
+        }
+        if ($request->filled('start_date')) {
+            $query->where('fuel_date', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->where('fuel_date', '<=', $request->end_date);
+        }
+
+        return $this->xlsxDownload('fuel-'.now()->format('Ymd-His').'.xlsx', function ($writer) use ($query) {
+            $writer->addRow(Row::fromValues(['Tanggal', 'Kendaraan', 'Odometer', 'Jenis', 'Liter', 'Harga/L', 'Total', 'SPBU']));
+            $this->eachChunk($query, function ($rows) use ($writer) {
+                foreach ($rows as $r) {
+                    $writer->addRow(Row::fromValues([$r->fuel_date->format('Y-m-d'), $r->vehicle->name ?? '', $r->odometer, $r->fuel_type ?? '', (float) $r->liters, (float) $r->price_per_liter, (float) $r->total_cost, $r->station ?? '']));
+                }
+            });
+        });
+    }
+
+    public function serviceExcel(Request $request): StreamedResponse
+    {
+        $query = ServiceRecord::where('user_id', auth()->id())->with('vehicle')->orderBy('service_date')->orderBy('id');
+        if ($request->filled('vehicle_id')) {
+            $query->where('vehicle_id', $request->vehicle_id);
+        }
+        if ($request->filled('start_date')) {
+            $query->where('service_date', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->where('service_date', '<=', $request->end_date);
+        }
+
+        return $this->xlsxDownload('service-'.now()->format('Ymd-His').'.xlsx', function ($writer) use ($query) {
+            $writer->addRow(Row::fromValues(['Tanggal', 'Kendaraan', 'Jenis', 'Bengkel', 'Jasa', 'Sparepart', 'Total', 'Odometer']));
+            $this->eachChunk($query, function ($rows) use ($writer) {
+                foreach ($rows as $r) {
+                    $writer->addRow(Row::fromValues([$r->service_date->format('Y-m-d'), $r->vehicle->name ?? '', $r->service_type, $r->workshop ?? '', (float) $r->labor_cost, (float) $r->parts_cost, (float) $r->total_cost, $r->odometer]));
+                }
+            });
+        });
+    }
+
     public function financePdf(Request $request)
     {
         [$start, $end] = $this->resolvePreset($request);
@@ -172,6 +293,28 @@ class ExportController extends Controller
         $html = view('reports.pdf.vehicle', array_merge($data, ['vehicles' => Vehicle::where('user_id', auth()->id())->get()]))->render();
 
         return $this->pdfResponse($html, 'vehicle-'.$start.'_to_'.$end.'.pdf');
+    }
+
+    private function xlsxDownload(string $filename, callable $fill): StreamedResponse
+    {
+        return response()->streamDownload(function () use ($fill) {
+            $writer = new XlsxWriter;
+            $writer->openToFile('php://output');
+            $fill($writer);
+            $writer->close();
+        }, $filename, ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
+    }
+
+    private function eachChunk($query, callable $callback, int $perPage = 500): void
+    {
+        $page = 1;
+        do {
+            $rows = (clone $query)->forPage($page, $perPage)->get();
+            if ($rows->isNotEmpty()) {
+                $callback($rows);
+            }
+            $page++;
+        } while ($rows->count() === $perPage);
     }
 
     private function pdfResponse(string $html, string $filename)
