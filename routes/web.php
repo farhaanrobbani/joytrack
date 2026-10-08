@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('reports/finance', [ReportController::class, 'finance'])->name('reports.finance');
     Route::get('reports/vehicle', [ReportController::class, 'vehicle'])->name('reports.vehicle');
+    Route::get('reports/fuel', [ReportController::class, 'fuel'])->name('reports.fuel');
+    Route::get('reports/service', [ReportController::class, 'service'])->name('reports.service');
 
     Route::get('export/transactions', [ExportController::class, 'transactions'])->name('export.transactions');
     Route::get('export/finance', [ExportController::class, 'finance'])->name('export.finance');

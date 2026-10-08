@@ -38,4 +38,32 @@ class ReportController extends Controller
 
         return view('reports.vehicle', array_merge($data, ['vehicles' => $vehicles, 'preset' => $request->input('preset', 'month'), 'selectedVehicle' => $request->vehicle_id]));
     }
+
+    public function fuel(Request $request): View
+    {
+        $this->validateReportParams($request, [
+            'vehicle_id' => ['nullable', 'exists:vehicles,id'],
+        ]);
+
+        [$start, $end] = $this->resolvePreset($request);
+
+        $data = $this->service->fuel(auth()->id(), $start, $end, $request->vehicle_id ? (int) $request->vehicle_id : null);
+        $vehicles = Vehicle::where('user_id', auth()->id())->orderBy('name')->get();
+
+        return view('reports.fuel', array_merge($data, ['vehicles' => $vehicles, 'preset' => $request->input('preset', 'month'), 'selectedVehicle' => $request->vehicle_id]));
+    }
+
+    public function service(Request $request): View
+    {
+        $this->validateReportParams($request, [
+            'vehicle_id' => ['nullable', 'exists:vehicles,id'],
+        ]);
+
+        [$start, $end] = $this->resolvePreset($request);
+
+        $data = $this->service->service(auth()->id(), $start, $end, $request->vehicle_id ? (int) $request->vehicle_id : null);
+        $vehicles = Vehicle::where('user_id', auth()->id())->orderBy('name')->get();
+
+        return view('reports.service', array_merge($data, ['vehicles' => $vehicles, 'preset' => $request->input('preset', 'month'), 'selectedVehicle' => $request->vehicle_id]));
+    }
 }

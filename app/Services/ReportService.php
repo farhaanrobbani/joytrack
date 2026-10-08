@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\Account;
 use App\Models\FuelRecord;
 use App\Models\ServiceRecord;
 use App\Models\Transaction;
+use App\Models\Vehicle;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +22,7 @@ class ReportService
         $totalExpense = (clone $base)->where('type', 'expense')->sum('amount');
         $netCashflow = $totalIncome - $totalExpense;
 
-        $totalBalance = \App\Models\Account::where('user_id', $userId)->where('is_active', true)->sum('current_balance');
+        $totalBalance = Account::where('user_id', $userId)->where('is_active', true)->sum('current_balance');
 
         $expenseByCategory = (clone $base)->where('type', 'expense')
             ->select('category_id', DB::raw('SUM(amount) as total'))
@@ -70,11 +72,12 @@ class ReportService
         $totalVehicleCost = $fuelStats['total'] + $serviceStats['total'];
 
         // Per vehicle breakdown
-        $perVehicle = \App\Models\Vehicle::where('user_id', $userId)->get()->map(function ($v) use ($start, $end) {
+        $perVehicle = Vehicle::where('user_id', $userId)->get()->map(function ($v) use ($start, $end) {
             $fuel = FuelRecord::where('user_id', $v->user_id)->where('vehicle_id', $v->id)->whereBetween('fuel_date', [$start, $end]);
             $service = ServiceRecord::where('user_id', $v->user_id)->where('vehicle_id', $v->id)->whereBetween('service_date', [$start, $end]);
             $fuelTotal = (float) $fuel->sum('total_cost');
             $serviceTotal = (float) $service->sum('total_cost');
+
             return [
                 'vehicle' => $v,
                 'fuel_total' => $fuelTotal,
@@ -103,6 +106,104 @@ class ReportService
         return compact('start', 'end', 'fuelStats', 'serviceStats', 'totalVehicleCost', 'perVehicle', 'distance', 'efficiency', 'costPerKm');
     }
 
+    public function fuel(int $userId, ?string $startDate, ?string $endDate, ?int $vehicleId = null): array
+    {
+        [$start, $end] = $this->resolveRange($startDate, $endDate);
+
+        $base = FuelRecord::where('user_id', $userId)->whereBetween('fuel_date', [$start, $end])
+            ->when($vehicleId, fn ($q) => $q->where('vehicle_id', $vehicleId));
+
+        $stats = [
+            'total' => (float) (clone $base)->sum('total_cost'),
+            'liters' => (float) (clone $base)->sum('liters'),
+            'count' => (int) (clone $base)->count(),
+            'avg_price' => 0.0,
+            'avg_cost' => 0.0,
+        ];
+        if ($stats['liters'] > 0) {
+            $stats['avg_price'] = $stats['total'] / $stats['liters'];
+        }
+        if ($stats['count'] > 0) {
+            $stats['avg_cost'] = $stats['total'] / $stats['count'];
+        }
+
+        $records = (clone $base)->with('vehicle')->orderByDesc('fuel_date')->orderByDesc('id')->get();
+
+        $perVehicle = $records->groupBy('vehicle_id')->map(fn ($rows) => [
+            'vehicle' => $rows->first()->vehicle,
+            'count' => $rows->count(),
+            'liters' => (float) $rows->sum('liters'),
+            'total' => (float) $rows->sum('total_cost'),
+        ])->values();
+
+        $monthly = $this->monthlySeries($records, 'fuel_date', ['total' => 'total_cost', 'liters' => 'liters'], $start, $end);
+
+        return compact('start', 'end', 'stats', 'perVehicle', 'monthly', 'records');
+    }
+
+    public function service(int $userId, ?string $startDate, ?string $endDate, ?int $vehicleId = null): array
+    {
+        [$start, $end] = $this->resolveRange($startDate, $endDate);
+
+        $base = ServiceRecord::where('user_id', $userId)->whereBetween('service_date', [$start, $end])
+            ->when($vehicleId, fn ($q) => $q->where('vehicle_id', $vehicleId));
+
+        $stats = [
+            'total' => (float) (clone $base)->sum('total_cost'),
+            'labor' => (float) (clone $base)->sum('labor_cost'),
+            'parts' => (float) (clone $base)->sum('parts_cost'),
+            'count' => (int) (clone $base)->count(),
+            'avg_cost' => 0.0,
+        ];
+        if ($stats['count'] > 0) {
+            $stats['avg_cost'] = $stats['total'] / $stats['count'];
+        }
+
+        $records = (clone $base)->with('vehicle')->orderByDesc('service_date')->orderByDesc('id')->get();
+
+        $perVehicle = $records->groupBy('vehicle_id')->map(fn ($rows) => [
+            'vehicle' => $rows->first()->vehicle,
+            'count' => $rows->count(),
+            'labor' => (float) $rows->sum('labor_cost'),
+            'parts' => (float) $rows->sum('parts_cost'),
+            'total' => (float) $rows->sum('total_cost'),
+        ])->values();
+
+        $monthly = $this->monthlySeries($records, 'service_date', ['total' => 'total_cost', 'labor' => 'labor_cost', 'parts' => 'parts_cost'], $start, $end);
+
+        return compact('start', 'end', 'stats', 'perVehicle', 'monthly', 'records');
+    }
+
+    private function monthlySeries($records, string $dateAttribute, array $sums, string $start, string $end): array
+    {
+        $buckets = [];
+        $cursor = Carbon::parse($start)->startOfMonth();
+        $endC = Carbon::parse($end);
+        while ($cursor->lte($endC)) {
+            $row = ['label' => $cursor->format('M Y')];
+            foreach (array_keys($sums) as $field) {
+                $row[$field] = 0.0;
+            }
+            $buckets[$cursor->format('Y-m')] = $row;
+            $cursor->addMonth();
+            if (count($buckets) > 24) {
+                break;
+            }
+        }
+
+        foreach ($records as $record) {
+            $key = Carbon::parse($record->{$dateAttribute})->format('Y-m');
+            if (! isset($buckets[$key])) {
+                continue;
+            }
+            foreach ($sums as $field => $attribute) {
+                $buckets[$key][$field] += (float) $record->{$attribute};
+            }
+        }
+
+        return array_values($buckets);
+    }
+
     private function resolveRange(?string $startDate, ?string $endDate): array
     {
         $tz = 'Asia/Jakarta';
@@ -111,6 +212,7 @@ class ReportService
         }
         // default: current month
         $now = Carbon::now($tz);
+
         return [$now->copy()->startOfMonth()->toDateString(), $now->copy()->endOfMonth()->toDateString()];
     }
 
@@ -134,8 +236,11 @@ class ReportService
                 'net' => (float) ($income - $expense),
             ];
             $cursor->addMonth();
-            if (count($months) > 24) break; // safety
+            if (count($months) > 24) {
+                break;
+            } // safety
         }
+
         return $months;
     }
 }

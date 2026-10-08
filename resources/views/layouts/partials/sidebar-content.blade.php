@@ -35,6 +35,8 @@
         <x-sidebar-section :items="[
             ['label' => 'Laporan Keuangan', 'route' => 'reports.finance', 'icon' => 'chart-bar'],
             ['label' => 'Laporan Kendaraan', 'route' => 'reports.vehicle', 'icon' => 'document-chart-bar'],
+            ['label' => 'Laporan BBM', 'route' => 'reports.fuel', 'icon' => 'beaker'],
+            ['label' => 'Laporan Servis', 'route' => 'reports.service', 'icon' => 'wrench'],
         ]" :title="__('Laporan')" />
 
         @if(auth()->check() && auth()->user()->isAdmin())
