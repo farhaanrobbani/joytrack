@@ -30,7 +30,6 @@
                 <x-input-label for="end_date" :value="__('Sampai')" />
                 <x-text-input id="end_date" name="end_date" type="date" class="mt-1 text-sm" :value="$end" />
             </div>
-            <input type="hidden" name="preset" value="custom" id="preset-custom" disabled>
             <x-primary-button type="submit" class="text-sm h-10">{{ __('Terapkan') }}</x-primary-button>
             <a href="{{ route('reports.finance', ['preset' => 'month']) }}" class="px-4 py-2 bg-gray-100 rounded-lg text-sm font-semibold h-10 flex items-center">{{ __('Reset') }}</a>
         </form>
