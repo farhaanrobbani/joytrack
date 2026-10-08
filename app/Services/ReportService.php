@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
-    public function finance(int $userId, ?string $startDate, ?string $endDate): array
+    public function finance(int $userId, ?string $startDate, ?string $endDate, bool $withDetails = true): array
     {
         [$start, $end] = $this->resolveRange($startDate, $endDate);
 
@@ -33,11 +33,15 @@ class ReportService
             ->map(fn ($r) => ['name' => $r->category->name ?? __('Tanpa Kategori'), 'total' => (float) $r->total]);
 
         // Cashflow monthly breakdown within range
-        $monthly = $this->monthlyCashflow($userId, $start, $end);
+        $monthly = $withDetails ? $this->monthlyCashflow($userId, $start, $end) : [];
 
         // Income/Expense lists for detail
-        $incomeTransactions = (clone $base)->where('type', 'income')->with(['category', 'account'])->orderByDesc('transaction_date')->get();
-        $expenseTransactions = (clone $base)->where('type', 'expense')->with(['category', 'account'])->orderByDesc('transaction_date')->get();
+        $incomeTransactions = $withDetails
+            ? (clone $base)->where('type', 'income')->with(['category', 'account'])->orderByDesc('transaction_date')->get()
+            : collect();
+        $expenseTransactions = $withDetails
+            ? (clone $base)->where('type', 'expense')->with(['category', 'account'])->orderByDesc('transaction_date')->get()
+            : collect();
 
         return compact('start', 'end', 'totalIncome', 'totalExpense', 'netCashflow', 'totalBalance', 'expenseByCategory', 'monthly', 'incomeTransactions', 'expenseTransactions');
     }

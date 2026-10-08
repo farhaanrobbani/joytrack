@@ -6,7 +6,6 @@ use App\Http\Traits\ResolvesReportPreset;
 use App\Models\FuelRecord;
 use App\Models\ServiceRecord;
 use App\Models\Transaction;
-use App\Models\Vehicle;
 use App\Services\ReportService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -25,7 +24,7 @@ class ExportController extends Controller
     {
         $query = Transaction::where('user_id', auth()->id())
             ->with(['account', 'destinationAccount', 'category'])
-            ->orderBy('transaction_date');
+            ->orderBy('transaction_date')->orderBy('id');
 
         if ($request->filled('start_date')) {
             $query->where('transaction_date', '>=', $request->start_date);
@@ -41,8 +40,9 @@ class ExportController extends Controller
 
         return response()->streamDownload(function () use ($query) {
             $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
             fputcsv($handle, ['Tanggal', 'Jenis', 'Akun', 'Tujuan', 'Kategori', 'Nominal', 'Deskripsi', 'Catatan']);
-            $query->chunk(500, function ($rows) use ($handle) {
+            $this->eachChunk($query, function ($rows) use ($handle) {
                 foreach ($rows as $r) {
                     fputcsv($handle, [
                         $r->transaction_date->format('Y-m-d'),
@@ -63,11 +63,12 @@ class ExportController extends Controller
     public function finance(Request $request): StreamedResponse
     {
         [$start, $end] = $this->resolvePreset($request);
-        $data = $this->reportService->finance(auth()->id(), $start, $end);
+        $data = $this->reportService->finance(auth()->id(), $start, $end, withDetails: false);
         $filename = 'finance-'.$start.'_to_'.$end.'.csv';
 
         return response()->streamDownload(function () use ($data) {
             $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
             fputcsv($handle, ['Ringkasan Keuangan', 'Periode: '.$data['start'].' - '.$data['end']]);
             fputcsv($handle, ['Total Pemasukan', $data['totalIncome']]);
             fputcsv($handle, ['Total Pengeluaran', $data['totalExpense']]);
@@ -91,6 +92,7 @@ class ExportController extends Controller
 
         return response()->streamDownload(function () use ($data) {
             $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
             fputcsv($handle, ['Laporan Kendaraan', 'Periode: '.$data['start'].' - '.$data['end']]);
             fputcsv($handle, ['Total BBM', $data['fuelStats']['total']]);
             fputcsv($handle, ['Total Servis', $data['serviceStats']['total']]);
@@ -106,7 +108,7 @@ class ExportController extends Controller
 
     public function fuel(Request $request): StreamedResponse
     {
-        $query = FuelRecord::where('user_id', auth()->id())->with('vehicle')->orderBy('fuel_date');
+        $query = FuelRecord::where('user_id', auth()->id())->with('vehicle')->orderBy('fuel_date')->orderBy('id');
         if ($request->filled('vehicle_id')) {
             $query->where('vehicle_id', $request->vehicle_id);
         }
@@ -121,8 +123,9 @@ class ExportController extends Controller
 
         return response()->streamDownload(function () use ($query) {
             $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
             fputcsv($handle, ['Tanggal', 'Kendaraan', 'Odometer', 'Jenis', 'Liter', 'Harga/L', 'Total', 'SPBU']);
-            $query->chunk(500, function ($rows) use ($handle) {
+            $this->eachChunk($query, function ($rows) use ($handle) {
                 foreach ($rows as $r) {
                     fputcsv($handle, [$r->fuel_date->format('Y-m-d'), $r->vehicle->name ?? '', $r->odometer, $r->fuel_type ?? '', $r->liters, $r->price_per_liter, $r->total_cost, $r->station ?? '']);
                 }
@@ -133,7 +136,7 @@ class ExportController extends Controller
 
     public function service(Request $request): StreamedResponse
     {
-        $query = ServiceRecord::where('user_id', auth()->id())->with('vehicle')->orderBy('service_date');
+        $query = ServiceRecord::where('user_id', auth()->id())->with('vehicle')->orderBy('service_date')->orderBy('id');
         if ($request->filled('vehicle_id')) {
             $query->where('vehicle_id', $request->vehicle_id);
         }
@@ -148,8 +151,9 @@ class ExportController extends Controller
 
         return response()->streamDownload(function () use ($query) {
             $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
             fputcsv($handle, ['Tanggal', 'Kendaraan', 'Jenis', 'Bengkel', 'Jasa', 'Sparepart', 'Total', 'Odometer']);
-            $query->chunk(500, function ($rows) use ($handle) {
+            $this->eachChunk($query, function ($rows) use ($handle) {
                 foreach ($rows as $r) {
                     fputcsv($handle, [$r->service_date->format('Y-m-d'), $r->vehicle->name ?? '', $r->service_type, $r->workshop ?? '', $r->labor_cost, $r->parts_cost, $r->total_cost, $r->odometer]);
                 }
@@ -290,7 +294,7 @@ class ExportController extends Controller
     {
         [$start, $end] = $this->resolvePreset($request);
         $data = $this->reportService->vehicle(auth()->id(), $start, $end, $request->vehicle_id ? (int) $request->vehicle_id : null);
-        $html = view('reports.pdf.vehicle', array_merge($data, ['vehicles' => Vehicle::where('user_id', auth()->id())->get()]))->render();
+        $html = view('reports.pdf.vehicle', $data)->render();
 
         return $this->pdfResponse($html, 'vehicle-'.$start.'_to_'.$end.'.pdf');
     }
