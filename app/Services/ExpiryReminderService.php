@@ -103,6 +103,21 @@ class ExpiryReminderService
         return 'ok';
     }
 
+    public function daysUntilDate(CarbonInterface $date): int
+    {
+        return $this->daysUntil($date, $this->now());
+    }
+
+    public function statusForDocument(Document $document): string
+    {
+        return $this->statusFor($this->daysUntilDate($document->expiry_date), $document->reminder_days);
+    }
+
+    public function statusForSubscription(Subscription $subscription): string
+    {
+        return $this->statusFor($this->daysUntilDate($subscription->next_renewal_date), $subscription->reminder_days);
+    }
+
     protected function now(): Carbon
     {
         return Carbon::now(self::TIMEZONE)->startOfDay();

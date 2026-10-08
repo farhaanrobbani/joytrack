@@ -1,14 +1,18 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FuelRecordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceRecordController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +46,10 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('service-records', ServiceRecordController::class);
 
+    Route::resource('documents', DocumentController::class)->except(['show']);
+
+    Route::resource('subscriptions', SubscriptionController::class)->except(['show']);
+
     Route::get('reports/finance', [ReportController::class, 'finance'])->name('reports.finance');
     Route::get('reports/vehicle', [ReportController::class, 'vehicle'])->name('reports.vehicle');
     Route::get('reports/fuel', [ReportController::class, 'fuel'])->name('reports.fuel');
@@ -68,11 +76,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('attachments/{attachment}', [AttachmentController::class, 'destroy'])->name('attachments.destroy');
 
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
-        Route::post('/users/{user}/toggle-role', [\App\Http\Controllers\Admin\UserController::class, 'toggleRole'])->name('users.toggle');
-        Route::get('/settings', [\App\Http\Controllers\Admin\SiteSettingController::class, 'edit'])->name('settings.edit');
-        Route::patch('/settings', [\App\Http\Controllers\Admin\SiteSettingController::class, 'update'])->name('settings.update');
+        Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::post('/users/{user}/toggle-role', [UserController::class, 'toggleRole'])->name('users.toggle');
+        Route::get('/settings', [SiteSettingController::class, 'edit'])->name('settings.edit');
+        Route::patch('/settings', [SiteSettingController::class, 'update'])->name('settings.update');
     });
 });
 
