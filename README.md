@@ -1,14 +1,14 @@
 # JoyTrack — Manajemen Keuangan & Kendaraan
 
-Aplikasi web manajemen keuangan pribadi + kendaraan (BBM, servis, pengingat, laporan) — Laravel 12, Livewire, Tailwind, MySQL.
+Aplikasi web manajemen keuangan pribadi + kendaraan (BBM, servis, pengingat, laporan) — Laravel 13, Livewire, Tailwind, MySQL.
 
 ## Stack
 
-Laravel 12 · PHP 8.3 · MySQL/MariaDB · Livewire 4 · Tailwind 3 · Vite · dompdf
+Laravel 13 · PHP 8.3 · MySQL/MariaDB · Livewire 4 · Tailwind 3 · Vite · dompdf · openspout
 
 ## Fitur
 
-Auth · Akun (bank/cash/ewallet) · Kategori · Transaksi (income/expense/transfer, saldo terpusat `TransactionService`, `DB::transaction`) · Vehicle · Fuel (km/L, biaya/km, integrasi transaksi) · Service (next date/km, integrasi transaksi) · Reminder (date + odometer) · Dashboard (cashflow 6 bulan, kategori) · Reports (finance/vehicle) · Attachments (polymorphic) · Export CSV + PDF
+Auth · Akun (bank/cash/ewallet) · Kategori · Transaksi (income/expense/transfer, saldo terpusat `TransactionService`, `DB::transaction`) · Vehicle · Fuel (km/L, biaya/km, integrasi transaksi) · Service (next date/km, integrasi transaksi) · Reminder (date + odometer) · Dashboard (cashflow 6 bulan, kategori) · Reports (finance/vehicle/fuel/service) · Attachments (polymorphic) · Export Excel (xlsx) + CSV + PDF
 
 ## Quick Start
 
@@ -27,13 +27,15 @@ php artisan serve --host=0.0.0.0 --port=7041
 - `AGENTS.md` — workflow & rules
 - `docs/database.md` — schema
 - `docs/business-rules.md` — aturan saldo, odometer, fuel efficiency
-- `docs/deployment.md` — deploy & CI/CD (`git push origin main`)
+- `docs/deployment.md` — deploy & CI (`git push origin main` → GitHub Actions `.github/workflows/ci.yml`)
 - `docs/backup.md` — backup DB & files
+- `docs/decisions/` — ADR (format export, CI/CD, error page)
+- `docs/security-review.md` / `docs/phase13-review.md` — hasil review
 - `PRD.md` / `DESIGN.md` / `ARCHITECTURE.md`
 
 ## Tests
 
 ```bash
-php artisan test   # 98 tests
+php artisan test   # 126 tests
 npm run build
 ```

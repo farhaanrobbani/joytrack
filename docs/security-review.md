@@ -1,7 +1,7 @@
 # Security Review — Phase 13
 
 ## Auth & Authorization
-- All business tables have `user_id` FK + Policies (`AccountPolicy`, `CategoryPolicy`, `TransactionPolicy`, `VehiclePolicy`, `FuelRecordPolicy`, `ServiceRecordPolicy`, `AttachmentPolicy`) checked via `$this->authorize()` or FormRequest `can()`. Verified via 98 tests (IDOR 403).
+- All business tables have `user_id` FK + Policies (`AccountPolicy`, `CategoryPolicy`, `TransactionPolicy`, `VehiclePolicy`, `FuelRecordPolicy`, `ServiceRecordPolicy`, `AttachmentPolicy`) checked via `$this->authorize()` or FormRequest `can()`. Verified via 126 tests (IDOR 403).
 - Routes under `auth` middleware. Dashboard/report/export require auth.
 
 ## Validation
@@ -26,5 +26,5 @@
 - `DB::transaction()` for create/update/delete affecting multiple tables (TransactionService → AccountBalanceService). Revert-apply on update.
 
 ## Other
-- `.env` not committed, `AGENTS.md §5` secrets via env.
-- `APP_DEBUG` false in production, generic error messages (no SQL trace).
+- `.env` not committed, secrets via environment variables (`.env.example` only).
+- `APP_DEBUG=false` in production; halaman error custom (`errors/404|403|419|500.blade.php`) menampilkan pesan generik tanpa trace SQL.

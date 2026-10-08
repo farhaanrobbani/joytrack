@@ -2,184 +2,184 @@
 
 ## Phase 0 — Project Setup
 
-- [ ] Create Laravel project
-- [ ] Configure MySQL
-- [ ] Configure `.env`
-- [ ] Configure timezone Asia/Jakarta
-- [ ] Install authentication
-- [ ] Install Tailwind
-- [ ] Install Livewire
-- [ ] Configure storage
-- [ ] Configure testing
+- [x] Create Laravel project
+- [x] Configure MySQL
+- [x] Configure `.env`
+- [x] Configure timezone Asia/Jakarta
+- [x] Install authentication
+- [x] Install Tailwind
+- [x] Install Livewire
+- [x] Configure storage
+- [x] Configure testing
 
 ---
 
 # Phase 1 — Authentication
 
-- [ ] Register
-- [ ] Login
-- [ ] Logout
-- [ ] Forgot password
-- [ ] Reset password
-- [ ] Profile
-- [ ] Change password
+- [x] Register
+- [x] Login
+- [x] Logout
+- [x] Forgot password
+- [x] Reset password
+- [x] Profile
+- [x] Change password
 
 ---
 
 # Phase 2 — Account
 
-- [ ] Account migration
-- [ ] Account model
-- [ ] Account factory
-- [ ] Account seeder
-- [ ] Account CRUD
-- [ ] Initial balance
-- [ ] Current balance
-- [ ] Account active/inactive
-- [ ] Account tests
+- [x] Account migration
+- [x] Account model
+- [x] Account factory
+- [x] Account seeder
+- [x] Account CRUD
+- [x] Initial balance
+- [x] Current balance
+- [x] Account active/inactive
+- [x] Account tests
 
 ---
 
 # Phase 3 — Categories
 
-- [ ] Category migration
-- [ ] Category model
-- [ ] Default category seeder
-- [ ] Category CRUD
-- [ ] Income categories
-- [ ] Expense categories
-- [ ] Category tests
+- [x] Category migration
+- [x] Category model
+- [x] Default category seeder
+- [x] Category CRUD
+- [x] Income categories
+- [x] Expense categories
+- [x] Category tests
 
 ---
 
 # Phase 4 — Transactions
 
-- [ ] Transaction migration
-- [ ] Transaction model
-- [ ] Transaction service
-- [ ] Income
-- [ ] Expense
-- [ ] Transfer
-- [ ] Balance calculation
-- [ ] Edit transaction
-- [ ] Delete transaction
-- [ ] Transaction filters
-- [ ] Transaction pagination
-- [ ] Transaction tests
+- [x] Transaction migration
+- [x] Transaction model
+- [x] Transaction service
+- [x] Income
+- [x] Expense
+- [x] Transfer
+- [x] Balance calculation
+- [x] Edit transaction
+- [x] Delete transaction
+- [x] Transaction filters
+- [x] Transaction pagination
+- [x] Transaction tests
 
 ---
 
 # Phase 5 — Dashboard
 
-- [ ] Total balance
-- [ ] Monthly income
-- [ ] Monthly expense
-- [ ] Net cashflow
-- [ ] Recent transactions
-- [ ] Income vs expense chart
-- [ ] Expense by category chart
+- [x] Total balance
+- [x] Monthly income
+- [x] Monthly expense
+- [x] Net cashflow
+- [x] Recent transactions
+- [x] Income vs expense chart
+- [x] Expense by category chart
 
 ---
 
 # Phase 6 — Vehicles
 
-- [ ] Vehicle migration
-- [ ] Vehicle model
-- [ ] Vehicle CRUD
-- [ ] Odometer
-- [ ] Vehicle detail page
-- [ ] Vehicle dashboard
-- [ ] Vehicle tests
+- [x] Vehicle migration
+- [x] Vehicle model
+- [x] Vehicle CRUD
+- [x] Odometer
+- [x] Vehicle detail page
+- [x] Vehicle dashboard
+- [x] Vehicle tests
 
 ---
 
 # Phase 7 — Fuel
 
-- [ ] Fuel record migration
-- [ ] Fuel model
-- [ ] Fuel CRUD
-- [ ] Fuel calculation
-- [ ] Financial transaction integration
-- [ ] Fuel history
-- [ ] Fuel statistics
-- [ ] KM/L calculation
-- [ ] Cost/km calculation
-- [ ] Fuel tests
+- [x] Fuel record migration
+- [x] Fuel model
+- [x] Fuel CRUD
+- [x] Fuel calculation
+- [x] Financial transaction integration
+- [x] Fuel history
+- [x] Fuel statistics
+- [x] KM/L calculation
+- [x] Cost/km calculation
+- [x] Fuel tests
 
 ---
 
 # Phase 8 — Service
 
-- [ ] Service record migration
-- [ ] Service model
-- [ ] Service CRUD
-- [ ] Labor cost
-- [ ] Parts cost
-- [ ] Total cost
-- [ ] Financial transaction integration
-- [ ] Service history
-- [ ] Next service date
-- [ ] Next service odometer
-- [ ] Service tests
+- [x] Service record migration
+- [x] Service model
+- [x] Service CRUD
+- [x] Labor cost
+- [x] Parts cost
+- [x] Total cost
+- [x] Financial transaction integration
+- [x] Service history
+- [x] Next service date
+- [x] Next service odometer
+- [x] Service tests
 
 ---
 
 # Phase 9 — Reminder
 
-- [ ] Service date reminder
-- [ ] Service mileage reminder
-- [ ] Dashboard reminder
-- [ ] Reminder status
+- [x] Service date reminder
+- [x] Service mileage reminder
+- [x] Dashboard reminder
+- [x] Reminder status
 
 ---
 
 # Phase 10 — Reports
 
-- [ ] Financial report
-- [ ] Income report
-- [ ] Expense report
-- [ ] Cashflow report
-- [ ] Category report
-- [ ] Vehicle cost report
-- [ ] Fuel report
-- [ ] Service report
-- [ ] Date range filter
+- [x] Financial report
+- [x] Income report
+- [x] Expense report
+- [x] Cashflow report
+- [x] Category report
+- [x] Vehicle cost report
+- [x] Fuel report
+- [x] Service report
+- [x] Date range filter
 
 ---
 
 # Phase 11 — Attachments
 
-- [ ] Attachment migration
-- [ ] Upload transaction receipt
-- [ ] Upload fuel receipt
-- [ ] Upload service receipt
-- [ ] File validation
-- [ ] File preview
-- [ ] File deletion
+- [x] Attachment migration
+- [x] Upload transaction receipt
+- [x] Upload fuel receipt
+- [x] Upload service receipt
+- [x] File validation
+- [x] File preview
+- [x] File deletion
 
 ---
 
 # Phase 12 — Export
 
-- [ ] Export transactions to Excel
-- [ ] Export financial report
-- [ ] Export vehicle report
-- [ ] Export fuel report
-- [ ] Export service report
-- [ ] PDF report
+- [x] Export transactions to Excel
+- [x] Export financial report
+- [x] Export vehicle report
+- [x] Export fuel report
+- [x] Export service report
+- [x] PDF report
 
 ---
 
 # Phase 13 — Finalization
 
-- [ ] Security review
-- [ ] Authorization review
-- [ ] Database index review
-- [ ] N+1 query review
-- [ ] Validation review
-- [ ] Test review
-- [ ] UI responsive review
-- [ ] Error handling review
-- [ ] Production configuration
-- [ ] Backup strategy
-- [ ] Deployment documentation
+- [x] Security review
+- [x] Authorization review
+- [x] Database index review
+- [x] N+1 query review
+- [x] Validation review
+- [x] Test review
+- [x] UI responsive review
+- [x] Error handling review
+- [x] Production configuration
+- [x] Backup strategy
+- [x] Deployment documentation
