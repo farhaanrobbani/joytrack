@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('documents', DocumentController::class)->except(['show']);
 
     Route::resource('subscriptions', SubscriptionController::class)->except(['show']);
+    Route::post('subscriptions/{subscription}/renew', [SubscriptionController::class, 'renew'])->name('subscriptions.renew');
 
     Route::get('reminders', [ReminderController::class, 'index'])->name('reminders.index');
 

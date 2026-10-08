@@ -2,16 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RenewSubscriptionRequest;
 use App\Http\Requests\StoreSubscriptionRequest;
 use App\Http\Requests\UpdateSubscriptionRequest;
 use App\Models\Subscription;
 use App\Services\ExpiryReminderService;
+use App\Services\SubscriptionRenewalService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class SubscriptionController extends Controller
 {
-    public function __construct(protected ExpiryReminderService $reminders) {}
+    public function __construct(
+        protected ExpiryReminderService $reminders,
+        protected SubscriptionRenewalService $renewalService,
+    ) {}
 
     public function index(): View
     {
@@ -60,6 +65,21 @@ class SubscriptionController extends Controller
 
         return redirect()->route('subscriptions.index')
             ->with('status', __('Berlangganan berhasil diperbarui.'));
+    }
+
+    public function renew(RenewSubscriptionRequest $request, Subscription $subscription): RedirectResponse
+    {
+        $this->authorize('update', $subscription);
+
+        $payload = $request->validated();
+        $payload['create_transaction'] = $request->boolean('create_transaction');
+
+        $renewal = $this->renewalService->renew($subscription, $payload);
+
+        return redirect()->route('subscriptions.index')
+            ->with('status', __('Berlangganan berhasil diperpanjang hingga :date.', [
+                'date' => $renewal->new_date->format('d M Y'),
+            ]));
     }
 
     public function destroy(Subscription $subscription): RedirectResponse
