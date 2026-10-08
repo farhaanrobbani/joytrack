@@ -2,19 +2,23 @@
 
 namespace App\Services;
 
+use App\Models\Account;
 use App\Models\Transaction;
+use App\Support\GroupsByMonth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DashboardService
 {
+    use GroupsByMonth;
+
     public function getData(int $userId): array
     {
         $now = Carbon::now('Asia/Jakarta');
         $startOfMonth = $now->copy()->startOfMonth()->toDateString();
         $endOfMonth = $now->copy()->endOfMonth()->toDateString();
 
-        $totalBalance = \App\Models\Account::where('user_id', $userId)
+        $totalBalance = Account::where('user_id', $userId)
             ->where('is_active', true)
             ->sum('current_balance');
 
@@ -67,28 +71,38 @@ class DashboardService
 
     private function getCashflowChart(int $userId, Carbon $now): array
     {
+        $rangeStart = $now->copy()->subMonths(5)->startOfMonth()->toDateString();
+        $rangeEnd = $now->copy()->endOfMonth()->toDateString();
+
+        $monthExpr = $this->monthKeySql('transaction_date');
+        $rows = Transaction::where('user_id', $userId)
+            ->whereBetween('transaction_date', [$rangeStart, $rangeEnd])
+            ->whereIn('type', ['income', 'expense'])
+            ->selectRaw('type, '.$monthExpr.' as ym, SUM(amount) as total')
+            ->groupBy('type', DB::raw($monthExpr))
+            ->get();
+
+        $byMonth = $rows->groupBy('ym');
         $labels = [];
         $incomeData = [];
         $expenseData = [];
 
         for ($i = 5; $i >= 0; $i--) {
             $date = $now->copy()->subMonths($i);
-            $start = $date->copy()->startOfMonth()->toDateString();
-            $end = $date->copy()->endOfMonth()->toDateString();
             $labels[] = $date->format('M Y');
 
-            $income = Transaction::where('user_id', $userId)
-                ->where('type', 'income')
-                ->whereBetween('transaction_date', [$start, $end])
-                ->sum('amount');
+            $income = 0.0;
+            $expense = 0.0;
+            foreach ($byMonth->get($date->format('Y-m'), collect()) as $row) {
+                if ($row->type === 'income') {
+                    $income = (float) $row->total;
+                } elseif ($row->type === 'expense') {
+                    $expense = (float) $row->total;
+                }
+            }
 
-            $expense = Transaction::where('user_id', $userId)
-                ->where('type', 'expense')
-                ->whereBetween('transaction_date', [$start, $end])
-                ->sum('amount');
-
-            $incomeData[] = (float) $income;
-            $expenseData[] = (float) $expense;
+            $incomeData[] = $income;
+            $expenseData[] = $expense;
         }
 
         return [

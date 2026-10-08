@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Category;
 use App\Models\FuelRecord;
+use App\Models\Transaction;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\DB;
 
@@ -41,7 +42,7 @@ class FuelRecordService
                     'type' => 'expense',
                     'amount' => $data['total_cost'],
                     'transaction_date' => $data['fuel_date'],
-                    'description' => 'BBM ' . ($data['fuel_type'] ?? '') . ' - ' . ($data['vehicle_id'] ? Vehicle::find($data['vehicle_id'])?->name ?? '' : ''),
+                    'description' => 'BBM '.($data['fuel_type'] ?? '').' - '.($data['vehicle_id'] ? Vehicle::find($data['vehicle_id'])?->name ?? '' : ''),
                     'notes' => $data['notes'] ?? null,
                 ]);
                 $data['transaction_id'] = $transaction->id;
@@ -68,7 +69,7 @@ class FuelRecordService
             // If fuel had transaction, we need to update or delete it when total_cost or account changes
             // Simplified: delete old transaction and recreate if account_id present? But we keep logic to adjust balance via TransactionService
             if ($oldTransactionId) {
-                $oldTx = \App\Models\Transaction::find($oldTransactionId);
+                $oldTx = Transaction::find($oldTransactionId);
                 if ($oldTx) {
                     $this->transactionService->delete($oldTx);
                 }
@@ -88,7 +89,7 @@ class FuelRecordService
                     'type' => 'expense',
                     'amount' => $data['total_cost'],
                     'transaction_date' => $data['fuel_date'],
-                    'description' => 'BBM ' . ($data['fuel_type'] ?? '') . ' - ' . Vehicle::find($data['vehicle_id'])?->name,
+                    'description' => 'BBM '.($data['fuel_type'] ?? '').' - '.Vehicle::find($data['vehicle_id'])?->name,
                     'notes' => $data['notes'] ?? null,
                 ]);
                 $data['transaction_id'] = $newTransaction->id;
@@ -112,7 +113,7 @@ class FuelRecordService
     {
         DB::transaction(function () use ($fuel) {
             if ($fuel->transaction_id) {
-                $tx = \App\Models\Transaction::find($fuel->transaction_id);
+                $tx = Transaction::find($fuel->transaction_id);
                 if ($tx) {
                     $this->transactionService->delete($tx);
                 }
@@ -127,11 +128,14 @@ class FuelRecordService
         if ($vehicleId) {
             $query->where('vehicle_id', $vehicleId);
         }
-        $records = $query->orderBy('fuel_date')->orderBy('odometer')->get();
 
-        $totalLiters = (float) $records->sum('liters');
-        $totalCost = (float) $records->sum('total_cost');
-        $count = $records->count();
+        $agg = (clone $query)
+            ->selectRaw('SUM(liters) as total_liters, SUM(total_cost) as total_cost, COUNT(*) as total_count')
+            ->first();
+
+        $totalLiters = (float) ($agg->total_liters ?? 0);
+        $totalCost = (float) ($agg->total_cost ?? 0);
+        $count = (int) ($agg->total_count ?? 0);
         $avgPrice = $totalLiters > 0 ? $totalCost / $totalLiters : 0;
         $avgCost = $count > 0 ? $totalCost / $count : 0;
 
@@ -140,10 +144,10 @@ class FuelRecordService
         $efficiency = null;
         $costPerKm = null;
         if ($count >= 2) {
-            $first = $records->first()->odometer;
-            $last = $records->last()->odometer;
+            $first = (clone $query)->orderBy('fuel_date')->orderBy('odometer')->value('odometer');
+            $last = (clone $query)->orderByDesc('fuel_date')->orderByDesc('odometer')->value('odometer');
             $distance = $last - $first;
-            if ($distance > 0) {
+            if ($distance > 0 && $totalLiters > 0) {
                 $efficiency = $distance / $totalLiters;
                 $costPerKm = $totalCost / $distance;
             }

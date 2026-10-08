@@ -7,11 +7,14 @@ use App\Models\FuelRecord;
 use App\Models\ServiceRecord;
 use App\Models\Transaction;
 use App\Models\Vehicle;
+use App\Support\GroupsByMonth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
+    use GroupsByMonth;
+
     public function finance(int $userId, ?string $startDate, ?string $endDate, bool $withDetails = true): array
     {
         [$start, $end] = $this->resolveRange($startDate, $endDate);
@@ -75,21 +78,33 @@ class ReportService
 
         $totalVehicleCost = $fuelStats['total'] + $serviceStats['total'];
 
-        // Per vehicle breakdown
-        $perVehicle = Vehicle::where('user_id', $userId)->get()->map(function ($v) use ($start, $end) {
-            $fuel = FuelRecord::where('user_id', $v->user_id)->where('vehicle_id', $v->id)->whereBetween('fuel_date', [$start, $end]);
-            $service = ServiceRecord::where('user_id', $v->user_id)->where('vehicle_id', $v->id)->whereBetween('service_date', [$start, $end]);
-            $fuelTotal = (float) $fuel->sum('total_cost');
-            $serviceTotal = (float) $service->sum('total_cost');
+        // Per vehicle breakdown (2 agregat query, bukan 5 query per kendaraan)
+        $fuelAgg = FuelRecord::where('user_id', $userId)->whereBetween('fuel_date', [$start, $end])
+            ->selectRaw('vehicle_id, SUM(total_cost) as fuel_total, SUM(liters) as fuel_liters, COUNT(*) as fuel_count')
+            ->groupBy('vehicle_id')
+            ->get()
+            ->keyBy('vehicle_id');
+
+        $serviceAgg = ServiceRecord::where('user_id', $userId)->whereBetween('service_date', [$start, $end])
+            ->selectRaw('vehicle_id, SUM(total_cost) as service_total, COUNT(*) as service_count')
+            ->groupBy('vehicle_id')
+            ->get()
+            ->keyBy('vehicle_id');
+
+        $perVehicle = Vehicle::where('user_id', $userId)->get()->map(function ($v) use ($fuelAgg, $serviceAgg) {
+            $fuel = $fuelAgg->get($v->id);
+            $service = $serviceAgg->get($v->id);
+            $fuelTotal = $fuel ? (float) $fuel->fuel_total : 0.0;
+            $serviceTotal = $service ? (float) $service->service_total : 0.0;
 
             return [
                 'vehicle' => $v,
                 'fuel_total' => $fuelTotal,
                 'service_total' => $serviceTotal,
                 'total' => $fuelTotal + $serviceTotal,
-                'fuel_liters' => (float) FuelRecord::where('user_id', $v->user_id)->where('vehicle_id', $v->id)->whereBetween('fuel_date', [$start, $end])->sum('liters'),
-                'fuel_count' => (int) FuelRecord::where('user_id', $v->user_id)->where('vehicle_id', $v->id)->whereBetween('fuel_date', [$start, $end])->count(),
-                'service_count' => (int) ServiceRecord::where('user_id', $v->user_id)->where('vehicle_id', $v->id)->whereBetween('service_date', [$start, $end])->count(),
+                'fuel_liters' => $fuel ? (float) $fuel->fuel_liters : 0.0,
+                'fuel_count' => $fuel ? (int) $fuel->fuel_count : 0,
+                'service_count' => $service ? (int) $service->service_count : 0,
             ];
         });
 
@@ -97,16 +112,15 @@ class ReportService
         $distance = null;
         $efficiency = null;
         $costPerKm = null;
-        $fuelForDistance = FuelRecord::where('user_id', $userId)
+        $odometers = FuelRecord::where('user_id', $userId)
             ->whereBetween('fuel_date', [$start, $end])
             ->when($vehicleId, fn ($q) => $q->where('vehicle_id', $vehicleId))
             ->orderBy('odometer')
-            ->get();
-        if ($fuelForDistance->count() >= 2) {
-            $distance = $fuelForDistance->last()->odometer - $fuelForDistance->first()->odometer;
-            $liters = (float) $fuelForDistance->sum('liters');
-            if ($distance > 0 && $liters > 0) {
-                $efficiency = $distance / $liters;
+            ->pluck('odometer');
+        if ($odometers->count() >= 2) {
+            $distance = $odometers->last() - $odometers->first();
+            if ($distance > 0 && $fuelStats['liters'] > 0) {
+                $efficiency = $distance / $fuelStats['liters'];
                 $costPerKm = $fuelStats['total'] / $distance;
             }
         }
@@ -226,22 +240,33 @@ class ReportService
 
     private function monthlyCashflow(int $userId, string $start, string $end): array
     {
-        $startC = Carbon::parse($start);
-        $endC = Carbon::parse($end);
+        $monthExpr = $this->monthKeySql('transaction_date');
+        $rows = Transaction::where('user_id', $userId)
+            ->whereBetween('transaction_date', [$start, $end])
+            ->whereIn('type', ['income', 'expense'])
+            ->selectRaw('type, '.$monthExpr.' as ym, SUM(amount) as total')
+            ->groupBy('type', DB::raw($monthExpr))
+            ->get();
+
+        $byMonth = $rows->groupBy('ym');
         $months = [];
-        $cursor = $startC->copy()->startOfMonth();
+        $cursor = Carbon::parse($start)->startOfMonth();
+        $endC = Carbon::parse($end);
         while ($cursor->lte($endC)) {
-            $mStart = $cursor->copy()->startOfMonth()->toDateString();
-            $mEnd = $cursor->copy()->endOfMonth()->toDateString();
-            $clippedStart = max($mStart, $start);
-            $clippedEnd = min($mEnd, $end);
-            $income = Transaction::where('user_id', $userId)->where('type', 'income')->whereBetween('transaction_date', [$clippedStart, $clippedEnd])->sum('amount');
-            $expense = Transaction::where('user_id', $userId)->where('type', 'expense')->whereBetween('transaction_date', [$clippedStart, $clippedEnd])->sum('amount');
+            $income = 0.0;
+            $expense = 0.0;
+            foreach ($byMonth->get($cursor->format('Y-m'), collect()) as $row) {
+                if ($row->type === 'income') {
+                    $income = (float) $row->total;
+                } elseif ($row->type === 'expense') {
+                    $expense = (float) $row->total;
+                }
+            }
             $months[] = [
                 'label' => $cursor->format('M Y'),
-                'income' => (float) $income,
-                'expense' => (float) $expense,
-                'net' => (float) ($income - $expense),
+                'income' => $income,
+                'expense' => $expense,
+                'net' => $income - $expense,
             ];
             $cursor->addMonth();
             if (count($months) > 24) {
