@@ -83,9 +83,9 @@ class ReportService
                 'fuel_total' => $fuelTotal,
                 'service_total' => $serviceTotal,
                 'total' => $fuelTotal + $serviceTotal,
-                'fuel_liters' => (float) FuelRecord::where('vehicle_id', $v->id)->whereBetween('fuel_date', [$start, $end])->sum('liters'),
-                'fuel_count' => (int) FuelRecord::where('vehicle_id', $v->id)->whereBetween('fuel_date', [$start, $end])->count(),
-                'service_count' => (int) ServiceRecord::where('vehicle_id', $v->id)->whereBetween('service_date', [$start, $end])->count(),
+                'fuel_liters' => (float) FuelRecord::where('user_id', $v->user_id)->where('vehicle_id', $v->id)->whereBetween('fuel_date', [$start, $end])->sum('liters'),
+                'fuel_count' => (int) FuelRecord::where('user_id', $v->user_id)->where('vehicle_id', $v->id)->whereBetween('fuel_date', [$start, $end])->count(),
+                'service_count' => (int) ServiceRecord::where('user_id', $v->user_id)->where('vehicle_id', $v->id)->whereBetween('service_date', [$start, $end])->count(),
             ];
         });
 
@@ -93,7 +93,11 @@ class ReportService
         $distance = null;
         $efficiency = null;
         $costPerKm = null;
-        $fuelForDistance = FuelRecord::where('user_id', $userId)->when($vehicleId, fn ($q) => $q->where('vehicle_id', $vehicleId))->orderBy('odometer')->get();
+        $fuelForDistance = FuelRecord::where('user_id', $userId)
+            ->whereBetween('fuel_date', [$start, $end])
+            ->when($vehicleId, fn ($q) => $q->where('vehicle_id', $vehicleId))
+            ->orderBy('odometer')
+            ->get();
         if ($fuelForDistance->count() >= 2) {
             $distance = $fuelForDistance->last()->odometer - $fuelForDistance->first()->odometer;
             $liters = (float) $fuelForDistance->sum('liters');
