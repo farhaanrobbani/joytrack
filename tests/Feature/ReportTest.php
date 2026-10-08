@@ -81,4 +81,101 @@ class ReportTest extends TestCase
         $response->assertStatus(200);
         $this->assertEquals(0, (float) $response->viewData('totalIncome'));
     }
+
+    public function test_fuel_report_requires_auth(): void
+    {
+        $this->get(route('reports.fuel'))->assertRedirect(route('login'));
+    }
+
+    public function test_fuel_report_shows_totals(): void
+    {
+        $user = User::factory()->create();
+        $vehicle = Vehicle::factory()->create(['user_id' => $user->id]);
+        FuelRecord::factory()->create(['user_id' => $user->id, 'vehicle_id' => $vehicle->id, 'fuel_date' => now()->format('Y-m-d'), 'total_cost' => 150000, 'liters' => 10]);
+        FuelRecord::factory()->create(['user_id' => $user->id, 'vehicle_id' => $vehicle->id, 'fuel_date' => now()->format('Y-m-d'), 'total_cost' => 100000, 'liters' => 5]);
+
+        $this->actingAs($user);
+        $response = $this->get(route('reports.fuel', ['preset' => 'month']));
+        $response->assertStatus(200);
+        $response->assertViewHas(['stats', 'perVehicle', 'monthly', 'records']);
+        $this->assertEquals(250000, (float) $response->viewData('stats')['total']);
+        $this->assertEquals(15, (float) $response->viewData('stats')['liters']);
+        $this->assertEquals(2, (int) $response->viewData('stats')['count']);
+    }
+
+    public function test_fuel_report_date_range_filter(): void
+    {
+        $user = User::factory()->create();
+        $vehicle = Vehicle::factory()->create(['user_id' => $user->id]);
+        FuelRecord::factory()->create(['user_id' => $user->id, 'vehicle_id' => $vehicle->id, 'fuel_date' => '2026-01-15', 'total_cost' => 100000]);
+        FuelRecord::factory()->create(['user_id' => $user->id, 'vehicle_id' => $vehicle->id, 'fuel_date' => '2026-02-15', 'total_cost' => 200000]);
+
+        $this->actingAs($user);
+        $response = $this->get(route('reports.fuel', ['start_date' => '2026-01-01', 'end_date' => '2026-01-31', 'preset' => 'custom']));
+        $response->assertStatus(200);
+        $this->assertEquals(100000, (float) $response->viewData('stats')['total']);
+    }
+
+    public function test_fuel_report_isolation(): void
+    {
+        $u1 = User::factory()->create();
+        $u2 = User::factory()->create();
+        $vehicle1 = Vehicle::factory()->create(['user_id' => $u1->id]);
+        FuelRecord::factory()->create(['user_id' => $u1->id, 'vehicle_id' => $vehicle1->id, 'fuel_date' => now()->format('Y-m-d'), 'total_cost' => 777000]);
+
+        $this->actingAs($u2);
+        $response = $this->get(route('reports.fuel', ['preset' => 'month']));
+        $response->assertStatus(200);
+        $this->assertEquals(0, (float) $response->viewData('stats')['total']);
+        $this->assertCount(0, $response->viewData('records'));
+    }
+
+    public function test_service_report_requires_auth(): void
+    {
+        $this->get(route('reports.service'))->assertRedirect(route('login'));
+    }
+
+    public function test_service_report_shows_totals(): void
+    {
+        $user = User::factory()->create();
+        $vehicle = Vehicle::factory()->create(['user_id' => $user->id]);
+        ServiceRecord::factory()->create(['user_id' => $user->id, 'vehicle_id' => $vehicle->id, 'service_date' => now()->format('Y-m-d'), 'total_cost' => 300000, 'labor_cost' => 100000, 'parts_cost' => 200000]);
+        ServiceRecord::factory()->create(['user_id' => $user->id, 'vehicle_id' => $vehicle->id, 'service_date' => now()->format('Y-m-d'), 'total_cost' => 50000, 'labor_cost' => 20000, 'parts_cost' => 30000]);
+
+        $this->actingAs($user);
+        $response = $this->get(route('reports.service', ['preset' => 'month']));
+        $response->assertStatus(200);
+        $response->assertViewHas(['stats', 'perVehicle', 'monthly', 'records']);
+        $this->assertEquals(350000, (float) $response->viewData('stats')['total']);
+        $this->assertEquals(120000, (float) $response->viewData('stats')['labor']);
+        $this->assertEquals(230000, (float) $response->viewData('stats')['parts']);
+        $this->assertEquals(2, (int) $response->viewData('stats')['count']);
+    }
+
+    public function test_service_report_date_range_filter(): void
+    {
+        $user = User::factory()->create();
+        $vehicle = Vehicle::factory()->create(['user_id' => $user->id]);
+        ServiceRecord::factory()->create(['user_id' => $user->id, 'vehicle_id' => $vehicle->id, 'service_date' => '2026-01-15', 'total_cost' => 100000]);
+        ServiceRecord::factory()->create(['user_id' => $user->id, 'vehicle_id' => $vehicle->id, 'service_date' => '2026-02-15', 'total_cost' => 200000]);
+
+        $this->actingAs($user);
+        $response = $this->get(route('reports.service', ['start_date' => '2026-01-01', 'end_date' => '2026-01-31', 'preset' => 'custom']));
+        $response->assertStatus(200);
+        $this->assertEquals(100000, (float) $response->viewData('stats')['total']);
+    }
+
+    public function test_service_report_isolation(): void
+    {
+        $u1 = User::factory()->create();
+        $u2 = User::factory()->create();
+        $vehicle1 = Vehicle::factory()->create(['user_id' => $u1->id]);
+        ServiceRecord::factory()->create(['user_id' => $u1->id, 'vehicle_id' => $vehicle1->id, 'service_date' => now()->format('Y-m-d'), 'total_cost' => 888000]);
+
+        $this->actingAs($u2);
+        $response = $this->get(route('reports.service', ['preset' => 'month']));
+        $response->assertStatus(200);
+        $this->assertEquals(0, (float) $response->viewData('stats')['total']);
+        $this->assertCount(0, $response->viewData('records'));
+    }
 }
