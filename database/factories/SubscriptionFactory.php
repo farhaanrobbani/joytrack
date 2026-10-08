@@ -22,6 +22,7 @@ class SubscriptionFactory extends Factory
             'user_id' => User::factory(),
             'name' => fake()->randomElement(['Netflix', 'Spotify', 'Domain .com', 'Cloud Hosting', 'Gym']),
             'amount' => fake()->randomFloat(2, 15000, 500000),
+            'renewal_cycle' => fake()->randomElement(['monthly', 'quarterly', 'yearly']),
             'next_renewal_date' => fake()->dateTimeBetween('+1 month', '+12 months')->format('Y-m-d'),
             'reminder_days' => 7,
             'notes' => fake()->optional()->sentence(),
