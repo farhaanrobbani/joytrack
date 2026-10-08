@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Account;
+use App\Models\FuelRecord;
+use App\Models\Vehicle;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreFuelRecordRequest extends FormRequest
@@ -33,17 +36,17 @@ class StoreFuelRecordRequest extends FormRequest
         $validator->after(function ($validator) {
             $userId = $this->user()->id;
             if ($this->filled('vehicle_id')) {
-                if (! \App\Models\Vehicle::where('id', $this->vehicle_id)->where('user_id', $userId)->exists()) {
+                if (! Vehicle::where('id', $this->vehicle_id)->where('user_id', $userId)->exists()) {
                     $validator->errors()->add('vehicle_id', __('Kendaraan tidak valid.'));
                 } else {
                     // odometer monotonic check vs last record (optional, allow first)
-                    $last = \App\Models\FuelRecord::where('vehicle_id', $this->vehicle_id)->orderByDesc('odometer')->first();
+                    $last = FuelRecord::where('vehicle_id', $this->vehicle_id)->orderByDesc('odometer')->first();
                     if ($last && (int) $this->odometer < (int) $last->odometer) {
-                        $validator->errors()->add('odometer', __('Odometer tidak boleh lebih kecil dari sebelumnya (:value km).', ['value' => number_format($last->odometer,0,',','.')]));
+                        $validator->errors()->add('odometer', __('Odometer tidak boleh lebih kecil dari sebelumnya (:value km).', ['value' => number_format($last->odometer, 0, ',', '.')]));
                     }
                 }
             }
-            if ($this->filled('account_id') && ! \App\Models\Account::where('id', $this->account_id)->where('user_id', $userId)->exists()) {
+            if ($this->filled('account_id') && ! Account::where('id', $this->account_id)->where('user_id', $userId)->exists()) {
                 $validator->errors()->add('account_id', __('Akun tidak valid.'));
             }
             if ($this->boolean('create_transaction') && ! $this->filled('account_id')) {

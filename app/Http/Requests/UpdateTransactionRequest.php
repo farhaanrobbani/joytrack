@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Account;
+use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -35,19 +37,19 @@ class UpdateTransactionRequest extends FormRequest
         $validator->after(function ($validator) {
             $userId = $this->user()->id;
             if ($this->filled('account_id')) {
-                $exists = \App\Models\Account::where('id', $this->account_id)->where('user_id', $userId)->exists();
+                $exists = Account::where('id', $this->account_id)->where('user_id', $userId)->exists();
                 if (! $exists) {
                     $validator->errors()->add('account_id', __('Akun tidak valid.'));
                 }
             }
             if ($this->filled('destination_account_id')) {
-                $exists = \App\Models\Account::where('id', $this->destination_account_id)->where('user_id', $userId)->exists();
+                $exists = Account::where('id', $this->destination_account_id)->where('user_id', $userId)->exists();
                 if (! $exists) {
                     $validator->errors()->add('destination_account_id', __('Akun tujuan tidak valid.'));
                 }
             }
             if ($this->filled('category_id')) {
-                $cat = \App\Models\Category::where('id', $this->category_id)->where('user_id', $userId)->first();
+                $cat = Category::where('id', $this->category_id)->where('user_id', $userId)->first();
                 if (! $cat) {
                     $validator->errors()->add('category_id', __('Kategori tidak valid.'));
                 } elseif ($this->filled('type') && $cat->type !== $this->type) {

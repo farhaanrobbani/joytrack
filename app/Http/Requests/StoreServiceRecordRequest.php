@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Account;
+use App\Models\Vehicle;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreServiceRecordRequest extends FormRequest
@@ -34,10 +36,10 @@ class StoreServiceRecordRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $userId = $this->user()->id;
-            if ($this->filled('vehicle_id') && ! \App\Models\Vehicle::where('id', $this->vehicle_id)->where('user_id', $userId)->exists()) {
+            if ($this->filled('vehicle_id') && ! Vehicle::where('id', $this->vehicle_id)->where('user_id', $userId)->exists()) {
                 $validator->errors()->add('vehicle_id', __('Kendaraan tidak valid.'));
             }
-            if ($this->filled('account_id') && ! \App\Models\Account::where('id', $this->account_id)->where('user_id', $userId)->exists()) {
+            if ($this->filled('account_id') && ! Account::where('id', $this->account_id)->where('user_id', $userId)->exists()) {
                 $validator->errors()->add('account_id', __('Akun tidak valid.'));
             }
             if ($this->boolean('create_transaction') && ! $this->filled('account_id')) {
