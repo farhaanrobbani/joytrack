@@ -94,6 +94,35 @@ class ReminderPageTest extends TestCase
         $response->assertSee(__('Tidak ada pengingat aktif'));
     }
 
+    public function test_reminder_page_has_navigation_to_manage_items(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+        $response = $this->get(route('reminders.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee(route('documents.index'));
+        $response->assertSee(route('subscriptions.index'));
+        $response->assertSee(route('documents.create'));
+        $response->assertSee(route('subscriptions.create'));
+        $response->assertSee(__('+ Tambah Dokumen'));
+        $response->assertSee(__('+ Tambah Berlangganan'));
+    }
+
+    public function test_sidebar_shows_reminder_section_links(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+        $response = $this->get(route('dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee(route('reminders.index'));
+        $response->assertSee(route('documents.index'));
+        $response->assertSee(route('subscriptions.index'));
+    }
+
     public function test_dashboard_expiry_reminders_sorted_overdue_first(): void
     {
         $user = User::factory()->create();

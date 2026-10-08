@@ -18,8 +18,13 @@
     <div class="px-4 space-y-6">
         <x-sidebar-section :items="[
             ['label' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'home'],
-            ['label' => 'Pengingat', 'route' => 'reminders.index', 'icon' => 'bell'],
         ]" :title="__('Umum')" />
+
+        <x-sidebar-section :items="[
+            ['label' => 'Pengingat', 'route' => 'reminders.index', 'icon' => 'bell'],
+            ['label' => 'Dokumen', 'route' => 'documents.index', 'icon' => 'document'],
+            ['label' => 'Berlangganan', 'route' => 'subscriptions.index', 'icon' => 'credit-card'],
+        ]" :title="__('Pengingat')" />
 
         <x-sidebar-section :items="[
             ['label' => 'Transaksi', 'route' => 'transactions.index', 'icon' => 'banknotes'],
