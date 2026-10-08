@@ -10,6 +10,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FuelRecordController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceRecordController;
 use App\Http\Controllers\SubscriptionController;
@@ -49,6 +50,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('documents', DocumentController::class)->except(['show']);
 
     Route::resource('subscriptions', SubscriptionController::class)->except(['show']);
+
+    Route::get('reminders', [ReminderController::class, 'index'])->name('reminders.index');
 
     Route::get('reports/finance', [ReportController::class, 'finance'])->name('reports.finance');
     Route::get('reports/vehicle', [ReportController::class, 'vehicle'])->name('reports.vehicle');

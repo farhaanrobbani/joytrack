@@ -18,6 +18,7 @@
     <div class="px-4 space-y-6">
         <x-sidebar-section :items="[
             ['label' => 'Dashboard', 'route' => 'dashboard', 'icon' => 'home'],
+            ['label' => 'Pengingat', 'route' => 'reminders.index', 'icon' => 'bell'],
         ]" :title="__('Umum')" />
 
         <x-sidebar-section :items="[
