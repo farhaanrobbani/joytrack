@@ -31,6 +31,37 @@
         </div>
     @endif
 
+    @if(isset($expiryReminders) && $expiryReminders->isNotEmpty())
+        <div class="mb-6 space-y-3">
+            @foreach($expiryReminders as $r)
+                <div class="rounded-2xl border p-4 {{ $r['status']==='overdue' ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800' }}">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="font-semibold {{ $r['status']==='overdue' ? 'text-red-800 dark:text-red-300' : 'text-amber-800 dark:text-amber-300' }}">
+                                {{ $r['status']==='overdue'
+                                    ? ($r['source']==='document' ? __('Dokumen Kadaluwarsa') : __('Perpanjangan Terlambat'))
+                                    : ($r['source']==='document' ? __('Dokumen Segera Kadaluwarsa') : __('Perpanjangan Segera Jatuh Tempo')) }}
+                                — {{ $r['title'] }}
+                            </p>
+                            <ul class="mt-1 list-disc list-inside text-sm {{ $r['status']==='overdue' ? 'text-red-700 dark:text-red-400' : 'text-amber-700 dark:text-amber-400' }}">
+                                @foreach($r['messages'] as $msg)
+                                    <li>{{ $msg }}</li>
+                                @endforeach
+                            </ul>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $r['source']==='document' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' }}">
+                                    {{ $r['source']==='document' ? __('Dokumen') : __('Berlangganan') }}
+                                </span>
+                                {{ $r['subtitle'] }} • {{ $r['date']->format('d M Y') }}
+                            </p>
+                        </div>
+                        <a href="{{ $r['edit_url'] }}" class="shrink-0 px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Lihat') }}</a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <x-stat-card :label="__('Total Saldo')" :value="'Rp ' . number_format($totalBalance, 0, ',', '.')" icon="wallet" color="brand" />
         <x-stat-card :label="__('Pemasukan Bulan Ini')" :value="'Rp ' . number_format($monthlyIncome, 0, ',', '.')" icon="arrow-trending-up" color="emerald" />
