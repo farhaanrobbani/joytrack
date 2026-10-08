@@ -195,5 +195,8 @@
 - [x] CRUD berlangganan (route, policy, FormRequest, views)
 - [x] Halaman `/reminders` (servis + dokumen + berlangganan, filter status)
 - [x] Menu sidebar Pengingat
-- [x] Test (33 test baru — total 159)
-- [x] Dokumentasi (database, business-rules, README)
+- [x] Navigasi (sidebar Pengingat, tombol tambah di `/reminders`)
+- [x] Perpanjangan subscription (siklus monthly/quarterly/yearly, riwayat `subscription_renewals`, expense opsional via `TransactionService`)
+- [x] UI perpanjangan (modal akun/nominal di `/subscriptions`, tabel riwayat di form edit, validasi akun/nominal)
+- [x] Test (33 reminder + 2 navigasi + 13 perpanjangan — total 174)
+- [x] Dokumentasi (database, business-rules §21–23, README)

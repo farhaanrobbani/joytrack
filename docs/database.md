@@ -207,6 +207,7 @@ id
 user_id
 name
 amount
+renewal_cycle
 next_renewal_date
 reminder_days
 notes
@@ -215,7 +216,31 @@ created_at
 updated_at
 ```
 
-`amount` nullable (informatif, tanpa otomatisasi transaksi).
+`amount` nullable (dipakai sebagai default nominal saat perpanjangan dengan transaksi).
+`renewal_cycle`: `monthly` | `quarterly` | `yearly` (default `monthly`).
+
+---
+
+# subscription_renewals
+
+```text
+id
+user_id
+subscription_id
+renewed_at
+previous_date
+new_date
+amount
+account_id
+transaction_id
+notes
+created_at
+updated_at
+```
+
+Riwayat perpanjangan berlangganan (lihat business-rules §23).
+`amount`, `account_id`, `transaction_id` nullable (transaksi expense opsional);
+`transaction_id` di-nullOnDelete.
 
 ---
 
@@ -282,6 +307,10 @@ documents.user_id + documents.is_active
 subscriptions.user_id
 subscriptions.next_renewal_date
 subscriptions.user_id + subscriptions.is_active
+
+subscription_renewals.user_id
+subscription_renewals.user_id + subscription_renewals.renewed_at
+subscription_renewals.subscription_id
 
 attachments.user_id
 ```

@@ -332,6 +332,28 @@ due_soon : 0 <= days <= reminder_days (per baris, default 7)
 ok       : days > reminder_days
 ```
 
-- Nominal `amount` hanya informatif — tidak membuat transaksi otomatis.
+- Nominal `amount` hanya informatif — pengingat tidak membuat transaksi otomatis;
+  transaksi expense hanya dibuat saat perpanjangan manual (lihat §23).
 - Pengingat servis (tanggal + odometer) tetap memakai `ServiceReminderService`
   dengan ambang global 7 hari / 500 km, dan digabung di halaman `/reminders`.
+
+---
+
+# 23. Subscription Renewal (Perpanjangan)
+
+- Siklus perpanjangan (`renewal_cycle`): `monthly` (1 bulan), `quarterly` (3 bulan),
+  `yearly` (12 bulan); default `monthly`.
+- Tanggal baru = base + siklus memakai `addMonthsNoOverflow`
+  (mis. 31 Jan → 28/29 Feb, bukan 3 Mar).
+- Base perhitungan: `next_renewal_date` jika masih akan datang; jika sudah lewat
+  (overdue), dihitung mulai dari hari ini (Asia/Jakarta).
+- Setiap perpanjangan mencatat riwayat di `subscription_renewals`
+  (tanggal lama, tanggal baru, nominal, catatan) dan menggeser `next_renewal_date`.
+- Expense opsional: jika `create_transaction` aktif, dibuat transaksi `expense`
+  ber tanggal hari ini lewat `TransactionService` (saldo akun ikut berkurang).
+  Kategori `Langganan` (expense) dibuat otomatis bila belum ada; nominal default
+  dari `subscriptions.amount`.
+- Validasi: `account_id` wajib & harus milik user yang sama saat `create_transaction`;
+  `amount` wajib diisi bila `subscriptions.amount` kosong.
+- Riwayat ditampilkan di form edit berlangganan; tombol perpanjang ada di
+  `/subscriptions` (modal) dan memakai aturan otorisasi `update` (policy).
