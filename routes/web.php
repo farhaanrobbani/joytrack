@@ -59,6 +59,9 @@ Route::middleware('auth')->group(function () {
     Route::get('export/service/excel', [ExportController::class, 'serviceExcel'])->name('export.service.excel');
     Route::get('export/finance/pdf', [ExportController::class, 'financePdf'])->name('export.finance.pdf');
     Route::get('export/vehicle/pdf', [ExportController::class, 'vehiclePdf'])->name('export.vehicle.pdf');
+    Route::get('export/transactions/pdf', [ExportController::class, 'transactionsPdf'])->name('export.transactions.pdf');
+    Route::get('export/fuel/pdf', [ExportController::class, 'fuelPdf'])->name('export.fuel.pdf');
+    Route::get('export/service/pdf', [ExportController::class, 'servicePdf'])->name('export.service.pdf');
 
     Route::post('attachments', [AttachmentController::class, 'store'])->name('attachments.store');
     Route::get('attachments/{attachment}', [AttachmentController::class, 'show'])->name('attachments.show');

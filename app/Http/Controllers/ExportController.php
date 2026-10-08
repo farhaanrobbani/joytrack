@@ -295,6 +295,49 @@ class ExportController extends Controller
         return $this->pdfResponse($html, 'vehicle-'.$start.'_to_'.$end.'.pdf');
     }
 
+    public function transactionsPdf(Request $request)
+    {
+        $query = Transaction::where('user_id', auth()->id())
+            ->with(['account', 'destinationAccount', 'category'])
+            ->orderBy('transaction_date')->orderBy('id');
+
+        if ($request->filled('start_date')) {
+            $query->where('transaction_date', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->where('transaction_date', '<=', $request->end_date);
+        }
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        $html = view('reports.pdf.transactions', [
+            'transactions' => $query->get(),
+            'start' => $request->start_date,
+            'end' => $request->end_date,
+        ])->render();
+
+        return $this->pdfResponse($html, 'transactions-'.now()->format('Ymd-His').'.pdf');
+    }
+
+    public function fuelPdf(Request $request)
+    {
+        [$start, $end] = $this->resolvePreset($request);
+        $data = $this->reportService->fuel(auth()->id(), $start, $end, $request->vehicle_id ? (int) $request->vehicle_id : null);
+        $html = view('reports.pdf.fuel', $data)->render();
+
+        return $this->pdfResponse($html, 'fuel-'.$start.'_to_'.$end.'.pdf');
+    }
+
+    public function servicePdf(Request $request)
+    {
+        [$start, $end] = $this->resolvePreset($request);
+        $data = $this->reportService->service(auth()->id(), $start, $end, $request->vehicle_id ? (int) $request->vehicle_id : null);
+        $html = view('reports.pdf.service', $data)->render();
+
+        return $this->pdfResponse($html, 'service-'.$start.'_to_'.$end.'.pdf');
+    }
+
     private function xlsxDownload(string $filename, callable $fill): StreamedResponse
     {
         return response()->streamDownload(function () use ($fill) {
