@@ -33,6 +33,7 @@ class SubscriptionTest extends TestCase
         $response = $this->post(route('subscriptions.store'), [
             'name' => 'Netflix',
             'amount' => 186000,
+            'renewal_cycle' => 'monthly',
             'next_renewal_date' => now()->addDays(20)->format('Y-m-d'),
             'reminder_days' => 7,
             'is_active' => 1,
@@ -56,6 +57,7 @@ class SubscriptionTest extends TestCase
         $response = $this->patch(route('subscriptions.update', $subscription), [
             'name' => 'Netflix Premium',
             'amount' => 200000,
+            'renewal_cycle' => $subscription->renewal_cycle,
             'next_renewal_date' => $subscription->next_renewal_date->format('Y-m-d'),
             'reminder_days' => 10,
         ]);

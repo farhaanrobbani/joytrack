@@ -23,6 +23,17 @@
                     </div>
 
                     <div>
+                        <x-input-label for="renewal_cycle" :value="__('Siklus Perpanjangan')" />
+                        <select id="renewal_cycle" name="renewal_cycle" class="mt-1 block w-full border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg">
+                            @foreach(\App\Models\Subscription::CYCLE_LABELS as $value => $label)
+                                <option value="{{ $value }}" @selected(old('renewal_cycle', 'monthly') === $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        <p class="mt-1 text-sm text-gray-500">{{ __('Dipakai tombol Perpanjang untuk menghitung tanggal berikutnya.') }}</p>
+                        <x-input-error :messages="$errors->get('renewal_cycle')" class="mt-2" />
+                    </div>
+
+                    <div>
                         <x-input-label for="next_renewal_date" :value="__('Tanggal Perpanjangan Berikutnya')" />
                         <x-text-input id="next_renewal_date" name="next_renewal_date" type="date" class="mt-1 block w-full" :value="old('next_renewal_date')" required />
                         <x-input-error :messages="$errors->get('next_renewal_date')" class="mt-2" />

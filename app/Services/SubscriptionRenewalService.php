@@ -6,11 +6,25 @@ use App\Models\Category;
 use App\Models\Subscription;
 use App\Models\SubscriptionRenewal;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 
 class SubscriptionRenewalService
 {
     public function __construct(protected TransactionService $transactionService) {}
+
+    /**
+     * Tanggal perpanjangan berikutnya: jika jatuh tempo masih akan datang,
+     * tambah siklus dari tanggal itu; jika sudah lewat, mulai dari hari ini.
+     */
+    public function previewNextDate(Subscription $subscription): CarbonInterface
+    {
+        $today = Carbon::now('Asia/Jakarta')->startOfDay();
+        $next = $subscription->next_renewal_date;
+        $base = $next->gte($today) ? $next : $today;
+
+        return $subscription->nextDateFrom($base);
+    }
 
     /**
      * Perpanjang langganan: geser tanggal berikutnya sesuai siklus,
@@ -23,9 +37,7 @@ class SubscriptionRenewalService
         return DB::transaction(function () use ($subscription, $data) {
             $today = Carbon::now('Asia/Jakarta')->startOfDay();
             $previous = $subscription->next_renewal_date->copy();
-            // jika jatuh tempo sudah lewat, mulai hitung dari hari ini
-            $base = $previous->gte($today) ? $previous : $today;
-            $newDate = $subscription->nextDateFrom($base);
+            $newDate = $this->previewNextDate($subscription);
 
             $amount = $data['amount'] ?? $subscription->amount;
             $createTx = ! empty($data['create_transaction']) && ! empty($data['account_id']) && $amount !== null;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RenewSubscriptionRequest;
 use App\Http\Requests\StoreSubscriptionRequest;
 use App\Http\Requests\UpdateSubscriptionRequest;
+use App\Models\Account;
 use App\Models\Subscription;
 use App\Services\ExpiryReminderService;
 use App\Services\SubscriptionRenewalService;
@@ -29,9 +30,27 @@ class SubscriptionController extends Controller
             'model' => $subscription,
             'days' => $this->reminders->daysUntilDate($subscription->next_renewal_date),
             'status' => $this->reminders->statusForSubscription($subscription),
+            'renew_preview' => $this->renewalService->previewNextDate($subscription),
         ]);
 
-        return view('subscriptions.index', compact('subscriptions'));
+        $accounts = Account::where('user_id', auth()->id())
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        $renewPayload = $subscriptions->getCollection()->mapWithKeys(fn (array $row) => [
+            $row['model']->id => [
+                'id' => $row['model']->id,
+                'url' => route('subscriptions.renew', $row['model']),
+                'name' => $row['model']->name,
+                'cycle' => $row['model']->cycle_label,
+                'next' => $row['model']->next_renewal_date->format('d M Y'),
+                'preview' => $row['renew_preview']->format('d M Y'),
+                'amount' => $row['model']->amount,
+            ],
+        ]);
+
+        return view('subscriptions.index', compact('subscriptions', 'accounts', 'renewPayload'));
     }
 
     public function create(): View
@@ -53,6 +72,8 @@ class SubscriptionController extends Controller
     public function edit(Subscription $subscription): View
     {
         $this->authorize('update', $subscription);
+
+        $subscription->load('renewals');
 
         return view('subscriptions.edit', compact('subscription'));
     }

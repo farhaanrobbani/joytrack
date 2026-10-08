@@ -23,6 +23,16 @@
                     </div>
 
                     <div>
+                        <x-input-label for="renewal_cycle" :value="__('Siklus Perpanjangan')" />
+                        <select id="renewal_cycle" name="renewal_cycle" class="mt-1 block w-full border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg">
+                            @foreach(\App\Models\Subscription::CYCLE_LABELS as $value => $label)
+                                <option value="{{ $value }}" @selected(old('renewal_cycle', $subscription->renewal_cycle) === $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('renewal_cycle')" class="mt-2" />
+                    </div>
+
+                    <div>
                         <x-input-label for="next_renewal_date" :value="__('Tanggal Perpanjangan Berikutnya')" />
                         <x-text-input id="next_renewal_date" name="next_renewal_date" type="date" class="mt-1 block w-full" :value="old('next_renewal_date', $subscription->next_renewal_date->format('Y-m-d'))" required />
                         <x-input-error :messages="$errors->get('next_renewal_date')" class="mt-2" />
@@ -57,6 +67,44 @@
                     </div>
                 </div>
             </form>
+        </div>
+
+        <div class="bg-white shadow sm:rounded-lg p-6 mt-6">
+            <h3 class="font-semibold text-gray-900 mb-4">{{ __('Riwayat Perpanjangan') }}</h3>
+            @if($subscription->renewals->isEmpty())
+                <p class="text-sm text-gray-500">{{ __('Belum ada riwayat perpanjangan.') }}</p>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{{ __('Tanggal Perpanjang') }}</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{{ __('Jatuh Tempo Lama') }}</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{{ __('Jatuh Tempo Baru') }}</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">{{ __('Nominal') }}</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{{ __('Transaksi') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @foreach($subscription->renewals as $renewal)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm">{{ $renewal->renewed_at->format('d M Y') }}</td>
+                                    <td class="px-4 py-3 text-sm">{{ $renewal->previous_date->format('d M Y') }}</td>
+                                    <td class="px-4 py-3 text-sm">{{ $renewal->new_date->format('d M Y') }}</td>
+                                    <td class="px-4 py-3 text-sm text-right font-medium">{{ $renewal->amount !== null ? 'Rp '.number_format((float) $renewal->amount, 0, ',', '.') : '-' }}</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        @if($renewal->transaction_id)
+                                            <a href="{{ route('transactions.edit', $renewal->transaction_id) }}" class="text-emerald-600 hover:text-emerald-700">{{ __('Lihat transaksi') }}</a>
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>
