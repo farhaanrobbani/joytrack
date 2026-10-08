@@ -174,6 +174,51 @@ updated_at
 
 ---
 
+# documents
+
+```text
+id
+user_id
+vehicle_id
+name
+document_type
+expiry_date
+reminder_days
+notes
+is_active
+created_at
+updated_at
+```
+
+`document_type`:
+
+```text
+stnk | sim | pajak | asuransi | paspor | lainnya
+```
+
+`vehicle_id` nullable (opsional, mis. SIM/paspor tidak menempel kendaraan).
+
+---
+
+# subscriptions
+
+```text
+id
+user_id
+name
+amount
+next_renewal_date
+reminder_days
+notes
+is_active
+created_at
+updated_at
+```
+
+`amount` nullable (informatif, tanpa otomatisasi transaksi).
+
+---
+
 # attachments
 
 ```text
@@ -229,6 +274,14 @@ fuel_records.fuel_date
 service_records.user_id
 service_records.vehicle_id
 service_records.service_date
+
+documents.user_id
+documents.expiry_date
+documents.user_id + documents.is_active
+
+subscriptions.user_id
+subscriptions.next_renewal_date
+subscriptions.user_id + subscriptions.is_active
 
 attachments.user_id
 ```

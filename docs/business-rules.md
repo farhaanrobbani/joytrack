@@ -299,3 +299,39 @@ Fuel Cost
 + Service Cost
 + Other Vehicle Expense
 ```
+
+---
+
+# 21. Document Expiry Reminder
+
+Berlaku untuk dokumen dengan `is_active = true` milik user yang bersangkutan.
+
+```text
+days = expiry_date - hari ini (Asia/Jakarta)
+
+overdue  : days < 0
+due_soon : 0 <= days <= reminder_days (per baris, default 7)
+ok       : days > reminder_days
+```
+
+- Item `ok` tidak ditampilkan di dashboard maupun halaman Pengingat.
+- Urutan tampil: `overdue` dulu, lalu `due_soon` dengan sisa hari terkecil.
+- Threshold mengikuti `reminder_days` per dokumen (1–90 hari), bukan global.
+
+---
+
+# 22. Subscription Renewal Reminder
+
+Sama seperti aturan dokumen, dengan tanggal `next_renewal_date`:
+
+```text
+days = next_renewal_date - hari ini (Asia/Jakarta)
+
+overdue  : days < 0
+due_soon : 0 <= days <= reminder_days (per baris, default 7)
+ok       : days > reminder_days
+```
+
+- Nominal `amount` hanya informatif — tidak membuat transaksi otomatis.
+- Pengingat servis (tanggal + odometer) tetap memakai `ServiceReminderService`
+  dengan ambang global 7 hari / 500 km, dan digabung di halaman `/reminders`.

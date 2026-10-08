@@ -183,3 +183,17 @@
 - [x] Production configuration
 - [x] Backup strategy
 - [x] Deployment documentation
+
+---
+
+# Phase 14 — Pengingat Dokumen & Berlangganan
+
+- [x] Migration `documents` & `subscriptions` + model + factory
+- [x] `ExpiryReminderService` (status overdue/due_soon/ok, threshold per baris)
+- [x] Kartu pengingat dokumen/berlangganan di dashboard
+- [x] CRUD dokumen (route, policy, FormRequest, views)
+- [x] CRUD berlangganan (route, policy, FormRequest, views)
+- [x] Halaman `/reminders` (servis + dokumen + berlangganan, filter status)
+- [x] Menu sidebar Pengingat
+- [x] Test (33 test baru — total 159)
+- [x] Dokumentasi (database, business-rules, README)
