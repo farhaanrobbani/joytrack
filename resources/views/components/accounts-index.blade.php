@@ -39,6 +39,16 @@ new class extends Component
                     <div class="mb-4">
                         <p class="text-xs text-gray-500">{{ __('Saldo') }}</p>
                         <p class="text-2xl font-bold text-gray-900">Rp {{ number_format($account->current_balance, 0, ',', '.') }}</p>
+                        @if ($account->isCredit())
+                            <div class="mt-2 text-xs text-gray-600 space-y-0.5">
+                                @if ($account->credit_limit !== null)
+                                    <p>{{ __('Limit') }}: Rp {{ number_format($account->credit_limit, 0, ',', '.') }} · {{ __('Terpakai') }}: Rp {{ number_format($account->used_credit, 0, ',', '.') }} · {{ __('Sisa') }}: Rp {{ number_format($account->available_credit, 0, ',', '.') }}</p>
+                                @endif
+                                @if ($account->due_day)
+                                    <p>{{ __('Jatuh tempo') }}: {{ __('tanggal') }} {{ $account->due_day }}{{ $account->billing_day ? ' · ' . __('Cetak') . ': ' . __('tanggal') . ' ' . $account->billing_day : '' }}</p>
+                                @endif
+                            </div>
+                        @endif
                     </div>
 
                     @if ($account->description)

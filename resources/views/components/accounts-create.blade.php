@@ -10,6 +10,9 @@ new class extends Component
     public string $name = '';
     public string $type = 'bank';
     public string $initial_balance = '0';
+    public string $credit_limit = '';
+    public string $billing_day = '';
+    public string $due_day = '';
     public string $description = '';
     public bool $is_active = true;
 
@@ -36,6 +39,9 @@ new class extends Component
             'name' => $this->name,
             'type' => $this->type,
             'initial_balance' => $this->initial_balance,
+            'credit_limit' => $this->credit_limit !== '' ? $this->credit_limit : null,
+            'billing_day' => $this->billing_day !== '' ? (int) $this->billing_day : null,
+            'due_day' => $this->due_day !== '' ? (int) $this->due_day : null,
             'description' => $this->description !== '' ? $this->description : null,
             'is_active' => $this->is_active,
         ];
@@ -60,15 +66,40 @@ new class extends Component
 
                 <div>
                     <x-input-label for="type" :value="__('Jenis Akun')" />
-                    <select id="type" wire:model="type" class="mt-1 block w-full border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg">
+                    <select id="type" wire:model.live="type" class="mt-1 block w-full border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg">
                         <option value="bank">{{ __('Bank') }}</option>
                         <option value="cash">{{ __('Cash') }}</option>
                         <option value="ewallet">{{ __('E-wallet') }}</option>
                         <option value="savings">{{ __('Savings') }}</option>
+                        <option value="credit">{{ __('Kartu Kredit / Paylater') }}</option>
                         <option value="other">{{ __('Other') }}</option>
                     </select>
                     <x-input-error :messages="$errors->get('type')" class="mt-2" />
                 </div>
+
+                @if ($type === 'credit')
+                    <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-lg space-y-4">
+                        <p class="text-sm font-semibold text-emerald-700">{{ __('Detail Kartu Kredit / Paylater') }}</p>
+                        <div>
+                            <x-input-label for="credit_limit" :value="__('Limit Kredit')" />
+                            <x-text-input id="credit_limit" wire:model="credit_limit" type="number" step="0.01" min="0" class="mt-1 block w-full" placeholder="5000000" />
+                            <x-input-error :messages="$errors->get('credit_limit')" class="mt-2" />
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <x-input-label for="billing_day" :value="__('Tgl Cetak Tagihan')" />
+                                <x-text-input id="billing_day" wire:model="billing_day" type="number" min="1" max="31" class="mt-1 block w-full" placeholder="1" />
+                                <x-input-error :messages="$errors->get('billing_day')" class="mt-2" />
+                            </div>
+                            <div>
+                                <x-input-label for="due_day" :value="__('Jatuh Tempo')" />
+                                <x-text-input id="due_day" wire:model="due_day" type="number" min="1" max="31" class="mt-1 block w-full" placeholder="10" />
+                                <x-input-error :messages="$errors->get('due_day')" class="mt-2" />
+                            </div>
+                        </div>
+                        <p class="text-sm text-emerald-700/80">{{ __('Belanja dicatat sebagai expense ke akun ini (saldo negatif = tagihan). Bayar tagihan dengan transfer dari bank ke akun ini.') }}</p>
+                    </div>
+                @endif
 
                 <div>
                     <x-input-label for="initial_balance" :value="__('Saldo Awal')" />

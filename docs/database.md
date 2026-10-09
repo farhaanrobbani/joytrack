@@ -27,6 +27,9 @@ name
 type
 initial_balance
 current_balance
+credit_limit
+billing_day
+due_day
 description
 is_active
 created_at
@@ -41,7 +44,12 @@ cash
 ewallet
 savings
 other
+credit
 ```
+
+- `credit_limit`, `billing_day`, `due_day` hanya relevan untuk `type = credit`
+  (nullable, `billing_day`/`due_day` = 1–31).
+- `current_balance` negatif pada akun `credit` = tagihan yang belum dibayar.
 
 ---
 

@@ -50,8 +50,8 @@ new class extends Component
                         <div>
                             <p class="font-semibold {{ $r['status']==='overdue' ? 'text-red-800 dark:text-red-300' : 'text-amber-800 dark:text-amber-300' }}">
                                 {{ $r['status']==='overdue'
-                                    ? ($r['source']==='document' ? __('Dokumen Kadaluwarsa') : __('Perpanjangan Terlambat'))
-                                    : ($r['source']==='document' ? __('Dokumen Segera Kadaluwarsa') : __('Perpanjangan Segera Jatuh Tempo')) }}
+                                    ? ($r['source']==='document' ? __('Dokumen Kadaluwarsa') : ($r['source']==='credit' ? __('Tagihan Kartu Terlambat') : __('Perpanjangan Terlambat')))
+                                    : ($r['source']==='document' ? __('Dokumen Segera Kadaluwarsa') : ($r['source']==='credit' ? __('Tagihan Kartu Segera Jatuh Tempo') : __('Perpanjangan Segera Jatuh Tempo'))) }}
                                 — {{ $r['title'] }}
                             </p>
                             <ul class="mt-1 list-disc list-inside text-sm {{ $r['status']==='overdue' ? 'text-red-700 dark:text-red-400' : 'text-amber-700 dark:text-amber-400' }}">
@@ -60,8 +60,8 @@ new class extends Component
                                 @endforeach
                             </ul>
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $r['source']==='document' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' }}">
-                                    {{ $r['source']==='document' ? __('Dokumen') : __('Berlangganan') }}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $r['source']==='document' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ($r['source']==='credit' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300') }}">
+                                    {{ $r['source']==='document' ? __('Dokumen') : ($r['source']==='credit' ? __('Tagihan Kartu') : __('Berlangganan')) }}
                                 </span>
                                 {{ $r['subtitle'] }} • {{ $r['date']->format('d M Y') }}
                             </p>

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Account;
 use App\Models\Document;
 use App\Models\Subscription;
 use Carbon\Carbon;
@@ -12,15 +13,19 @@ class ExpiryReminderService
 {
     public const TIMEZONE = 'Asia/Jakarta';
 
+    public const CREDIT_REMINDER_DAYS = 7;
+
     /**
-     * @return Collection<int, array{source: string, title: string, subtitle: string, date: CarbonInterface, days: int, status: string, messages: array<string>, edit_url: string, model: Document|Subscription}>
+     * @return Collection<int, array{source: string, title: string, subtitle: string, date: CarbonInterface, days: int, status: string, messages: array<string>, edit_url: string, model: Document|Subscription|Account}>
      */
     public function getAll(int $userId): Collection
     {
         return $this->getDocumentReminders($userId)
             ->merge($this->getSubscriptionReminders($userId))
+            ->merge($this->getCreditReminders($userId))
             ->sortBy(fn ($r) => [$r['status'] === 'overdue' ? 0 : 1, $r['days']])
-            ->values();
+            ->values()
+            ->toBase();
     }
 
     /**
@@ -51,7 +56,8 @@ class ExpiryReminderService
                 ];
             })
             ->filter(fn ($item) => $item['status'] !== 'ok')
-            ->values();
+            ->values()
+            ->toBase();
 
         return $items;
     }
@@ -85,9 +91,45 @@ class ExpiryReminderService
                 ];
             })
             ->filter(fn ($item) => $item['status'] !== 'ok')
-            ->values();
+            ->values()
+            ->toBase();
 
         return $items;
+    }
+
+    /**
+     * @return Collection<int, array{source: string, title: string, subtitle: string, date: CarbonInterface, days: int, status: string, messages: array<string>, edit_url: string, model: Account}>
+     */
+    public function getCreditReminders(int $userId): Collection
+    {
+        $now = $this->now();
+
+        return Account::where('user_id', $userId)
+            ->where('is_active', true)
+            ->where('type', 'credit')
+            ->whereNotNull('due_day')
+            ->where('current_balance', '<', 0)
+            ->get()
+            ->map(function (Account $account) use ($now) {
+                $dueDate = $now->copy()->day(min((int) $account->due_day, $now->daysInMonth()));
+                $days = $this->daysUntil($dueDate, $now);
+                $status = $this->statusFor($days, self::CREDIT_REMINDER_DAYS);
+
+                return [
+                    'source' => 'credit',
+                    'title' => __('Tagihan :name', ['name' => $account->name]),
+                    'subtitle' => $account->type_label.' • Rp '.number_format(abs((float) $account->current_balance), 0, ',', '.'),
+                    'date' => $dueDate,
+                    'days' => $days,
+                    'status' => $status,
+                    'messages' => $this->creditMessages($account, $dueDate, $days, $status),
+                    'edit_url' => route('accounts.edit', $account),
+                    'model' => $account,
+                ];
+            })
+            ->filter(fn ($item) => $item['status'] !== 'ok')
+            ->values()
+            ->toBase();
     }
 
     public function statusFor(int $daysUntil, int $reminderDays): string
@@ -160,6 +202,32 @@ class ExpiryReminderService
 
         return [__('Dokumen :name kedaluwarsa pada :date (sisa :days hari)', [
             'name' => $document->name,
+            'date' => $date,
+            'days' => $days,
+        ])];
+    }
+
+    /**
+     * @return array<string>
+     */
+    protected function creditMessages(Account $account, CarbonInterface $dueDate, int $days, string $status): array
+    {
+        $date = $dueDate->format('d M Y');
+
+        if ($status === 'overdue') {
+            return [__('Tagihan :name jatuh tempo pada :date (terlambat :days hari)', [
+                'name' => $account->name,
+                'date' => $date,
+                'days' => abs($days),
+            ])];
+        }
+
+        if ($days === 0) {
+            return [__('Tagihan :name jatuh tempo hari ini', ['name' => $account->name])];
+        }
+
+        return [__('Tagihan :name jatuh tempo pada :date (sisa :days hari)', [
+            'name' => $account->name,
             'date' => $date,
             'days' => $days,
         ])];

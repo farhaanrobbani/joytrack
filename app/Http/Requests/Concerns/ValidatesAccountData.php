@@ -8,7 +8,10 @@ trait ValidatesAccountData
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'type' => ['required', 'in:bank,cash,ewallet,savings,other'],
+            'type' => ['required', 'in:bank,cash,ewallet,savings,other,credit'],
+            'credit_limit' => ['nullable', 'numeric', 'min:0'],
+            'billing_day' => ['nullable', 'integer', 'between:1,31'],
+            'due_day' => ['nullable', 'integer', 'between:1,31'],
             'description' => ['nullable', 'string', 'max:1000'],
             'is_active' => ['boolean'],
         ];
@@ -20,6 +23,10 @@ trait ValidatesAccountData
             'name.required' => __('Nama akun wajib diisi.'),
             'type.required' => __('Jenis akun wajib dipilih.'),
             'type.in' => __('Jenis akun tidak valid.'),
+            'credit_limit.numeric' => __('Limit kredit harus berupa angka.'),
+            'credit_limit.min' => __('Limit kredit tidak boleh negatif.'),
+            'billing_day.between' => __('Tanggal cetak tagihan harus 1-31.'),
+            'due_day.between' => __('Tanggal jatuh tempo harus 1-31.'),
         ];
     }
 

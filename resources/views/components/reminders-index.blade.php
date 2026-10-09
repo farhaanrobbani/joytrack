@@ -95,8 +95,9 @@ new class extends Component
         $services = app(ServiceReminderService::class)->getReminders(auth()->id());
         $documents = app(ExpiryReminderService::class)->getDocumentReminders(auth()->id());
         $subscriptions = app(ExpiryReminderService::class)->getSubscriptionReminders(auth()->id());
+        $credits = app(ExpiryReminderService::class)->getCreditReminders(auth()->id());
 
-        $all = $services->merge($documents)->merge($subscriptions);
+        $all = $services->merge($documents)->merge($subscriptions)->merge($credits);
 
         $overdueCount = $all->filter(fn ($item) => $item['status'] === 'overdue')->count();
         $dueSoonCount = $all->filter(fn ($item) => $item['status'] === 'due_soon')->count();
@@ -109,11 +110,13 @@ new class extends Component
         $services = $filter($services);
         $documents = $filter($documents);
         $subscriptions = $filter($subscriptions);
+        $credits = $filter($credits);
 
         return $this->view([
             'services' => $services,
             'documents' => $documents,
             'subscriptions' => $subscriptions,
+            'credits' => $credits,
             'overdueCount' => $overdueCount,
             'dueSoonCount' => $dueSoonCount,
             'totalCount' => $totalCount,
@@ -249,13 +252,44 @@ new class extends Component
             @endif
         </div>
 
+        <div>
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                <x-heroicon-o-credit-card class="w-5 h-5 text-gray-400" />
+                {{ __('Tagihan Kartu') }}
+                <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">{{ $credits->count() }}</span>
+            </h3>
+            @if($credits->isEmpty())
+                <div class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl p-4 text-sm text-gray-500 dark:text-gray-400">{{ __('Tidak ada pengingat tagihan kartu') }}</div>
+            @else
+                <div class="space-y-3">
+                    @foreach($credits as $r)
+                        <div wire:key="credit-{{ $r['model']->id }}" class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl border p-4 {{ $r['status']==='overdue' ? 'border-red-200 dark:border-red-800' : 'border-amber-200 dark:border-amber-800' }}">
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <p class="font-semibold text-gray-900 dark:text-white">
+                                        {{ $r['title'] }}
+                                        <span class="ms-2 px-2 py-0.5 text-xs font-medium rounded-full {{ $r['status']==='overdue' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300' }}">{{ $statusLabel($r['status']) }}</span>
+                                    </p>
+                                    <ul class="mt-1 list-disc list-inside text-sm text-gray-600 dark:text-gray-300">
+                                        @foreach($r['messages'] as $msg)<li>{{ $msg }}</li>@endforeach
+                                    </ul>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $r['subtitle'] }} • {{ $r['date']->format('d M Y') }}</p>
+                                </div>
+                                <a href="{{ $r['edit_url'] }}" class="shrink-0 px-3 py-1.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-600">{{ __('Lihat') }}</a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+
         @if($totalCount === 0)
             <div class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl p-10 text-center">
                 <div class="w-16 h-16 mx-auto rounded-2xl bg-gray-50 dark:bg-gray-700 flex items-center justify-center mb-3">
                     <x-heroicon-o-bell-alert class="w-8 h-8 text-gray-300" />
                 </div>
                 <p class="text-sm font-medium text-gray-900 dark:text-white">{{ __('Tidak ada pengingat aktif') }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ __('Semua servis, dokumen, dan berlangganan Anda masih aman.') }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ __('Semua servis, dokumen, berlangganan, dan tagihan kartu Anda masih aman.') }}</p>
             </div>
         @endif
     </div>

@@ -360,3 +360,32 @@ ok       : days > reminder_days
   otorisasi `update` (policy).
 - Setelah sukses, redirect kembali ke halaman asal (`back=reminders` → `/reminders`,
   selain itu → `/subscriptions`) dengan pesan sukses.
+
+---
+
+# 24. Credit Account (Kartu Kredit / Paylater)
+
+- Akun `type = credit` boleh punya `credit_limit`, `billing_day` (tgl cetak
+  tagihan), dan `due_day` (jatuh tempo), semuanya nullable; `initial_balance`
+  wajib ≥ 0 (mulai dari 0).
+- Belanja dicatat sebagai transaksi `expense` ke akun credit →
+  `current_balance` menjadi negatif. Saldo negatif = tagihan yang belum dibayar:
+
+  ```text
+  utang   = max(0, -current_balance)
+  sisa    = credit_limit - utang (null bila limit tidak diatur)
+  ```
+
+- Membayar tagihan = transaksi `transfer` dari akun bank/cash ke akun credit
+  (saldo credit naik menuju 0); transfer tidak dihitung income/expense (§3).
+- Batas limit tidak diblokir di aplikasi (fase lanjut: statement/cicilan/
+  min-payment).
+- Pengingat jatuh tempo (`ExpiryReminderService::getCreditReminders`, tampil di
+  `/reminders` bagian "Tagihan Kartu" dan dashboard):
+
+  ```text
+  Syarat : akun aktif, type = credit, due_day terisi, current_balance < 0
+  days   = due_day bulan berjalan (diklaim ke hari terakhir bulan) - hari ini
+  ok (>7 hari) tidak ditampilkan; threshold global 7 hari
+  overdue : days < 0 (lewat tanggal jatuh tempo bulan ini, masih berutang)
+  ```

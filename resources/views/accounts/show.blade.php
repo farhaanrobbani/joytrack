@@ -59,6 +59,36 @@
                         {{ $account->current_balance > $account->initial_balance ? '+' : '' }}Rp {{ number_format($account->current_balance - $account->initial_balance, 0, ',', '.') }}
                     </p>
                 </div>
+
+                @if ($account->isCredit())
+                    <div class="p-4 bg-emerald-50 rounded-lg space-y-2">
+                        <p class="text-sm font-semibold text-emerald-700">{{ __('Detail Kartu Kredit / Paylater') }}</p>
+                        @if ($account->credit_limit !== null)
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">{{ __('Limit Kredit') }}</span>
+                                <span class="font-medium text-gray-900">Rp {{ number_format($account->credit_limit, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">{{ __('Terpakai') }}</span>
+                                <span class="font-medium text-red-600">Rp {{ number_format($account->used_credit, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">{{ __('Sisa Limit') }}</span>
+                                <span class="font-medium text-emerald-700">Rp {{ number_format($account->available_credit, 0, ',', '.') }}</span>
+                            </div>
+                        @else
+                            <p class="text-sm text-gray-600">{{ __('Limit belum diatur.') }}</p>
+                        @endif
+                        @if ($account->billing_day || $account->due_day)
+                            <div class="flex justify-between text-sm pt-1 border-t border-emerald-100">
+                                <span class="text-gray-600">{{ __('Cetak / Jatuh tempo') }}</span>
+                                <span class="font-medium text-gray-900">
+                                    {{ $account->billing_day ? __('tanggal') . ' ' . $account->billing_day : '-' }} / {{ $account->due_day ? __('tanggal') . ' ' . $account->due_day : '-' }}
+                                </span>
+                            </div>
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>
     </div>
