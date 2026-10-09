@@ -2,7 +2,7 @@
 
 ## Environment
 
-- PHP 8.3, MariaDB 10.11, Node 26 (Vite + Tailwind)
+- PHP 8.5, MariaDB 10.11, Node 26 (Vite + Tailwind 4)
 - App timezone `Asia/Jakarta` (`config/app.php:68`)
 - Locale `id` (`APP_LOCALE=id`)
 

@@ -4,7 +4,7 @@ Aplikasi web manajemen keuangan pribadi + kendaraan (BBM, servis, pengingat, lap
 
 ## Stack
 
-Laravel 13 · PHP 8.3 · MySQL/MariaDB · Livewire 4 · Tailwind 3 · Vite · dompdf · openspout
+Laravel 13 · PHP 8.5 · MySQL/MariaDB · Livewire 4 · Tailwind 4 · Vite · dompdf · openspout
 
 ## Fitur
 
