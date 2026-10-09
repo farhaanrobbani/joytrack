@@ -30,6 +30,8 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
+        <x-turnstile class="mt-6" />
+
         <div class="flex items-center justify-end mt-4">
             <x-primary-button type="submit">
                 {{ __('Reset Password') }}

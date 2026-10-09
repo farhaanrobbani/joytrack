@@ -34,6 +34,9 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @if (config('turnstile.site_key'))
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        @endif
     </head>
     <body class="font-sans text-gray-900 dark:text-gray-100 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-linear-to-br from-brand-50 via-slate-50 to-emerald-50 dark:from-gray-950 dark:via-gray-900 dark:to-brand-950 relative overflow-hidden">

@@ -8,7 +8,7 @@ Laravel 13 · PHP 8.5 · MySQL/MariaDB · Livewire 4 · Tailwind 4 · Vite · do
 
 ## Fitur
 
-Auth · Akun (bank/cash/ewallet) · Kategori · Transaksi (income/expense/transfer, saldo terpusat `TransactionService`, `DB::transaction`) · Vehicle · Fuel (km/L, biaya/km, integrasi transaksi) · Service (next date/km, integrasi transaksi) · Reminder (date + odometer) · Pengingat dokumen kadaluarsa & perpanjangan berlangganan (`/reminders`) · Perpanjangan berlangganan (siklus bulanan/3 bulan/tahunan, riwayat, expense opsional) · Dashboard (cashflow 6 bulan, kategori) · Reports (finance/vehicle/fuel/service) · Attachments (polymorphic) · Export Excel (xlsx) + CSV + PDF · Navigasi sidebar `wire:navigate` (pindah halaman instan tanpa reload penuh)
+Auth · Cloudflare Turnstile (form auth publik) · Akun (bank/cash/ewallet) · Kategori · Transaksi (income/expense/transfer, saldo terpusat `TransactionService`, `DB::transaction`) · Vehicle · Fuel (km/L, biaya/km, integrasi transaksi) · Service (next date/km, integrasi transaksi) · Reminder (date + odometer) · Pengingat dokumen kadaluarsa & perpanjangan berlangganan (`/reminders`) · Perpanjangan berlangganan (siklus bulanan/3 bulan/tahunan, riwayat, expense opsional) · Dashboard (cashflow 6 bulan, kategori) · Reports (finance/vehicle/fuel/service) · Attachments (polymorphic) · Export Excel (xlsx) + CSV + PDF · Navigasi sidebar `wire:navigate` (pindah halaman instan tanpa reload penuh)
 
 ## Quick Start
 
@@ -36,6 +36,6 @@ php artisan serve --host=0.0.0.0 --port=7041
 ## Tests
 
 ```bash
-php artisan test   # 259 tests
+php artisan test   # 268 tests
 npm run build
 ```
