@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class TransactionTest extends TestCase
@@ -18,6 +19,7 @@ class TransactionTest extends TestCase
         $user = User::factory()->create();
         $account = Account::factory()->create(['user_id' => $user->id, 'initial_balance' => 1000000, 'current_balance' => 1000000]);
         $category = Category::factory()->create(['user_id' => $user->id, 'type' => $catType]);
+
         return [$user, $account, $category];
     }
 
@@ -72,7 +74,8 @@ class TransactionTest extends TestCase
             'transaction_date' => now()->format('Y-m-d'),
         ])->assertRedirect(route('transactions.index'));
 
-        $src->refresh(); $dst->refresh();
+        $src->refresh();
+        $dst->refresh();
         $this->assertEquals(700000, (float) $src->current_balance);
         $this->assertEquals(800000, (float) $dst->current_balance);
         $this->assertDatabaseHas('transactions', ['type' => 'transfer', 'account_id' => $src->id, 'destination_account_id' => $dst->id]);
@@ -152,8 +155,12 @@ class TransactionTest extends TestCase
         Transaction::factory()->count(20)->create(['user_id' => $user->id, 'account_id' => $account->id, 'category_id' => $cat->id, 'type' => 'expense']);
         $response = $this->get(route('transactions.index'));
         $response->assertStatus(200);
-        // paginator exists - 15 per page
-        $this->assertTrue($response->viewData('transactions')->hasPages() || $response->viewData('transactions')->count() === 15);
+
+        // paginator exists - 15 per page: page 1 has a "next" control, page 2 a "previous" one
+        Livewire::test('transactions-index')
+            ->assertSeeHtml('nextPage')
+            ->call('nextPage')
+            ->assertSeeHtml('previousPage');
     }
 
     public function test_ownership_isolation(): void

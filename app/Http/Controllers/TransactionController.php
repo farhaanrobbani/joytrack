@@ -16,47 +16,9 @@ class TransactionController extends Controller
 {
     public function __construct(protected TransactionService $service) {}
 
-    public function index(Request $request): View
+    public function index(): View
     {
-        $query = Transaction::where('user_id', auth()->id())
-            ->with(['account', 'destinationAccount', 'category'])
-            ->orderByDesc('transaction_date')
-            ->orderByDesc('id');
-
-        // Filters PRD §20
-        if ($request->filled('type') && in_array($request->type, ['income', 'expense', 'transfer'])) {
-            $query->where('type', $request->type);
-        }
-        if ($request->filled('account_id')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('account_id', $request->account_id)
-                  ->orWhere('destination_account_id', $request->account_id);
-            });
-        }
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
-        if ($request->filled('date_from')) {
-            $query->where('transaction_date', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->where('transaction_date', '<=', $request->date_to);
-        }
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('description', 'like', "%{$search}%")
-                  ->orWhere('notes', 'like', "%{$search}%")
-                  ->orWhere('amount', 'like', "%{$search}%");
-            });
-        }
-
-        $transactions = $query->paginate(15)->withQueryString();
-
-        $accounts = Account::where('user_id', auth()->id())->orderBy('name')->get();
-        $categories = Category::where('user_id', auth()->id())->orderBy('name')->get();
-
-        return view('transactions.index', compact('transactions', 'accounts', 'categories'));
+        return view('transactions.index');
     }
 
     public function create(Request $request): View
