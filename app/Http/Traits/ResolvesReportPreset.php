@@ -18,7 +18,11 @@ trait ResolvesReportPreset
 
     protected function resolvePreset(Request $request): array
     {
-        $preset = $request->input('preset');
+        return static::resolvePresetValues($request->input('preset'), $request->input('start_date'), $request->input('end_date'));
+    }
+
+    public static function resolvePresetValues(?string $preset, ?string $startDate, ?string $endDate): array
+    {
         $tz = 'Asia/Jakarta';
         $now = Carbon::now($tz);
 
@@ -28,8 +32,8 @@ trait ResolvesReportPreset
             'month' => [$now->copy()->startOfMonth()->toDateString(), $now->copy()->endOfMonth()->toDateString()],
             'year' => [$now->copy()->startOfYear()->toDateString(), $now->copy()->endOfYear()->toDateString()],
             default => [
-                $request->input('start_date') ?? $now->copy()->startOfMonth()->toDateString(),
-                $request->input('end_date') ?? $now->copy()->endOfMonth()->toDateString(),
+                $startDate ?? $now->copy()->startOfMonth()->toDateString(),
+                $endDate ?? $now->copy()->endOfMonth()->toDateString(),
             ],
         };
     }
