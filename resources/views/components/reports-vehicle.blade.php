@@ -48,7 +48,7 @@ new class extends Component
 ?>
 
 <div>
-<div class="bg-white shadow sm:rounded-lg p-4 mb-6">
+<div class="bg-white shadow-sm sm:rounded-lg p-4 mb-6">
     <form method="GET" action="{{ route('reports.vehicle') }}" class="flex flex-wrap gap-3 items-end">
         <div>
             <x-input-label :value="__('Periode')" />
@@ -82,13 +82,13 @@ new class extends Component
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-    <div class="bg-white shadow sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Biaya BBM') }}</p><p class="mt-2 text-2xl font-semibold">Rp {{ number_format($fuelStats['total'],0,',','.') }}</p><p class="text-xs text-gray-400">{{ number_format($fuelStats['liters'],2,',','.') }} L • {{ $fuelStats['count'] }} {{ __('pengisian') }}</p></div>
-    <div class="bg-white shadow sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Biaya Servis') }}</p><p class="mt-2 text-2xl font-semibold">Rp {{ number_format($serviceStats['total'],0,',','.') }}</p><p class="text-xs text-gray-400">{{ $serviceStats['count'] }} {{ __('servis') }}</p></div>
-    <div class="bg-white shadow sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Biaya Kendaraan') }}</p><p class="mt-2 text-2xl font-bold text-emerald-600">Rp {{ number_format($totalVehicleCost,0,',','.') }}</p><p class="text-xs text-gray-400">@if($distance){{ number_format($distance,0,',','.') }} km • {{ $efficiency ? number_format($efficiency,2,',','.') . ' km/L' : '' }} @else - @endif</p></div>
+    <div class="bg-white shadow-sm sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Biaya BBM') }}</p><p class="mt-2 text-2xl font-semibold">Rp {{ number_format($fuelStats['total'],0,',','.') }}</p><p class="text-xs text-gray-400">{{ number_format($fuelStats['liters'],2,',','.') }} L • {{ $fuelStats['count'] }} {{ __('pengisian') }}</p></div>
+    <div class="bg-white shadow-sm sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Biaya Servis') }}</p><p class="mt-2 text-2xl font-semibold">Rp {{ number_format($serviceStats['total'],0,',','.') }}</p><p class="text-xs text-gray-400">{{ $serviceStats['count'] }} {{ __('servis') }}</p></div>
+    <div class="bg-white shadow-sm sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Biaya Kendaraan') }}</p><p class="mt-2 text-2xl font-bold text-emerald-600">Rp {{ number_format($totalVehicleCost,0,',','.') }}</p><p class="text-xs text-gray-400">@if($distance){{ number_format($distance,0,',','.') }} km • {{ $efficiency ? number_format($efficiency,2,',','.') . ' km/L' : '' }} @else - @endif</p></div>
 </div>
 
 @if($distance)
-    <div class="bg-white shadow sm:rounded-lg p-6 mb-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
         <h3 class="font-semibold text-gray-800 mb-2">{{ __('Statistik Perjalanan') }}</h3>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
             <div><p class="text-gray-500">{{ __('Jarak Tempuh') }}</p><p class="font-semibold">{{ number_format($distance,0,',','.') }} km</p></div>
@@ -99,7 +99,7 @@ new class extends Component
     </div>
 @endif
 
-<div class="bg-white shadow sm:rounded-lg p-6">
+<div class="bg-white shadow-sm sm:rounded-lg p-6">
     <h3 class="font-semibold text-gray-800 mb-4">{{ __('Biaya per Kendaraan') }}</h3>
     @if($perVehicle->isEmpty())
         <p class="text-sm text-gray-400">{{ __('Belum ada kendaraan') }}</p>

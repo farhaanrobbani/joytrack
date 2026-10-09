@@ -19,14 +19,14 @@ new class extends Component
 
 <div>
     @if($vehicles->isEmpty())
-        <div class="bg-white shadow sm:rounded-lg p-8 text-center">
+        <div class="bg-white shadow-sm sm:rounded-lg p-8 text-center">
             <p class="text-gray-500">{{ __('Belum ada kendaraan') }}</p>
             <p class="mt-1 text-sm text-gray-400">{{ __('Tambahkan kendaraan untuk mencatat bahan bakar dan servis.') }}</p>
         </div>
     @else
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($vehicles as $v)
-                <div wire:key="vehicle-{{ $v->id }}" class="bg-white shadow sm:rounded-lg p-6">
+                <div wire:key="vehicle-{{ $v->id }}" class="bg-white shadow-sm sm:rounded-lg p-6">
                     <div class="flex items-start justify-between mb-3">
                         <div>
                             <h3 class="font-semibold text-gray-900">{{ $v->name }}</h3>

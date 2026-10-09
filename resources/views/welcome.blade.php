@@ -34,7 +34,7 @@
 </head>
 <body class="font-sans antialiased bg-slate-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
     <!-- Nav -->
-    <header class="fixed top-0 left-0 right-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800">
+    <header class="fixed top-0 left-0 right-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-2">
                 <img src="{{ $iconUrl }}" alt="{{ $siteName }}" class="w-8 h-8 rounded-xl object-cover">
@@ -86,7 +86,7 @@
                     </div>
                 </div>
                 <div class="relative">
-                    <div class="absolute -inset-4 bg-gradient-to-br from-brand-100 to-emerald-50 dark:from-brand-900/20 dark:to-gray-800 rounded-3xl blur-2xl"></div>
+                    <div class="absolute -inset-4 bg-linear-to-br from-brand-100 to-emerald-50 dark:from-brand-900/20 dark:to-gray-800 rounded-3xl blur-2xl"></div>
                     <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-soft-lg border border-gray-100 dark:border-gray-700 p-4">
                         <div class="flex items-center gap-2 mb-4">
                             <span class="w-3 h-3 rounded-full bg-red-400"></span>
@@ -100,7 +100,7 @@
                             <div class="rounded-xl bg-red-50 dark:bg-red-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Pengeluaran') }}</p><p class="font-bold text-red-600">Rp 2.300.000</p></div>
                             <div class="rounded-xl bg-brand-50 dark:bg-brand-900/30 p-4"><p class="text-xs text-gray-500">{{ __('Kendaraan') }}</p><p class="font-bold">Vario 45.200 km</p></div>
                         </div>
-                        <div class="mt-4 h-20 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-400 opacity-90"></div>
+                        <div class="mt-4 h-20 rounded-xl bg-linear-to-r from-brand-500 to-emerald-400 opacity-90"></div>
                     </div>
                 </div>
             </div>

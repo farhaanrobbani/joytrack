@@ -9,7 +9,7 @@
         </div>
     </x-slot>
 
-    <div class="max-w-2xl bg-white shadow sm:rounded-lg p-6">
+    <div class="max-w-2xl bg-white shadow-sm sm:rounded-lg p-6">
         <dl class="space-y-4">
             <div class="flex justify-between"><dt class="text-sm text-gray-500">{{ __('Jenis') }}</dt><dd class="text-sm font-medium">
                 <span class="px-2 py-1 rounded-full text-xs {{ $transaction->type==='income'?'bg-emerald-100 text-emerald-700':($transaction->type==='expense'?'bg-red-100 text-red-700':'bg-gray-100 text-gray-700') }}">{{ $transaction->type==='income'?__('Pemasukan'):($transaction->type==='expense'?__('Pengeluaran'):__('Transfer')) }}</span>

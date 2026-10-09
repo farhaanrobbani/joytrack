@@ -36,7 +36,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 dark:text-gray-100 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-brand-50 via-slate-50 to-emerald-50 dark:from-gray-950 dark:via-gray-900 dark:to-brand-950 relative overflow-hidden">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-linear-to-br from-brand-50 via-slate-50 to-emerald-50 dark:from-gray-950 dark:via-gray-900 dark:to-brand-950 relative overflow-hidden">
             <!-- Decorative blobs -->
             <div class="absolute -top-24 -left-24 w-96 h-96 bg-brand-100 dark:bg-brand-900/20 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
             <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-emerald-100 dark:bg-emerald-900/20 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
@@ -47,7 +47,7 @@
                     <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">{{ $siteNameGuest }}</span>
                 </a>
 
-                <div class="w-full sm:max-w-md mt-6 px-6 py-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur rounded-2xl shadow-soft-lg border border-white/60 dark:border-gray-800">
+                <div class="w-full sm:max-w-md mt-6 px-6 py-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl shadow-soft-lg border border-white/60 dark:border-gray-800">
                     {{ $slot }}
                 </div>
 

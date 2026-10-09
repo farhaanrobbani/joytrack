@@ -85,13 +85,13 @@ new class extends Component
 
 <div>
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white shadow sm:rounded-lg p-4"><p class="text-xs text-gray-500">{{ __('Total Liter') }}</p><p class="text-xl font-bold">{{ number_format($stats['totalLiters'], 2, ',', '.') }} L</p></div>
-        <div class="bg-white shadow sm:rounded-lg p-4"><p class="text-xs text-gray-500">{{ __('Total Biaya') }}</p><p class="text-xl font-bold">Rp {{ number_format($stats['totalCost'], 0, ',', '.') }}</p></div>
-        <div class="bg-white shadow sm:rounded-lg p-4"><p class="text-xs text-gray-500">{{ __('Rata-rata Harga/L') }}</p><p class="text-xl font-bold">Rp {{ number_format($stats['avgPrice'], 0, ',', '.') }}</p></div>
-        <div class="bg-white shadow sm:rounded-lg p-4"><p class="text-xs text-gray-500">{{ __('Konsumsi') }}</p><p class="text-xl font-bold">{{ $stats['efficiency'] ? number_format($stats['efficiency'], 2, ',', '.') . ' km/L' : '-' }}</p><p class="text-xs text-gray-400">{{ $stats['costPerKm'] ? 'Rp ' . number_format($stats['costPerKm'], 0, ',', '.') . '/km' : '' }}</p></div>
+        <div class="bg-white shadow-sm sm:rounded-lg p-4"><p class="text-xs text-gray-500">{{ __('Total Liter') }}</p><p class="text-xl font-bold">{{ number_format($stats['totalLiters'], 2, ',', '.') }} L</p></div>
+        <div class="bg-white shadow-sm sm:rounded-lg p-4"><p class="text-xs text-gray-500">{{ __('Total Biaya') }}</p><p class="text-xl font-bold">Rp {{ number_format($stats['totalCost'], 0, ',', '.') }}</p></div>
+        <div class="bg-white shadow-sm sm:rounded-lg p-4"><p class="text-xs text-gray-500">{{ __('Rata-rata Harga/L') }}</p><p class="text-xl font-bold">Rp {{ number_format($stats['avgPrice'], 0, ',', '.') }}</p></div>
+        <div class="bg-white shadow-sm sm:rounded-lg p-4"><p class="text-xs text-gray-500">{{ __('Konsumsi') }}</p><p class="text-xl font-bold">{{ $stats['efficiency'] ? number_format($stats['efficiency'], 2, ',', '.') . ' km/L' : '-' }}</p><p class="text-xs text-gray-400">{{ $stats['costPerKm'] ? 'Rp ' . number_format($stats['costPerKm'], 0, ',', '.') . '/km' : '' }}</p></div>
     </div>
 
-    <div class="bg-white shadow sm:rounded-lg p-4 mb-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-4 mb-6">
         <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
             <select wire:model.live="vehicleId" class="border-gray-300 rounded-lg text-sm">
                 <option value="">{{ __('Semua Kendaraan') }}</option>
@@ -106,7 +106,7 @@ new class extends Component
         </div>
     </div>
 
-    <div class="bg-white shadow sm:rounded-lg overflow-hidden" wire:loading.class="opacity-50">
+    <div class="bg-white shadow-sm sm:rounded-lg overflow-hidden" wire:loading.class="opacity-50">
         @if($records->isEmpty())
             <div class="p-8 text-center text-gray-500">{{ __('Belum ada catatan BBM') }}</div>
         @else

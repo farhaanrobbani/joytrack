@@ -25,7 +25,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
-            <div class="bg-white shadow sm:rounded-lg p-6">
+            <div class="bg-white shadow-sm sm:rounded-lg p-6">
                 <h3 class="font-semibold text-gray-900 mb-4">{{ $vehicle->name }}</h3>
                 <p class="text-sm text-gray-500 mb-1">{{ $vehicle->license_plate ?? '-' }} @if($vehicle->brand) • {{ $vehicle->brand }} {{ $vehicle->model }} @endif</p>
                 <p class="text-2xl font-bold text-gray-900">{{ number_format($vehicle->current_odometer,0,',','.') }} km</p>
@@ -42,7 +42,7 @@
         </div>
 
         <div class="space-y-6">
-            <div class="bg-white shadow sm:rounded-lg p-6">
+            <div class="bg-white shadow-sm sm:rounded-lg p-6">
                 <h3 class="font-semibold text-gray-800 mb-3">{{ __('Ringkasan Biaya') }}</h3>
                 <div class="space-y-3 text-sm">
                     <div class="flex justify-between"><span class="text-gray-500">{{ __('BBM') }}</span><span class="font-medium">Rp {{ number_format($stats['total_fuel_cost'],0,',','.') }}</span></div>
@@ -53,7 +53,7 @@
             </div>
 
             @if(isset($recentFuels) && $recentFuels->isNotEmpty())
-                <div class="bg-white shadow sm:rounded-lg p-6">
+                <div class="bg-white shadow-sm sm:rounded-lg p-6">
                     <h3 class="font-semibold text-gray-800 mb-3">{{ __('Riwayat BBM Terbaru') }}</h3>
                     <ul class="divide-y divide-gray-100 text-sm">
                         @foreach($recentFuels as $f)
@@ -73,7 +73,7 @@
             @endif
 
             @if(isset($recentServices) && $recentServices->isNotEmpty())
-                <div class="bg-white shadow sm:rounded-lg p-6">
+                <div class="bg-white shadow-sm sm:rounded-lg p-6">
                     <h3 class="font-semibold text-gray-800 mb-3">{{ __('Riwayat Servis Terbaru') }}</h3>
                     <ul class="divide-y divide-gray-100 text-sm">
                         @foreach($recentServices as $s)

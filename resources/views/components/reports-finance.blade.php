@@ -48,7 +48,7 @@ new class extends Component
 ?>
 
 <div>
-<div class="bg-white shadow sm:rounded-lg p-4 mb-6">
+<div class="bg-white shadow-sm sm:rounded-lg p-4 mb-6">
     <form method="GET" action="{{ route('reports.finance') }}" class="flex flex-wrap gap-3 items-end">
         <div>
             <x-input-label :value="__('Periode')" />
@@ -75,14 +75,14 @@ new class extends Component
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-    <div class="bg-white shadow sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Pemasukan') }}</p><p class="mt-2 text-2xl font-semibold text-emerald-600">Rp {{ number_format($totalIncome,0,',','.') }}</p></div>
-    <div class="bg-white shadow sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Pengeluaran') }}</p><p class="mt-2 text-2xl font-semibold text-red-600">Rp {{ number_format($totalExpense,0,',','.') }}</p></div>
-    <div class="bg-white shadow sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Net Cashflow') }}</p><p class="mt-2 text-2xl font-semibold {{ $netCashflow >=0 ? 'text-emerald-600' : 'text-red-600' }}">Rp {{ number_format($netCashflow,0,',','.') }}</p></div>
-    <div class="bg-white shadow sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Saldo (Aktif)') }}</p><p class="mt-2 text-2xl font-semibold">Rp {{ number_format($totalBalance,0,',','.') }}</p></div>
+    <div class="bg-white shadow-sm sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Pemasukan') }}</p><p class="mt-2 text-2xl font-semibold text-emerald-600">Rp {{ number_format($totalIncome,0,',','.') }}</p></div>
+    <div class="bg-white shadow-sm sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Pengeluaran') }}</p><p class="mt-2 text-2xl font-semibold text-red-600">Rp {{ number_format($totalExpense,0,',','.') }}</p></div>
+    <div class="bg-white shadow-sm sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Net Cashflow') }}</p><p class="mt-2 text-2xl font-semibold {{ $netCashflow >=0 ? 'text-emerald-600' : 'text-red-600' }}">Rp {{ number_format($netCashflow,0,',','.') }}</p></div>
+    <div class="bg-white shadow-sm sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Saldo (Aktif)') }}</p><p class="mt-2 text-2xl font-semibold">Rp {{ number_format($totalBalance,0,',','.') }}</p></div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-    <div class="bg-white shadow sm:rounded-lg p-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6">
         <h3 class="font-semibold text-gray-800 mb-4">{{ __('Cashflow') }}</h3>
         @if(empty($monthly) || (array_sum(array_column($monthly,'income'))==0 && array_sum(array_column($monthly,'expense'))==0))
             <p class="text-sm text-gray-400 py-8 text-center">{{ __('Belum ada data pada periode ini') }}</p>
@@ -101,7 +101,7 @@ new class extends Component
         @endif
     </div>
 
-    <div class="bg-white shadow sm:rounded-lg p-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6">
         <h3 class="font-semibold text-gray-800 mb-4">{{ __('Pengeluaran per Kategori') }}</h3>
         @if($expenseByCategory->isEmpty())
             <p class="text-sm text-gray-400 py-8 text-center">{{ __('Belum ada pengeluaran') }}</p>
@@ -117,7 +117,7 @@ new class extends Component
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white shadow sm:rounded-lg p-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6">
         <h3 class="font-semibold text-gray-800 mb-3">{{ __('Rincian Pemasukan') }} <span class="text-sm font-normal text-gray-500">({{ $incomeTransactions->count() }})</span></h3>
         @if($incomeTransactions->isEmpty())
             <p class="text-sm text-gray-400">{{ __('Tidak ada pemasukan pada periode ini') }}</p>
@@ -129,7 +129,7 @@ new class extends Component
             </ul>
         @endif
     </div>
-    <div class="bg-white shadow sm:rounded-lg p-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6">
         <h3 class="font-semibold text-gray-800 mb-3">{{ __('Rincian Pengeluaran') }} <span class="text-sm font-normal text-gray-500">({{ $expenseTransactions->count() }})</span></h3>
         @if($expenseTransactions->isEmpty())
             <p class="text-sm text-gray-400">{{ __('Tidak ada pengeluaran pada periode ini') }}</p>

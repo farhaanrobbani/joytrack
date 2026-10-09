@@ -47,15 +47,15 @@ new class extends Component
                 @if($settings['site_icon'])
                     <div class="mt-2 flex items-center gap-3">
                         <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($settings['site_icon']) }}" alt="Icon" class="w-16 h-16 object-cover rounded-xl border">
-                        <img src="/icons/icon-192x192.png" alt="192" class="w-12 h-12 rounded border">
+                        <img src="/icons/icon-192x192.png" alt="192" class="w-12 h-12 rounded-sm border">
                         <label class="flex items-center gap-2 text-sm">
-                            <input type="checkbox" name="remove_site_icon" value="1" class="rounded border-gray-300 text-brand-600">
+                            <input type="checkbox" name="remove_site_icon" value="1" class="rounded-sm border-gray-300 text-brand-600">
                             <span>{{ __('Hapus icon') }}</span>
                         </label>
                     </div>
                 @else
                     <div class="mt-2 flex gap-2">
-                        <img src="/icons/icon-192x192.png" alt="icon" class="w-12 h-12 rounded border">
+                        <img src="/icons/icon-192x192.png" alt="icon" class="w-12 h-12 rounded-sm border">
                         <span class="text-xs text-gray-400">{{ __('Icon saat ini: /icons/icon-*.png') }}</span>
                     </div>
                 @endif

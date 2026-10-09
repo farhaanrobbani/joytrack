@@ -61,7 +61,7 @@ new class extends Component
 ?>
 
 <div>
-    <div class="bg-white shadow sm:rounded-lg p-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6">
         <form wire:submit="save">
             <div class="space-y-6">
                 <div>
@@ -83,7 +83,7 @@ new class extends Component
                     <x-input-error :messages="$errors->get('icon')" class="mt-2" />
                 </div>
                 <div class="flex items-center">
-                    <input id="is_active" wire:model="is_active" type="checkbox" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
+                    <input id="is_active" wire:model="is_active" type="checkbox" class="rounded-sm border-gray-300 text-emerald-600 focus:ring-emerald-500" />
                     <x-input-label for="is_active" :value="__('Aktif')" class="ms-2" />
                 </div>
                 <div class="flex gap-3">

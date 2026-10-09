@@ -8,7 +8,7 @@
             </div>
         </div>
     </x-slot>
-    <div class="bg-white shadow sm:rounded-lg p-6 max-w-2xl">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6 max-w-2xl">
         <dl class="space-y-3">
             <div><dt class="text-sm text-gray-500">{{ __('Nama') }}</dt><dd class="font-medium text-gray-900">{{ $category->name }}</dd></div>
             <div><dt class="text-sm text-gray-500">{{ __('Jenis') }}</dt><dd class="font-medium text-gray-900">{{ $category->type_label }}</dd></div>

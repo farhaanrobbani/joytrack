@@ -20,13 +20,13 @@ new class extends Component
 
 <div>
     @if(($categories['income'] ?? collect())->isEmpty() && ($categories['expense'] ?? collect())->isEmpty())
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+        <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg p-6">
             <p class="text-gray-500">{{ __('Belum ada kategori. Buat kategori untuk mengelompokkan transaksi.') }}</p>
         </div>
     @else
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             @foreach (['income' => __('Pemasukan'), 'expense' => __('Pengeluaran')] as $type => $label)
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg p-6">
                     <h3 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full {{ $type === 'income' ? 'bg-emerald-500' : 'bg-red-500' }}"></span>
                         {{ $label }}

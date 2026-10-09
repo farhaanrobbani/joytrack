@@ -48,7 +48,7 @@
         </script>
         <div x-data="{ sidebarOpen: false }" class="min-h-screen">
             <!-- Topbar -->
-            <header class="fixed top-0 left-0 right-0 z-30 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800">
+            <header class="fixed top-0 left-0 right-0 z-30 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
                 <div class="flex items-center justify-between h-full px-4 sm:px-6">
                     <div class="flex items-center gap-3">
                         <!-- Hamburger (mobile) -->
@@ -81,7 +81,7 @@
                                 </x-dropdown-link>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="block w-full text-start px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">
+                                    <button type="submit" class="block w-full text-start px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-hidden focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">
                                         {{ __('Keluar') }}
                                     </button>
                                 </form>

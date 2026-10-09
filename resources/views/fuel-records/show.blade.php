@@ -10,7 +10,7 @@
     </x-slot>
 
     <div class="max-w-3xl mx-auto space-y-6">
-        <div class="bg-white shadow sm:rounded-lg p-6">
+        <div class="bg-white shadow-sm sm:rounded-lg p-6">
             <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div><dt class="text-gray-500">{{ __('Kendaraan') }}</dt><dd class="font-medium">{{ $fuelRecord->vehicle->name }} ({{ $fuelRecord->vehicle->license_plate }})</dd></div>
                 <div><dt class="text-gray-500">{{ __('Tanggal') }}</dt><dd class="font-medium">{{ $fuelRecord->fuel_date->format('d M Y') }}</dd></div>

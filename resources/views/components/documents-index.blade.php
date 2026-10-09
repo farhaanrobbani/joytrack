@@ -29,7 +29,7 @@ new class extends Component
 ?>
 
 <div>
-    <div class="bg-white shadow sm:rounded-lg overflow-hidden" wire:loading.class="opacity-50">
+    <div class="bg-white shadow-sm sm:rounded-lg overflow-hidden" wire:loading.class="opacity-50">
         @if($documents->isEmpty())
             <div class="p-8 text-center text-gray-500">{{ __('Belum ada dokumen') }}</div>
         @else

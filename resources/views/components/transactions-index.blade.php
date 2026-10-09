@@ -86,7 +86,7 @@ new class extends Component
 ?>
 
 <div>
-    <div class="bg-white shadow sm:rounded-lg p-4 mb-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-4 mb-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
             <input type="text" wire:model.live.debounce.400ms="search" placeholder="{{ __('Cari deskripsi/catatan') }}" class="border-gray-300 rounded-lg text-sm focus:border-emerald-500 focus:ring-emerald-500">
             <select wire:model.live="type" class="border-gray-300 rounded-lg text-sm focus:border-emerald-500 focus:ring-emerald-500">
@@ -115,7 +115,7 @@ new class extends Component
         </div>
     </div>
 
-    <div class="bg-white shadow sm:rounded-lg overflow-hidden" wire:loading.class="opacity-50">
+    <div class="bg-white shadow-sm sm:rounded-lg overflow-hidden" wire:loading.class="opacity-50">
         @if($transactions->isEmpty())
             <div class="p-8 text-center">
                 <p class="text-gray-500">{{ __('Belum ada transaksi') }}</p>

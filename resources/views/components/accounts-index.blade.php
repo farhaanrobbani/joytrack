@@ -19,13 +19,13 @@ new class extends Component
 
 <div class="space-y-6">
     @if ($accounts->isEmpty())
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+        <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg p-6">
             <p class="text-gray-500">{{ __('Belum ada akun. Buat akun baru untuk mulai mencatat transaksi Anda.') }}</p>
         </div>
     @else
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach ($accounts as $account)
-                <div wire:key="account-{{ $account->id }}" class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                <div wire:key="account-{{ $account->id }}" class="bg-white overflow-hidden shadow-xs sm:rounded-lg p-6">
                     <div class="flex items-start justify-between mb-4">
                         <div>
                             <h3 class="font-semibold text-gray-900">{{ $account->name }}</h3>
@@ -46,13 +46,13 @@ new class extends Component
                     @endif
 
                     <div class="flex gap-2">
-                        <a href="{{ route('accounts.edit', $account) }}" class="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded text-center text-sm font-medium hover:bg-blue-100 transition-colors">
+                        <a href="{{ route('accounts.edit', $account) }}" class="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-sm text-center text-sm font-medium hover:bg-blue-100 transition-colors">
                             {{ __('Edit') }}
                         </a>
                         <form action="{{ route('accounts.destroy', $account) }}" method="POST" class="flex-1" onsubmit="return confirm('{{ __('Yakin hapus akun ini?') }}')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="w-full px-3 py-2 bg-red-50 text-red-600 rounded text-sm font-medium hover:bg-red-100 transition-colors">
+                            <button type="submit" class="w-full px-3 py-2 bg-red-50 text-red-600 rounded-sm text-sm font-medium hover:bg-red-100 transition-colors">
                                 {{ __('Hapus') }}
                             </button>
                         </form>

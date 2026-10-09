@@ -95,7 +95,7 @@ new class extends Component
 ?>
 
 <div>
-    <div class="bg-white shadow sm:rounded-lg p-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6">
         <form wire:submit="save">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>

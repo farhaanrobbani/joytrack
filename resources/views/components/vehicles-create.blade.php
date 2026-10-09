@@ -66,7 +66,7 @@ new class extends Component
 ?>
 
 <div>
-    <div class="bg-white shadow sm:rounded-lg p-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6">
         <form wire:submit="save">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="sm:col-span-2">
@@ -131,7 +131,7 @@ new class extends Component
                     <textarea id="notes" wire:model="notes" rows="3" class="mt-1 block w-full border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"></textarea>
                 </div>
                 <div class="sm:col-span-2 flex items-center">
-                    <input id="is_active" wire:model="is_active" type="checkbox" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
+                    <input id="is_active" wire:model="is_active" type="checkbox" class="rounded-sm border-gray-300 text-emerald-600 focus:ring-emerald-500" />
                     <x-input-label for="is_active" :value="__('Aktif')" class="ms-2" />
                 </div>
             </div>

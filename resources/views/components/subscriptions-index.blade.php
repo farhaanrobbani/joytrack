@@ -104,7 +104,7 @@ new class extends Component
 ?>
 
 <div>
-    <div class="bg-white shadow sm:rounded-lg overflow-hidden" wire:loading.class="opacity-50">
+    <div class="bg-white shadow-sm sm:rounded-lg overflow-hidden" wire:loading.class="opacity-50">
         @if($subscriptions->isEmpty())
             <div class="p-8 text-center text-gray-500">{{ __('Belum ada berlangganan') }}</div>
         @else
@@ -177,7 +177,7 @@ new class extends Component
 
                     <div class="space-y-4">
                         <div class="flex items-center">
-                            <input id="renew_create_transaction" wire:model="renewCreateTransaction" type="checkbox" class="rounded border-gray-300 text-emerald-600 shadow-sm focus:ring-emerald-500" />
+                            <input id="renew_create_transaction" wire:model="renewCreateTransaction" type="checkbox" class="rounded-sm border-gray-300 text-emerald-600 shadow-xs focus:ring-emerald-500" />
                             <x-input-label for="renew_create_transaction" :value="__('Catat sebagai pengeluaran')" class="ms-2" />
                         </div>
 

@@ -75,7 +75,7 @@ new class extends Component
 ?>
 
 <div>
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+    <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg p-6">
         <form wire:submit="save">
             <div class="space-y-6">
                 <div>
@@ -119,13 +119,13 @@ new class extends Component
                 </div>
 
                 <div class="flex items-center">
-                    <input id="is_active" wire:model="is_active" type="checkbox" class="rounded border-gray-300 text-emerald-600 shadow-sm focus:ring-emerald-500" />
+                    <input id="is_active" wire:model="is_active" type="checkbox" class="rounded-sm border-gray-300 text-emerald-600 shadow-xs focus:ring-emerald-500" />
                     <x-input-label for="is_active" :value="__('Aktif')" class="ms-2" />
                 </div>
                 <x-input-error :messages="$errors->get('is_active')" class="mt-2" />
 
                 <div class="flex gap-3">
-                    <a href="{{ route('subscriptions.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 border border-transparent rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                    <a href="{{ route('subscriptions.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 border border-transparent rounded-lg font-semibold text-sm text-gray-700 hover:bg-gray-200 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         {{ __('Batal') }}
                     </a>
                     <x-primary-button type="submit" class="ms-auto">
@@ -136,7 +136,7 @@ new class extends Component
         </form>
     </div>
 
-    <div class="bg-white shadow sm:rounded-lg p-6 mt-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6 mt-6">
         <h3 class="font-semibold text-gray-900 mb-4">{{ __('Riwayat Perpanjangan') }}</h3>
         @if($renewals->isEmpty())
             <p class="text-sm text-gray-500">{{ __('Belum ada riwayat perpanjangan.') }}</p>

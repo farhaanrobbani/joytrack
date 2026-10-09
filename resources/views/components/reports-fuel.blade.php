@@ -48,7 +48,7 @@ new class extends Component
 ?>
 
 <div>
-<div class="bg-white shadow sm:rounded-lg p-4 mb-6">
+<div class="bg-white shadow-sm sm:rounded-lg p-4 mb-6">
     <form method="GET" action="{{ route('reports.fuel') }}" class="flex flex-wrap gap-3 items-end">
         <div>
             <x-input-label :value="__('Periode')" />
@@ -82,13 +82,13 @@ new class extends Component
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-    <div class="bg-white shadow sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Biaya') }}</p><p class="mt-2 text-2xl font-semibold text-emerald-600">Rp {{ number_format($stats['total'],0,',','.') }}</p></div>
-    <div class="bg-white shadow sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Liter') }}</p><p class="mt-2 text-2xl font-semibold">{{ number_format($stats['liters'],2,',','.') }} L</p></div>
-    <div class="bg-white shadow sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Jumlah Pengisian') }}</p><p class="mt-2 text-2xl font-semibold">{{ $stats['count'] }}</p></div>
-    <div class="bg-white shadow sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Rata-rata Harga/L') }}</p><p class="mt-2 text-2xl font-semibold">Rp {{ number_format($stats['avg_price'],0,',','.') }}</p><p class="text-xs text-gray-400">{{ __('Rata-rata per isian: :val', ['val' => 'Rp ' . number_format($stats['avg_cost'],0,',','.')]) }}</p></div>
+    <div class="bg-white shadow-sm sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Biaya') }}</p><p class="mt-2 text-2xl font-semibold text-emerald-600">Rp {{ number_format($stats['total'],0,',','.') }}</p></div>
+    <div class="bg-white shadow-sm sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Total Liter') }}</p><p class="mt-2 text-2xl font-semibold">{{ number_format($stats['liters'],2,',','.') }} L</p></div>
+    <div class="bg-white shadow-sm sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Jumlah Pengisian') }}</p><p class="mt-2 text-2xl font-semibold">{{ $stats['count'] }}</p></div>
+    <div class="bg-white shadow-sm sm:rounded-lg p-6"><p class="text-sm text-gray-500">{{ __('Rata-rata Harga/L') }}</p><p class="mt-2 text-2xl font-semibold">Rp {{ number_format($stats['avg_price'],0,',','.') }}</p><p class="text-xs text-gray-400">{{ __('Rata-rata per isian: :val', ['val' => 'Rp ' . number_format($stats['avg_cost'],0,',','.')]) }}</p></div>
 </div>
 
-<div class="bg-white shadow sm:rounded-lg p-6 mb-6">
+<div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6">
     <h3 class="font-semibold text-gray-800 mb-3">{{ __('Biaya BBM per Bulan') }}</h3>
     <canvas id="fuelMonthly" class="max-h-72"></canvas>
     <div class="overflow-x-auto mt-4">
@@ -114,7 +114,7 @@ new class extends Component
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-    <div class="bg-white shadow sm:rounded-lg p-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6">
         <h3 class="font-semibold text-gray-800 mb-4">{{ __('Per Kendaraan') }}</h3>
         @if($perVehicle->isEmpty())
             <p class="text-sm text-gray-400">{{ __('Belum ada data BBM pada periode ini') }}</p>
@@ -144,7 +144,7 @@ new class extends Component
         @endif
     </div>
 
-    <div class="bg-white shadow sm:rounded-lg p-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6">
         <h3 class="font-semibold text-gray-800 mb-4">{{ __('Riwayat Pengisian') }} <span class="text-sm font-normal text-gray-500">({{ $records->count() }})</span></h3>
         @if($records->isEmpty())
             <p class="text-sm text-gray-400">{{ __('Tidak ada pengisian BBM pada periode ini') }}</p>

@@ -90,7 +90,7 @@ new class extends Component
 ?>
 
 <div>
-    <div class="bg-white shadow sm:rounded-lg p-6">
+    <div class="bg-white shadow-sm sm:rounded-lg p-6">
         <form wire:submit="save">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
@@ -144,7 +144,7 @@ new class extends Component
                     <x-input-error :messages="$errors->get('account_id')" class="mt-2" />
                 </div>
                 <div class="flex items-center">
-                    <input id="create_transaction" wire:model="create_transaction" type="checkbox" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
+                    <input id="create_transaction" wire:model="create_transaction" type="checkbox" class="rounded-sm border-gray-300 text-emerald-600 focus:ring-emerald-500" />
                     <x-input-label for="create_transaction" :value="__('Buat transaksi pengeluaran')" class="ms-2" />
                 </div>
                 <div class="sm:col-span-2">

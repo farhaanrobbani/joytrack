@@ -4,7 +4,7 @@
     $attachments = $model->attachments ?? collect();
 @endphp
 
-<div class="bg-white shadow sm:rounded-lg p-6 mt-6">
+<div class="bg-white shadow-sm sm:rounded-lg p-6 mt-6">
     <h3 class="font-semibold text-gray-800 mb-3">{{ __('Lampiran') }} <span class="text-sm font-normal text-gray-500">({{ $attachments->count() }})</span></h3>
 
     @if($attachments->isNotEmpty())
@@ -13,9 +13,9 @@
                 <li class="flex items-center justify-between py-3">
                     <div class="flex items-center gap-3">
                         @if($att->isImage())
-                            <img src="{{ $att->url() }}" alt="{{ $att->file_name }}" class="w-12 h-12 object-cover rounded border">
+                            <img src="{{ $att->url() }}" alt="{{ $att->file_name }}" class="w-12 h-12 object-cover rounded-sm border">
                         @else
-                            <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded border text-xs text-gray-500">{{ pathinfo($att->file_name, PATHINFO_EXTENSION) }}</div>
+                            <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-sm border text-xs text-gray-500">{{ pathinfo($att->file_name, PATHINFO_EXTENSION) }}</div>
                         @endif
                         <div>
                             <p class="text-sm font-medium text-gray-900 truncate max-w-[200px]">{{ $att->file_name }}</p>

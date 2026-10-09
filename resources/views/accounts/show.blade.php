@@ -16,7 +16,7 @@
     </x-slot>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+        <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg p-6">
             <h3 class="font-semibold text-lg text-gray-900 mb-4">{{ __('Informasi Akun') }}</h3>
             <div class="space-y-3">
                 <div>
@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+        <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg p-6">
             <h3 class="font-semibold text-lg text-gray-900 mb-4">{{ __('Saldo') }}</h3>
             <div class="space-y-4">
                 <div class="p-4 bg-emerald-50 rounded-lg">

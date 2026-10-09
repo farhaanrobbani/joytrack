@@ -6,19 +6,19 @@
     </x-slot>
 
     <div class="space-y-6">
-        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+        <div class="p-4 sm:p-8 bg-white shadow-sm sm:rounded-lg">
             <div class="max-w-xl">
                 <livewire:profile-update-information />
             </div>
         </div>
 
-        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+        <div class="p-4 sm:p-8 bg-white shadow-sm sm:rounded-lg">
             <div class="max-w-xl">
                 <livewire:profile-update-password />
             </div>
         </div>
 
-        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+        <div class="p-4 sm:p-8 bg-white shadow-sm sm:rounded-lg">
             <div class="max-w-xl">
                 <livewire:profile-delete-user />
             </div>
