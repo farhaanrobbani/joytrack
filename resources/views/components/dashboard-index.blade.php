@@ -73,8 +73,9 @@ new class extends Component
         </div>
     @endif
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <x-stat-card :label="__('Total Saldo')" :value="'Rp ' . number_format($totalBalance, 0, ',', '.')" icon="wallet" color="brand" />
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <x-stat-card :label="__('Saldo Aset')" :value="'Rp ' . number_format($assetBalance, 0, ',', '.')" icon="wallet" color="brand" />
+        <x-stat-card :label="__('Utang Kartu')" :value="'Rp ' . number_format($creditDebt, 0, ',', '.')" icon="credit-card" color="red" />
         <x-stat-card :label="__('Pemasukan Bulan Ini')" :value="'Rp ' . number_format($monthlyIncome, 0, ',', '.')" icon="arrow-trending-up" color="emerald" />
         <x-stat-card :label="__('Pengeluaran Bulan Ini')" :value="'Rp ' . number_format($monthlyExpense, 0, ',', '.')" icon="arrow-trending-down" color="red" />
         <x-stat-card :label="__('Selisih')" :value="'Rp ' . number_format($netCashflow, 0, ',', '.')" icon="scale" color="{{ $netCashflow >=0 ? 'emerald' : 'red' }}" />

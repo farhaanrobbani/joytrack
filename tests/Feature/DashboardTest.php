@@ -44,6 +44,22 @@ class DashboardTest extends TestCase
         $this->assertNotNull($component->viewData('expenseByCategory'));
     }
 
+    public function test_dashboard_splits_asset_balance_and_credit_debt(): void
+    {
+        $user = User::factory()->create();
+        Account::factory()->create(['user_id' => $user->id, 'type' => 'bank', 'initial_balance' => 1000000, 'current_balance' => 1000000]);
+        Account::factory()->create(['user_id' => $user->id, 'type' => 'cash', 'initial_balance' => 200000, 'current_balance' => 200000]);
+        Account::factory()->create(['user_id' => $user->id, 'type' => 'credit', 'initial_balance' => 0, 'current_balance' => -300000]);
+
+        $this->actingAs($user);
+
+        $component = Livewire::test('dashboard-index');
+        $this->assertSame(1200000.0, (float) $component->viewData('assetBalance'));
+        $this->assertSame(300000.0, (float) $component->viewData('creditDebt'));
+        $this->assertSame(900000.0, (float) $component->viewData('totalBalance'));
+        $component->assertSee('Saldo Aset')->assertSee('Utang Kartu');
+    }
+
     public function test_dashboard_isolation(): void
     {
         $u1 = User::factory()->create();

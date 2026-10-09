@@ -22,6 +22,13 @@ class DashboardService
             ->where('is_active', true)
             ->sum('current_balance');
 
+        $creditDebt = abs(min(0, (float) Account::where('user_id', $userId)
+            ->where('is_active', true)
+            ->where('type', 'credit')
+            ->sum('current_balance')));
+
+        $assetBalance = $totalBalance + $creditDebt;
+
         $monthlyIncome = Transaction::where('user_id', $userId)
             ->where('type', 'income')
             ->whereBetween('transaction_date', [$startOfMonth, $endOfMonth])
@@ -60,6 +67,8 @@ class DashboardService
 
         return compact(
             'totalBalance',
+            'assetBalance',
+            'creditDebt',
             'monthlyIncome',
             'monthlyExpense',
             'netCashflow',
