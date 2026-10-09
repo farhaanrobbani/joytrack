@@ -22,6 +22,17 @@ npm install && npm run build
 php artisan serve --host=0.0.0.0 --port=7041
 ```
 
+## Turnstile (opsional)
+
+Buat site di [dash.cloudflare.com/turnstile](https://dash.cloudflare.com/turnstile) (mode Managed), lalu isi kedua kunci di `.env`:
+
+```
+TURNSTILE_SITE_KEY=...
+TURNSTILE_SECRET_KEY=...
+```
+
+Proteksi aktif otomatis di form auth publik (login, register, lupa/reset password) begitu secret key terisi. Tanpa kunci, semua form tetap berjalan normal (verifikasi dilewati) — cocok untuk development & test.
+
 ## Docs
 
 - `AGENTS.md` — workflow & rules
