@@ -92,9 +92,16 @@ class LivewireRemindersTest extends TestCase
 
         $component = Livewire::test('reminders-index');
         $this->assertCount(2, $component->viewData('documents'));
+        $this->assertSame(2, $component->viewData('totalCount'));
+        $this->assertSame(1, $component->viewData('overdueCount'));
+        $this->assertSame(1, $component->viewData('dueSoonCount'));
 
-        $component = Livewire::test('reminders-index')->set('status', 'overdue');
+        $component->call('setStatus', 'overdue');
+        $this->assertSame('overdue', $component->instance()->status);
         $this->assertCount(1, $component->viewData('documents'));
         $component->assertSee('Dokumen Terlambat')->assertDontSee('Dokumen Segera');
+        $this->assertSame(2, $component->viewData('totalCount'));
+        $this->assertSame(1, $component->viewData('overdueCount'));
+        $this->assertSame(1, $component->viewData('dueSoonCount'));
     }
 }

@@ -96,6 +96,12 @@ new class extends Component
         $documents = app(ExpiryReminderService::class)->getDocumentReminders(auth()->id());
         $subscriptions = app(ExpiryReminderService::class)->getSubscriptionReminders(auth()->id());
 
+        $all = $services->merge($documents)->merge($subscriptions);
+
+        $overdueCount = $all->filter(fn ($item) => $item['status'] === 'overdue')->count();
+        $dueSoonCount = $all->filter(fn ($item) => $item['status'] === 'due_soon')->count();
+        $totalCount = $all->count();
+
         $filter = fn ($items) => $this->status === 'all'
             ? $items
             : $items->filter(fn ($item) => $item['status'] === $this->status)->values();
@@ -104,15 +110,13 @@ new class extends Component
         $documents = $filter($documents);
         $subscriptions = $filter($subscriptions);
 
-        $all = $services->merge($documents)->merge($subscriptions);
-
         return $this->view([
             'services' => $services,
             'documents' => $documents,
             'subscriptions' => $subscriptions,
-            'overdueCount' => $all->filter(fn ($item) => $item['status'] === 'overdue')->count(),
-            'dueSoonCount' => $all->filter(fn ($item) => $item['status'] === 'due_soon')->count(),
-            'totalCount' => $all->count(),
+            'overdueCount' => $overdueCount,
+            'dueSoonCount' => $dueSoonCount,
+            'totalCount' => $totalCount,
             'accounts' => Account::where('user_id', auth()->id())
                 ->where('is_active', true)
                 ->orderBy('name')
