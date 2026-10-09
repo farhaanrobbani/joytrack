@@ -8,6 +8,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class ReminderPageTest extends TestCase
@@ -47,14 +48,16 @@ class ReminderPageTest extends TestCase
         $response = $this->get(route('reminders.index'));
 
         $response->assertStatus(200);
-        $response->assertViewHas('services', fn ($s) => $s->count() === 1);
-        $response->assertViewHas('documents', fn ($d) => $d->count() === 1);
-        $response->assertViewHas('subscriptions', fn ($s) => $s->count() === 1);
-        $response->assertViewHas('totalCount', 3);
-        $response->assertViewHas('overdueCount', 2);
-        $response->assertViewHas('dueSoonCount', 1);
         $response->assertSee('STNK Motor');
         $response->assertSee('Domain JoyTrack');
+
+        $component = Livewire::test('reminders-index');
+        $this->assertCount(1, $component->viewData('services'));
+        $this->assertCount(1, $component->viewData('documents'));
+        $this->assertCount(1, $component->viewData('subscriptions'));
+        $this->assertSame(3, $component->viewData('totalCount'));
+        $this->assertSame(2, $component->viewData('overdueCount'));
+        $this->assertSame(1, $component->viewData('dueSoonCount'));
     }
 
     public function test_reminder_page_status_filter_overdue(): void
@@ -76,10 +79,12 @@ class ReminderPageTest extends TestCase
         $response = $this->get(route('reminders.index', ['status' => 'overdue']));
 
         $response->assertStatus(200);
-        $response->assertViewHas('documents', fn ($d) => $d->count() === 1);
-        $response->assertViewHas('subscriptions', fn ($s) => $s->count() === 0);
         $response->assertSee('Dokumen Terlambat');
         $response->assertDontSee('Langganan Aman');
+
+        $component = Livewire::test('reminders-index')->set('status', 'overdue');
+        $this->assertCount(1, $component->viewData('documents'));
+        $this->assertCount(0, $component->viewData('subscriptions'));
     }
 
     public function test_reminder_page_shows_empty_state(): void
@@ -90,8 +95,8 @@ class ReminderPageTest extends TestCase
         $response = $this->get(route('reminders.index'));
 
         $response->assertStatus(200);
-        $response->assertViewHas('totalCount', 0);
         $response->assertSee(__('Tidak ada pengingat aktif'));
+        $this->assertSame(0, Livewire::test('reminders-index')->viewData('totalCount'));
     }
 
     public function test_reminder_page_has_navigation_to_manage_items(): void
@@ -134,14 +139,11 @@ class ReminderPageTest extends TestCase
         ]);
 
         $this->actingAs($user);
-        $response = $this->get(route('reminders.index'));
+        $this->get(route('reminders.index'))->assertStatus(200);
 
-        $response->assertStatus(200);
-        $response->assertSee('window.JT_SUBSCRIPTIONS');
-        $response->assertSee('renew-subscription');
-        $response->assertSee('openRenew(window.JT_SUBSCRIPTIONS['.$subscription->id.'])', false);
-        $response->assertSee('name="back" value="reminders"', false);
-        $response->assertViewHas('renewPayload', fn (array $payload) => isset($payload[$subscription->id]));
+        Livewire::test('reminders-index')
+            ->assertSee('openRenew('.(int) $subscription->id.')')
+            ->assertSee(__('Perpanjang'));
     }
 
     public function test_reminder_page_without_subscription_reminders_has_no_renew_modal(): void
@@ -158,9 +160,9 @@ class ReminderPageTest extends TestCase
         $response = $this->get(route('reminders.index'));
 
         $response->assertStatus(200);
-        $response->assertDontSee('name="back" value="reminders"', false);
-        $response->assertDontSee('openRenew(window.JT_SUBSCRIPTIONS', false);
-        $response->assertViewHas('renewPayload', fn (array $payload) => $payload === []);
+        $component = Livewire::test('reminders-index');
+        $component->assertDontSee('openRenew(');
+        $this->assertCount(0, $component->viewData('subscriptions'));
     }
 
     public function test_renew_redirects_back_to_reminders_when_submitted_from_reminders(): void
@@ -199,7 +201,7 @@ class ReminderPageTest extends TestCase
         $response = $this->get(route('dashboard'));
 
         $response->assertStatus(200);
-        $reminders = $response->viewData('expiryReminders');
+        $reminders = Livewire::test('dashboard-index')->viewData('expiryReminders');
         $this->assertCount(2, $reminders);
         $this->assertEquals('Langganan Terlambat', $reminders->first()['title']);
         $this->assertEquals('overdue', $reminders->first()['status']);

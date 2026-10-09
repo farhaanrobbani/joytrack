@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
@@ -32,13 +33,15 @@ class DashboardTest extends TestCase
         $this->actingAs($user);
         $response = $this->get(route('dashboard'));
         $response->assertStatus(200);
-        $response->assertViewHas('totalBalance');
-        $response->assertViewHas('monthlyIncome');
-        $response->assertViewHas('monthlyExpense');
-        $response->assertViewHas('netCashflow');
-        $response->assertViewHas('recentTransactions');
-        $response->assertViewHas('cashflowChart');
-        $response->assertViewHas('expenseByCategory');
+
+        $component = Livewire::test('dashboard-index');
+        $this->assertNotNull($component->viewData('totalBalance'));
+        $this->assertNotNull($component->viewData('monthlyIncome'));
+        $this->assertNotNull($component->viewData('monthlyExpense'));
+        $this->assertNotNull($component->viewData('netCashflow'));
+        $this->assertNotNull($component->viewData('recentTransactions'));
+        $this->assertNotNull($component->viewData('cashflowChart'));
+        $this->assertNotNull($component->viewData('expenseByCategory'));
     }
 
     public function test_dashboard_isolation(): void
@@ -51,7 +54,7 @@ class DashboardTest extends TestCase
         $response = $this->get(route('dashboard'));
         $response->assertStatus(200);
         // totalBalance should reflect only u1
-        $this->assertEquals(999999, (float) $response->viewData('totalBalance'));
+        $this->assertEquals(999999, (float) Livewire::test('dashboard-index')->viewData('totalBalance'));
     }
 
     public function test_recent_transactions_limit(): void
@@ -61,7 +64,7 @@ class DashboardTest extends TestCase
         $cat = Category::factory()->create(['user_id' => $user->id, 'type' => 'expense']);
         Transaction::factory()->count(10)->create(['user_id' => $user->id, 'account_id' => $acc->id, 'category_id' => $cat->id, 'type' => 'expense']);
         $this->actingAs($user);
-        $response = $this->get(route('dashboard'));
-        $this->assertCount(5, $response->viewData('recentTransactions'));
+        $this->get(route('dashboard'))->assertStatus(200);
+        $this->assertCount(5, Livewire::test('dashboard-index')->viewData('recentTransactions'));
     }
 }

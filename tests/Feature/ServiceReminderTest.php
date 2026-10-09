@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Vehicle;
 use App\Services\ServiceReminderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class ServiceReminderTest extends TestCase
@@ -114,8 +115,7 @@ class ServiceReminderTest extends TestCase
         $this->actingAs($user);
         $response = $this->get(route('dashboard'));
         $response->assertStatus(200);
-        $response->assertViewHas('reminders');
-        $this->assertCount(1, $response->viewData('reminders'));
+        $this->assertCount(1, Livewire::test('dashboard-index')->viewData('reminders'));
     }
 
     public function test_vehicle_show_reminder_status(): void

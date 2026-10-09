@@ -223,8 +223,8 @@ class DocumentTest extends TestCase
         $response = $this->get(route('dashboard'));
 
         $response->assertStatus(200);
-        $response->assertViewHas('expiryReminders', fn ($reminders) => $reminders->count() === 1);
         $response->assertSee('STNK Mobil');
+        $this->assertCount(1, Livewire::test('dashboard-index')->viewData('expiryReminders'));
     }
 
     public function test_document_index_shows_status_badge(): void
