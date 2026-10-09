@@ -12,12 +12,7 @@ class AccountController extends Controller
 {
     public function index(): View
     {
-        $accounts = Account::where('user_id', auth()->id())
-            ->orderBy('is_active', 'desc')
-            ->orderBy('name')
-            ->get();
-
-        return view('accounts.index', compact('accounts'));
+        return view('accounts.index');
     }
 
     public function create(): View

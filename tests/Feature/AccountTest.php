@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class AccountTest extends TestCase
@@ -95,15 +96,15 @@ class AccountTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
 
-        Account::factory()->create(['user_id' => $user1->id]);
-        Account::factory()->create(['user_id' => $user1->id]);
-        Account::factory()->create(['user_id' => $user2->id]);
+        Account::factory()->create(['user_id' => $user1->id, 'name' => 'Dompet Satu']);
+        Account::factory()->create(['user_id' => $user1->id, 'name' => 'Bank Dua']);
+        Account::factory()->create(['user_id' => $user2->id, 'name' => 'Akun Orang Lain']);
 
         $this->actingAs($user1);
-        $response = $this->get(route('accounts.index'));
 
-        $response->assertViewHas('accounts', function ($accounts) {
-            return $accounts->count() === 2;
-        });
+        Livewire::test('accounts-index')
+            ->assertSee('Dompet Satu')
+            ->assertSee('Bank Dua')
+            ->assertDontSee('Akun Orang Lain');
     }
 }

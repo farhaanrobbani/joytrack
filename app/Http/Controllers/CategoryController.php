@@ -12,13 +12,7 @@ class CategoryController extends Controller
 {
     public function index(): View
     {
-        $categories = Category::where('user_id', auth()->id())
-            ->orderBy('type')
-            ->orderBy('name')
-            ->get()
-            ->groupBy('type');
-
-        return view('categories.index', compact('categories'));
+        return view('categories.index');
     }
 
     public function create(): View
