@@ -5,7 +5,7 @@
             try { $sidebarIcon = \App\Models\SiteSetting::get('site_icon'); $sidebarIconUrl = $sidebarIcon ? \Illuminate\Support\Facades\Storage::disk('public')->url($sidebarIcon) : null; } catch (\Throwable $e) {}
             $sidebarName = \App\Models\SiteSetting::get('site_name', config('app.name', 'JoyTrack'));
         @endphp
-        <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
+        <a wire:navigate href="{{ route('dashboard') }}" class="flex items-center gap-2">
             @if($sidebarIconUrl)
                 <img src="{{ $sidebarIconUrl }}" alt="{{ $sidebarName }}" class="w-8 h-8 rounded-xl object-cover shadow-soft">
             @else

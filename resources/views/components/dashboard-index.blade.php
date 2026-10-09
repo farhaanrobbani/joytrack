@@ -175,7 +175,7 @@ new class extends Component
     @if(array_sum($cashflowChart['income']) !== 0.0 || array_sum($cashflowChart['expense']) !== 0.0)
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            (function () {
                 const isDark = document.documentElement.classList.contains('dark');
                 const gridColor = isDark ? 'rgba(148,163,184,0.15)' : 'rgba(148,163,184,0.2)';
                 const textColor = isDark ? '#9ca3af' : '#6b7280';
@@ -206,7 +206,7 @@ new class extends Component
                         options: { responsive: true, cutout: '62%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16 } } } }
                     });
                 }
-            });
+            })();
         </script>
     @endif
 </div>

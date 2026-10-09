@@ -126,6 +126,7 @@ class ReminderPageTest extends TestCase
         $response->assertSee(route('reminders.index'));
         $response->assertSee(route('documents.index'));
         $response->assertSee(route('subscriptions.index'));
+        $response->assertSee('wire:navigate', false);
     }
 
     public function test_reminder_page_shows_renew_button_and_modal_for_subscription(): void

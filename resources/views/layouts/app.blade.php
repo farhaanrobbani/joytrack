@@ -137,6 +137,21 @@
         </div>
 
         @livewireScripts
+        <script data-navigate-once>
+            (function () {
+                let scrolls = [];
+                document.addEventListener('livewire:navigating', function () {
+                    scrolls = Array.from(document.querySelectorAll('aside')).map(function (el) {
+                        return el.scrollTop;
+                    });
+                });
+                document.addEventListener('livewire:navigated', function () {
+                    document.querySelectorAll('aside').forEach(function (el, i) {
+                        if (scrolls[i]) el.scrollTop = scrolls[i];
+                    });
+                });
+            })();
+        </script>
         @stack('scripts')
     </body>
 </html>

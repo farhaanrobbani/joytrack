@@ -167,7 +167,7 @@ new class extends Component
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    (function () {
         const ctx = document.getElementById('serviceMonthly');
         if (ctx) {
             new Chart(ctx, {
@@ -182,6 +182,6 @@ new class extends Component
                 options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { x: { stacked: true }, y: { stacked: true } } }
             });
         }
-    });
+    })();
 </script>
 </div>
