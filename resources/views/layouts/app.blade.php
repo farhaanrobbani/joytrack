@@ -39,6 +39,13 @@
         @livewireStyles
     </head>
     <body class="font-sans antialiased bg-slate-50 dark:bg-gray-950">
+        <script>
+            try {
+                var t = localStorage.getItem('theme');
+                var d = t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                document.documentElement.classList.toggle('dark', d);
+            } catch (e) {}
+        </script>
         <div x-data="{ sidebarOpen: false }" class="min-h-screen">
             <!-- Topbar -->
             <header class="fixed top-0 left-0 right-0 z-30 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800">
@@ -141,12 +148,12 @@
             (function () {
                 let scrolls = [];
                 document.addEventListener('livewire:navigating', function () {
-                    scrolls = Array.from(document.querySelectorAll('aside')).map(function (el) {
+                    scrolls = Array.from(document.querySelectorAll('aside nav')).map(function (el) {
                         return el.scrollTop;
                     });
                 });
                 document.addEventListener('livewire:navigated', function () {
-                    document.querySelectorAll('aside').forEach(function (el, i) {
+                    document.querySelectorAll('aside nav').forEach(function (el, i) {
                         if (scrolls[i]) el.scrollTop = scrolls[i];
                     });
                 });
