@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFuelRecordRequest;
 use App\Http\Requests\UpdateFuelRecordRequest;
-use App\Models\Account;
 use App\Models\FuelRecord;
-use App\Models\Vehicle;
 use App\Services\FuelRecordService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,47 +14,16 @@ class FuelRecordController extends Controller
 {
     public function __construct(protected FuelRecordService $service) {}
 
-    public function index(Request $request): View
+    public function index(): View
     {
-        $query = FuelRecord::where('user_id', auth()->id())
-            ->with(['vehicle', 'account', 'transaction'])
-            ->orderByDesc('fuel_date')
-            ->orderByDesc('id');
-
-        if ($request->filled('vehicle_id')) {
-            $query->where('vehicle_id', $request->vehicle_id);
-        }
-        if ($request->filled('fuel_type')) {
-            $query->where('fuel_type', $request->fuel_type);
-        }
-        if ($request->filled('date_from')) {
-            $query->where('fuel_date', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->where('fuel_date', '<=', $request->date_to);
-        }
-
-        $records = $query->paginate(15)->withQueryString();
-        $vehicles = Vehicle::where('user_id', auth()->id())->orderBy('name')->get();
-        $stats = $this->service->stats(auth()->id(), $request->vehicle_id ? (int) $request->vehicle_id : null);
-
-        // per-record km/l calculation
-        $records->getCollection()->transform(function ($r) {
-            static $prev = null;
-            // need ordered by odometer asc for distance calc, but we display desc. So compute separately for stats above.
-            return $r;
-        });
-
-        return view('fuel-records.index', compact('records', 'vehicles', 'stats'));
+        return view('fuel-records.index');
     }
 
     public function create(Request $request): View
     {
-        $vehicles = Vehicle::where('user_id', auth()->id())->active()->orderBy('name')->get();
-        $accounts = Account::where('user_id', auth()->id())->active()->orderBy('name')->get();
         $selectedVehicle = $request->query('vehicle_id');
 
-        return view('fuel-records.create', compact('vehicles', 'accounts', 'selectedVehicle'));
+        return view('fuel-records.create', compact('selectedVehicle'));
     }
 
     public function store(StoreFuelRecordRequest $request): RedirectResponse
@@ -91,10 +58,8 @@ class FuelRecordController extends Controller
     public function edit(FuelRecord $fuelRecord): View
     {
         $this->authorize('update', $fuelRecord);
-        $vehicles = Vehicle::where('user_id', auth()->id())->orderBy('name')->get();
-        $accounts = Account::where('user_id', auth()->id())->orderBy('name')->get();
 
-        return view('fuel-records.edit', compact('fuelRecord', 'vehicles', 'accounts'));
+        return view('fuel-records.edit', compact('fuelRecord'));
     }
 
     public function update(UpdateFuelRecordRequest $request, FuelRecord $fuelRecord): RedirectResponse

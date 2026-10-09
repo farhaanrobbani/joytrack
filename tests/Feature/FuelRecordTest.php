@@ -8,6 +8,7 @@ use App\Models\FuelRecord;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class FuelRecordTest extends TestCase
@@ -91,10 +92,9 @@ class FuelRecordTest extends TestCase
         FuelRecord::factory()->create(['user_id' => $user->id, 'vehicle_id' => $vehicle->id, 'odometer' => 10000, 'liters' => 10, 'total_cost' => 100000, 'fuel_date' => now()->format('Y-m-d')]);
         FuelRecord::factory()->create(['user_id' => $user->id, 'vehicle_id' => $vehicle->id, 'odometer' => 10500, 'liters' => 10, 'total_cost' => 100000, 'fuel_date' => now()->format('Y-m-d')]);
         $this->actingAs($user);
-        $response = $this->get(route('fuel-records.index', ['vehicle_id' => $vehicle->id]));
-        $response->assertStatus(200);
-        $response->assertViewHas('stats');
-        $stats = $response->viewData('stats');
+        $component = Livewire::test('fuel-records-index')
+            ->set('vehicleId', (string) $vehicle->id);
+        $stats = $component->instance()->stats;
         $this->assertEquals(20.0, $stats['totalLiters']);
         $this->assertEquals(200000.0, $stats['totalCost']);
         $this->assertEquals(500, $stats['distance']);

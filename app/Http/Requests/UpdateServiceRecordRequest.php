@@ -2,12 +2,13 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Account;
-use App\Models\Vehicle;
+use App\Http\Requests\Concerns\ValidatesServiceRecordData;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateServiceRecordRequest extends FormRequest
 {
+    use ValidatesServiceRecordData;
+
     public function authorize(): bool
     {
         return $this->user()->can('update', $this->service_record);
@@ -15,35 +16,11 @@ class UpdateServiceRecordRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'vehicle_id' => ['required', 'exists:vehicles,id'],
-            'service_date' => ['required', 'date'],
-            'odometer' => ['required', 'integer', 'min:0'],
-            'service_type' => ['required', 'string', 'max:100'],
-            'workshop' => ['nullable', 'string', 'max:100'],
-            'labor_cost' => ['required', 'numeric', 'min:0'],
-            'parts_cost' => ['required', 'numeric', 'min:0'],
-            'total_cost' => ['required', 'numeric', 'min:0'],
-            'next_service_date' => ['nullable', 'date', 'after_or_equal:service_date'],
-            'next_service_odometer' => ['nullable', 'integer', 'min:0'],
-            'notes' => ['nullable', 'string', 'max:1000'],
-            'account_id' => ['nullable', 'exists:accounts,id'],
-        ];
+        return static::serviceRecordRules();
     }
 
     public function withValidator($validator): void
     {
-        $validator->after(function ($validator) {
-            $userId = $this->user()->id;
-            if ($this->filled('vehicle_id') && ! Vehicle::where('id', $this->vehicle_id)->where('user_id', $userId)->exists()) {
-                $validator->errors()->add('vehicle_id', __('Kendaraan tidak valid.'));
-            }
-            if ($this->filled('account_id') && ! Account::where('id', $this->account_id)->where('user_id', $userId)->exists()) {
-                $validator->errors()->add('account_id', __('Akun tidak valid.'));
-            }
-            if ($this->filled('next_service_odometer') && $this->filled('odometer') && (int) $this->next_service_odometer <= (int) $this->odometer) {
-                $validator->errors()->add('next_service_odometer', __('Odometer servis berikutnya harus lebih besar dari odometer saat ini.'));
-            }
-        });
+        $validator->after(fn ($validator) => static::checkServiceRecordData($validator, $this->user()->id, $this->all()));
     }
 }
