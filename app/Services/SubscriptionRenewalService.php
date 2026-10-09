@@ -27,6 +27,30 @@ class SubscriptionRenewalService
     }
 
     /**
+     * Payload JSON untuk modal perpanjangan di view (keyed by id).
+     *
+     * @return array<int, array{id: int, url: string, name: string, cycle: string, next: string, preview: string, amount: float|string|null}>
+     */
+    public function renewPayload(iterable $subscriptions): array
+    {
+        $payload = [];
+
+        foreach ($subscriptions as $subscription) {
+            $payload[$subscription->id] = [
+                'id' => $subscription->id,
+                'url' => route('subscriptions.renew', $subscription),
+                'name' => $subscription->name,
+                'cycle' => $subscription->cycle_label,
+                'next' => $subscription->next_renewal_date->format('d M Y'),
+                'preview' => $this->previewNextDate($subscription)->format('d M Y'),
+                'amount' => $subscription->amount,
+            ];
+        }
+
+        return $payload;
+    }
+
+    /**
      * Perpanjang langganan: geser tanggal berikutnya sesuai siklus,
      * catat riwayat, dan opsional buat transaksi expense.
      *

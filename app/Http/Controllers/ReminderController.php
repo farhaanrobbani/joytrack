@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Services\ExpiryReminderService;
 use App\Services\ServiceReminderService;
+use App\Services\SubscriptionRenewalService;
 use Illuminate\View\View;
 
 class ReminderController extends Controller
@@ -11,6 +13,7 @@ class ReminderController extends Controller
     public function __construct(
         protected ServiceReminderService $serviceReminders,
         protected ExpiryReminderService $expiryReminders,
+        protected SubscriptionRenewalService $renewalService,
     ) {}
 
     public function index(): View
@@ -42,6 +45,13 @@ class ReminderController extends Controller
             'overdueCount' => $all->filter(fn ($item) => $item['status'] === 'overdue')->count(),
             'dueSoonCount' => $all->filter(fn ($item) => $item['status'] === 'due_soon')->count(),
             'totalCount' => $all->count(),
+            'accounts' => Account::where('user_id', auth()->id())
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(),
+            'renewPayload' => $this->renewalService->renewPayload(
+                $subscriptions->map(fn (array $row) => $row['model'])->values()
+            ),
         ]);
     }
 }

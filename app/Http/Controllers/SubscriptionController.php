@@ -30,7 +30,6 @@ class SubscriptionController extends Controller
             'model' => $subscription,
             'days' => $this->reminders->daysUntilDate($subscription->next_renewal_date),
             'status' => $this->reminders->statusForSubscription($subscription),
-            'renew_preview' => $this->renewalService->previewNextDate($subscription),
         ]);
 
         $accounts = Account::where('user_id', auth()->id())
@@ -38,17 +37,9 @@ class SubscriptionController extends Controller
             ->orderBy('name')
             ->get();
 
-        $renewPayload = $subscriptions->getCollection()->mapWithKeys(fn (array $row) => [
-            $row['model']->id => [
-                'id' => $row['model']->id,
-                'url' => route('subscriptions.renew', $row['model']),
-                'name' => $row['model']->name,
-                'cycle' => $row['model']->cycle_label,
-                'next' => $row['model']->next_renewal_date->format('d M Y'),
-                'preview' => $row['renew_preview']->format('d M Y'),
-                'amount' => $row['model']->amount,
-            ],
-        ]);
+        $renewPayload = $this->renewalService->renewPayload(
+            $subscriptions->getCollection()->map(fn (array $row) => $row['model'])
+        );
 
         return view('subscriptions.index', compact('subscriptions', 'accounts', 'renewPayload'));
     }
@@ -97,7 +88,11 @@ class SubscriptionController extends Controller
 
         $renewal = $this->renewalService->renew($subscription, $payload);
 
-        return redirect()->route('subscriptions.index')
+        $target = $request->input('back') === 'reminders'
+            ? route('reminders.index')
+            : route('subscriptions.index');
+
+        return redirect($target)
             ->with('status', __('Berlangganan berhasil diperpanjang hingga :date.', [
                 'date' => $renewal->new_date->format('d M Y'),
             ]));

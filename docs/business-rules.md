@@ -355,5 +355,8 @@ ok       : days > reminder_days
   dari `subscriptions.amount`.
 - Validasi: `account_id` wajib & harus milik user yang sama saat `create_transaction`;
   `amount` wajib diisi bila `subscriptions.amount` kosong.
-- Riwayat ditampilkan di form edit berlangganan; tombol perpanjang ada di
-  `/subscriptions` (modal) dan memakai aturan otorisasi `update` (policy).
+- Riwayat ditampilkan di form edit berlangganan; tombol perpanjang (modal) tersedia
+  di `/subscriptions` dan di halaman Pengingat `/reminders`, memakai aturan
+  otorisasi `update` (policy).
+- Setelah sukses, redirect kembali ke halaman asal (`back=reminders` → `/reminders`,
+  selain itu → `/subscriptions`) dengan pesan sukses.

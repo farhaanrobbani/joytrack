@@ -100,7 +100,18 @@
             @endif
         </div>
 
-        <div>
+        <div x-data="{
+            renew: null,
+            withTx: @js(old('create_transaction') !== null ? old('create_transaction') == '1' : true),
+            openRenew(sub) { this.renew = sub; this.withTx = true; this.$dispatch('open-modal', 'renew-subscription'); },
+            init() {
+                const id = @js(old('subscription_id'));
+                if (id && window.JT_SUBSCRIPTIONS && window.JT_SUBSCRIPTIONS[id]) {
+                    this.renew = window.JT_SUBSCRIPTIONS[id];
+                    this.$nextTick(() => this.$dispatch('open-modal', 'renew-subscription'));
+                }
+            },
+        }">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                 <x-heroicon-o-calendar-days class="w-5 h-5 text-gray-400" />
                 {{ __('Berlangganan') }}
@@ -123,11 +134,18 @@
                                     </ul>
                                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $r['subtitle'] }} • {{ $r['date']->format('d M Y') }}</p>
                                 </div>
-                                <a href="{{ $r['edit_url'] }}" class="shrink-0 px-3 py-1.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-600">{{ __('Lihat') }}</a>
+                                <div class="shrink-0 flex items-center gap-2">
+                                    <button type="button" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700" @click="openRenew(window.JT_SUBSCRIPTIONS[{{ $r['model']->id }}])">{{ __('Perpanjang') }}</button>
+                                    <a href="{{ $r['edit_url'] }}" class="px-3 py-1.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-600">{{ __('Lihat') }}</a>
+                                </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
+            @endif
+
+            @if(!$subscriptions->isEmpty())
+                @include('subscriptions.partials.renew-modal', ['back' => 'reminders'])
             @endif
         </div>
 
@@ -141,4 +159,10 @@
             </div>
         @endif
     </div>
+
+    @push('scripts')
+    <script>
+        window.JT_SUBSCRIPTIONS = @json($renewPayload);
+    </script>
+    @endpush
 </x-app-layout>

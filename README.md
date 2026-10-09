@@ -36,6 +36,6 @@ php artisan serve --host=0.0.0.0 --port=7041
 ## Tests
 
 ```bash
-php artisan test   # 174 tests
+php artisan test   # 177 tests
 npm run build
 ```

@@ -123,6 +123,63 @@ class ReminderPageTest extends TestCase
         $response->assertSee(route('subscriptions.index'));
     }
 
+    public function test_reminder_page_shows_renew_button_and_modal_for_subscription(): void
+    {
+        $user = User::factory()->create();
+        $subscription = Subscription::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'Netflix',
+            'next_renewal_date' => now()->subDay()->format('Y-m-d'),
+            'reminder_days' => 7,
+        ]);
+
+        $this->actingAs($user);
+        $response = $this->get(route('reminders.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('window.JT_SUBSCRIPTIONS');
+        $response->assertSee('renew-subscription');
+        $response->assertSee('openRenew(window.JT_SUBSCRIPTIONS['.$subscription->id.'])', false);
+        $response->assertSee('name="back" value="reminders"', false);
+        $response->assertViewHas('renewPayload', fn (array $payload) => isset($payload[$subscription->id]));
+    }
+
+    public function test_reminder_page_without_subscription_reminders_has_no_renew_modal(): void
+    {
+        $user = User::factory()->create();
+        Document::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'Dokumen Aman',
+            'expiry_date' => now()->addDays(3)->format('Y-m-d'),
+            'reminder_days' => 7,
+        ]);
+
+        $this->actingAs($user);
+        $response = $this->get(route('reminders.index'));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('name="back" value="reminders"', false);
+        $response->assertDontSee('openRenew(window.JT_SUBSCRIPTIONS', false);
+        $response->assertViewHas('renewPayload', fn (array $payload) => $payload === []);
+    }
+
+    public function test_renew_redirects_back_to_reminders_when_submitted_from_reminders(): void
+    {
+        $user = User::factory()->create();
+        $subscription = Subscription::factory()->create([
+            'user_id' => $user->id,
+            'next_renewal_date' => now()->subDays(5)->format('Y-m-d'),
+        ]);
+
+        $this->actingAs($user);
+        $response = $this->post(route('subscriptions.renew', $subscription), [
+            'back' => 'reminders',
+        ]);
+
+        $response->assertRedirect(route('reminders.index'));
+        $response->assertSessionHas('status');
+    }
+
     public function test_dashboard_expiry_reminders_sorted_overdue_first(): void
     {
         $user = User::factory()->create();
