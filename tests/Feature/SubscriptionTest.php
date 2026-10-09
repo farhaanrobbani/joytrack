@@ -6,6 +6,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use App\Services\ExpiryReminderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class SubscriptionTest extends TestCase
@@ -97,9 +98,9 @@ class SubscriptionTest extends TestCase
         Subscription::factory()->create(['user_id' => $user2->id]);
 
         $this->actingAs($user1);
-        $response = $this->get(route('subscriptions.index'));
+        $subscriptions = Livewire::test('subscriptions-index')->viewData('subscriptions');
 
-        $response->assertViewHas('subscriptions', fn ($subscriptions) => $subscriptions->count() === 1);
+        $this->assertSame(1, $subscriptions->count());
     }
 
     public function test_store_requires_next_renewal_date(): void

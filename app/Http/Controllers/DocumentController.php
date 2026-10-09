@@ -5,36 +5,19 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
 use App\Models\Document;
-use App\Models\Vehicle;
-use App\Services\ExpiryReminderService;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class DocumentController extends Controller
 {
-    public function __construct(protected ExpiryReminderService $reminders) {}
-
     public function index(): View
     {
-        $documents = Document::with('vehicle')
-            ->where('user_id', auth()->id())
-            ->orderBy('expiry_date')
-            ->paginate(15)
-            ->withQueryString();
-
-        $documents->through(fn (Document $document) => [
-            'model' => $document,
-            'days' => $this->reminders->daysUntilDate($document->expiry_date),
-            'status' => $this->reminders->statusForDocument($document),
-        ]);
-
-        return view('documents.index', compact('documents'));
+        return view('documents.index');
     }
 
     public function create(): View
     {
-        return view('documents.create', $this->formData());
+        return view('documents.create');
     }
 
     public function store(StoreDocumentRequest $request): RedirectResponse
@@ -53,7 +36,7 @@ class DocumentController extends Controller
     {
         $this->authorize('update', $document);
 
-        return view('documents.edit', ['document' => $document] + $this->formData());
+        return view('documents.edit', compact('document'));
     }
 
     public function update(UpdateDocumentRequest $request, Document $document): RedirectResponse
@@ -77,19 +60,5 @@ class DocumentController extends Controller
 
         return redirect()->route('documents.index')
             ->with('status', __('Dokumen berhasil dihapus.'));
-    }
-
-    /**
-     * @return array{vehicles: Collection, types: array<string, string>}
-     */
-    protected function formData(): array
-    {
-        return [
-            'vehicles' => Vehicle::where('user_id', auth()->id())
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get(),
-            'types' => Document::TYPE_LABELS,
-        ];
     }
 }

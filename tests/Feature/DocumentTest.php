@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Vehicle;
 use App\Services\ExpiryReminderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class DocumentTest extends TestCase
@@ -99,9 +100,9 @@ class DocumentTest extends TestCase
         Document::factory()->create(['user_id' => $user2->id]);
 
         $this->actingAs($user1);
-        $response = $this->get(route('documents.index'));
+        $documents = Livewire::test('documents-index')->viewData('documents');
 
-        $response->assertViewHas('documents', fn ($documents) => $documents->count() === 2);
+        $this->assertSame(2, $documents->count());
     }
 
     public function test_store_rejects_invalid_document_type(): void

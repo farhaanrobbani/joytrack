@@ -8,6 +8,7 @@ use App\Models\SubscriptionRenewal;
 use App\Models\User;
 use App\Services\SubscriptionRenewalService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class SubscriptionRenewalTest extends TestCase
@@ -229,11 +230,9 @@ class SubscriptionRenewalTest extends TestCase
         $this->actingAs($user);
         $subscription = $this->makeSubscription($user);
 
-        $this->get(route('subscriptions.index'))
-            ->assertOk()
-            ->assertSee('window.JT_SUBSCRIPTIONS')
-            ->assertSee('renew-subscription')
-            ->assertSee('openRenew(window.JT_SUBSCRIPTIONS['.(int) $subscription->id.'])', false);
+        Livewire::test('subscriptions-index')
+            ->assertSee('openRenew('.(int) $subscription->id.')')
+            ->assertSee(__('Perpanjang'));
     }
 
     public function test_subscription_edit_shows_renewal_history(): void
