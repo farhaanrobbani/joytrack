@@ -10,11 +10,12 @@ Browser
 Laravel
    ├── Routes
    ├── Controllers
-   ├── Form Requests
+   ├── Form Requests + Validation Traits
    ├── Policies
    ├── Services
    ├── Models
-   └── Views
+   ├── Views (Blade) + Livewire Components (SFC)
+   └── Alpine/Chart.js (client-side murni)
           ↓
        MySQL
 ```
@@ -47,7 +48,7 @@ app/
 resources/
 ├── views/
 │   ├── layouts/
-│   ├── components/
+│   ├── components/          # UI kit (x-card, x-input, ...) + SFC Livewire
 │   ├── dashboard/
 │   ├── accounts/
 │   ├── transactions/
@@ -55,6 +56,7 @@ resources/
 │   ├── fuel/
 │   ├── services/
 │   └── reports/
+│   # view lain = wrapper tipis: layout + <livewire:nama />
 │
 ├── js/
 └── css/
@@ -99,6 +101,62 @@ StoreFuelRecordRequest
 StoreServiceRecordRequest
 StoreVehicleRequest
 ```
+
+Rule yang dipakai komponen Livewire di-ekstrak ke trait static:
+
+```text
+app/Http/Requests/Concerns/
+├── ValidatesTransactionData
+├── ValidatesAccountData
+├── ValidatesCategoryData
+├── ValidatesVehicleData
+├── ValidatesFuelRecordData
+├── ValidatesServiceRecordData
+├── ValidatesDocumentData
+├── ValidatesSubscriptionData
+└── ValidatesProfileData
+```
+
+FormRequest `rules()` memanggil trait, komponen Livewire memanggil method
+static yang sama via `Validator::make` — satu sumber rule.
+
+---
+
+# 4b. Livewire Components (Frontend Layer)
+
+Sejak Phase 15 (migrasi full Livewire, 2026-10-09) seluruh halaman interaktif
+dirender komponen Livewire v4 **Single-File Component** di
+`resources/views/components/<nama>.blade.php`.
+
+Konvensi yang harus diikuti:
+
+- **Pola island**: route GET & controller tetap; view = wrapper
+  (`<x-app-layout>` + `<livewire:nama ... />`). Route write (POST/PATCH/DELETE)
+  dipertahankan sebagai guard regresi test (ADR 0003).
+- **Satu root element** per komponen — bungkus konten multi-blok dalam satu
+  `<div>` (Livewire menolak multi-root).
+- Segmen PHP komponen tidak boleh mencampur `@php(expr)` dengan blok
+  `@php…@endphp` dalam satu view (pitfall BladeCompiler).
+- `render()` menyediakan `$this->view($data)` — jangan ditulis manual di SFC.
+- Form: properti `snake_case` + `wire:submit="save"`; filter/index: properti
+  camelCase + `#[Url(as: 'snake_case')]`.
+- Model untuk edit: `#[Locked] public Model $m` + `mount()` + `Gate::authorize`
+  di `mount` dan `save`.
+- Validasi via trait static `App\Http\Requests\Concerns` (lihat §4).
+- Sukses: `session()->flash('status', ...)` + `$this->redirect(route(...))`.
+- Loop: `wire:key` wajib; live search: `wire:model.live.debounce.400ms`.
+- `@push('scripts')` tidak berlaku di dalam komponen → Chart.js memakai
+  `<script>` inline biasa; Alpine hanya untuk hal client-side murni
+  (fade toast, escape handler).
+- Modal: render server-side `@if($open)` + overlay fixed, tutup via
+  `$wire.close()`.
+- Test: `Livewire::test('nama', $mountArgs)`, assert data view via
+  `->viewData($key)` (Livewire tidak punya `assertViewHas`),
+  `->assertHasErrors([...])`, exception di `mount` perlu
+  `$this->withoutExceptionHandling()`.
+
+Halaman yang tetap Blade murni: `auth/*` (Breeze), `errors/*`,
+`reports/pdf/*`, `offline`, `welcome`, `layouts/*`, UI kit `components/*`.
 
 ---
 

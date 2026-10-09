@@ -201,3 +201,23 @@
 - [x] Tombol Perpanjang di halaman Pengingat `/reminders` (modal sama, redirect kembali ke asal)
 - [x] Test (33 reminder + 2 navigasi + 13 perpanjangan + 3 tombol di /reminders — total 177)
 - [x] Dokumentasi (database, business-rules §21–23, README)
+
+
+---
+
+# Phase 15 — Full Migration Livewire
+
+Konversi seluruh halaman interaktif ke komponen Livewire v4 (SFC) — 11 tahap commit granular, selesai 2026-10-09. Keputusan & konsekuensi: `docs/decisions/0003-full-migration-livewire.md`.
+
+- [x] Tahap 0 — Update dependensi (Livewire 4.4.7, Laravel 13.35, audit npm)
+- [x] Tahap 1 — Komponen transaksi (index, filter, pagination)
+- [x] Tahap 2 — Form transaksi (create/edit) + trait `ValidatesTransactionData`
+- [x] Tahap 3 — Akun & kategori (6 komponen + 2 trait)
+- [x] Tahap 4 — Kendaraan (index/create/edit + trait `ValidatesVehicleData`)
+- [x] Tahap 5 — Fuel & service records (4 form + 2 index + 4 trait/FormRequest)
+- [x] Tahap 6 — Dokumen & berlangganan + modal perpanjang di komponen
+- [x] Tahap 7 — Pengingat `/reminders` + dashboard (modal renew inline, chart inline script)
+- [x] Tahap 8 — Profil (update info, ganti password, hapus akun + modal); auth Breeze tetap Blade
+- [x] Tahap 9 — Laporan (finance/vehicle/fuel/service) & admin (dashboard, users, settings)
+- [x] Tahap 10 — Cleanup dead view (`modal.blade.php`) + dokumentasi (ADR 0003, ARCHITECTURE, README)
+- [x] Test 259 hijau; route write (POST/PATCH/DELETE) dipertahankan sebagai guard regresi

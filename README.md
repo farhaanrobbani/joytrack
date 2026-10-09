@@ -29,13 +29,13 @@ php artisan serve --host=0.0.0.0 --port=7041
 - `docs/business-rules.md` — aturan saldo, odometer, fuel efficiency
 - `docs/deployment.md` — deploy & CI (`git push origin main` → GitHub Actions `.github/workflows/ci.yml`)
 - `docs/backup.md` — backup DB & files
-- `docs/decisions/` — ADR (format export, CI/CD, error page)
+- `docs/decisions/` — ADR (format export, CI/CD, error page, migrasi Livewire)
 - `docs/security-review.md` / `docs/phase13-review.md` — hasil review
 - `PRD.md` / `DESIGN.md` / `ARCHITECTURE.md`
 
 ## Tests
 
 ```bash
-php artisan test   # 177 tests
+php artisan test   # 259 tests
 npm run build
 ```
