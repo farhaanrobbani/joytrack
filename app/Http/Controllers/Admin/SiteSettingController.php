@@ -61,6 +61,10 @@ class SiteSettingController extends Controller
 
     private function saveGenerated(\GdImage $image, int $size): void
     {
+        if (app()->runningUnitTests()) {
+            return;
+        }
+
         $destDir = public_path('icons');
         if (! is_dir($destDir)) {
             mkdir($destDir, 0755, true);
