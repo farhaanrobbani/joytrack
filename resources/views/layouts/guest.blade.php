@@ -12,9 +12,9 @@
         @endphp
         <title>{{ $siteNameGuest }} — {{ __('Masuk') }}</title>
         <meta name="theme-color" content="#059669">
-        <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png?v=2">
-        <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png?v=2">
-        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=2">
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png?v=3">
+        <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png?v=3">
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=3">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

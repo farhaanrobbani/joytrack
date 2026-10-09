@@ -12,5 +12,5 @@
 @if($iconUrl)
     <img src="{{ $iconUrl }}" alt="{{ $siteName }}" {{ $attributes->merge(['class' => 'object-cover rounded-2xl shadow-soft']) }} />
 @else
-    <img src="/icons/icon-192x192.png?v=2" alt="{{ $siteName }}" {{ $attributes->merge(['class' => 'object-cover rounded-2xl shadow-soft']) }} />
+    <img src="/icons/icon-192x192.png?v=3" alt="{{ $siteName }}" {{ $attributes->merge(['class' => 'object-cover rounded-2xl shadow-soft']) }} />
 @endif

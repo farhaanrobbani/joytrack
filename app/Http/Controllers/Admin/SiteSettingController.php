@@ -39,12 +39,16 @@ class SiteSettingController extends Controller
 
         if ($request->boolean('remove_site_icon')) {
             $old = SiteSetting::get('site_icon');
-            if ($old) Storage::disk('public')->delete($old);
+            if ($old) {
+                Storage::disk('public')->delete($old);
+            }
             SiteSetting::set('site_icon', null);
             $this->generateDefaultIcons();
         } elseif ($request->hasFile('site_icon')) {
             $old = SiteSetting::get('site_icon');
-            if ($old) Storage::disk('public')->delete($old);
+            if ($old) {
+                Storage::disk('public')->delete($old);
+            }
             $path = $request->file('site_icon')->store('settings', 'public');
             SiteSetting::set('site_icon', $path);
 
@@ -58,7 +62,9 @@ class SiteSettingController extends Controller
     private function saveGenerated(\GdImage $image, int $size): void
     {
         $destDir = public_path('icons');
-        if (! is_dir($destDir)) mkdir($destDir, 0755, true);
+        if (! is_dir($destDir)) {
+            mkdir($destDir, 0755, true);
+        }
 
         $name = match ($size) {
             32 => 'icon-32x32.png',
@@ -66,44 +72,55 @@ class SiteSettingController extends Controller
             default => "icon-{$size}x{$size}.png",
         };
 
-        imagepng($image, $destDir . '/' . $name);
+        imagepng($image, $destDir.'/'.$name);
 
         $storageDir = storage_path('app/public/icons');
-        if (! is_dir($storageDir)) mkdir($storageDir, 0755, true);
-        imagepng($image, $storageDir . '/' . $name);
+        if (! is_dir($storageDir)) {
+            mkdir($storageDir, 0755, true);
+        }
+        imagepng($image, $storageDir.'/'.$name);
     }
 
     private function generateDefaultIcons(): void
     {
-        if (! extension_loaded('gd')) return;
-        foreach ([32, 192, 512, 180] as $size) {
-            $img = imagecreatetruecolor($size, $size);
-            // emerald-500 #10b981 (terang, terbaca di tab kecil)
-            $bg = imagecolorallocate($img, 16, 185, 129);
-            imagefill($img, 0, 0, $bg);
-            $white = imagecolorallocate($img, 255, 255, 255);
-            $fontFile = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
-            if (file_exists($fontFile)) {
-                $fontSize = $size * 0.38;
-                $bbox = imagettfbbox($fontSize, 0, $fontFile, 'JT');
-                $tw = $bbox[2] - $bbox[0];
-                $th = $bbox[1] - $bbox[7];
-                $x = ($size - $tw) / 2;
-                $y = ($size + $th) / 2 - $size * 0.05;
-                imagettftext($img, $fontSize, 0, (int) $x, (int) $y, $white, $fontFile, 'JT');
+        $names = [
+            'icon-32x32.png',
+            'icon-192x192.png',
+            'icon-512x512.png',
+            'apple-touch-icon.png',
+        ];
+
+        foreach ($names as $name) {
+            $source = resource_path('images/icons/'.$name);
+            if (! is_file($source)) {
+                continue;
             }
-            $this->saveGenerated($img, $size);
-            imagedestroy($img);
+
+            $publicDir = public_path('icons');
+            if (! is_dir($publicDir)) {
+                mkdir($publicDir, 0755, true);
+            }
+            copy($source, $publicDir.'/'.$name);
+
+            $storageDir = storage_path('app/public/icons');
+            if (! is_dir($storageDir)) {
+                mkdir($storageDir, 0755, true);
+            }
+            copy($source, $storageDir.'/'.$name);
         }
     }
 
     private function generateIcons(string $sourcePath): void
     {
-        if (! extension_loaded('gd')) return;
+        if (! extension_loaded('gd')) {
+            return;
+        }
 
         foreach ([32, 192, 512, 180] as $size) {
             $src = @imagecreatefromstring(file_get_contents($sourcePath));
-            if (! $src) continue;
+            if (! $src) {
+                continue;
+            }
             $dst = imagecreatetruecolor($size, $size);
             imagealphablending($dst, false);
             imagesavealpha($dst, true);
