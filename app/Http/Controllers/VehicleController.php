@@ -4,21 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreVehicleRequest;
 use App\Http\Requests\UpdateVehicleRequest;
+use App\Models\FuelRecord;
+use App\Models\ServiceRecord;
 use App\Models\Vehicle;
 use App\Services\ServiceReminderService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class VehicleController extends Controller
 {
     public function index(): View
     {
-        $vehicles = Vehicle::where('user_id', auth()->id())
-            ->orderBy('is_active', 'desc')
-            ->orderBy('name')
-            ->get();
-
-        return view('vehicles.index', compact('vehicles'));
+        return view('vehicles.index');
     }
 
     public function create(): View
@@ -40,9 +38,9 @@ class VehicleController extends Controller
     {
         $this->authorize('view', $vehicle);
 
-        $fuelStats = \App\Models\FuelRecord::where('vehicle_id', $vehicle->id)->selectRaw('COUNT(*) as cnt, COALESCE(SUM(total_cost),0) as cost')->first();
-        $serviceStats = \Illuminate\Support\Facades\Schema::hasTable('service_records')
-            ? \App\Models\ServiceRecord::where('vehicle_id', $vehicle->id)->selectRaw('COUNT(*) as cnt, COALESCE(SUM(total_cost),0) as cost')->first()
+        $fuelStats = FuelRecord::where('vehicle_id', $vehicle->id)->selectRaw('COUNT(*) as cnt, COALESCE(SUM(total_cost),0) as cost')->first();
+        $serviceStats = Schema::hasTable('service_records')
+            ? ServiceRecord::where('vehicle_id', $vehicle->id)->selectRaw('COUNT(*) as cnt, COALESCE(SUM(total_cost),0) as cost')->first()
             : (object) ['cnt' => 0, 'cost' => 0];
 
         $stats = [
@@ -52,12 +50,14 @@ class VehicleController extends Controller
             'service_count' => (int) ($serviceStats->cnt ?? 0),
         ];
 
-        $recentFuels = \App\Models\FuelRecord::where('vehicle_id', $vehicle->id)->orderByDesc('fuel_date')->limit(5)->get();
-        $recentServices = \App\Models\ServiceRecord::where('vehicle_id', $vehicle->id)->orderByDesc('service_date')->limit(5)->get();
+        $recentFuels = FuelRecord::where('vehicle_id', $vehicle->id)->orderByDesc('fuel_date')->limit(5)->get();
+        $recentServices = ServiceRecord::where('vehicle_id', $vehicle->id)->orderByDesc('service_date')->limit(5)->get();
 
         $reminder = null;
-        $lastService = \App\Models\ServiceRecord::where('vehicle_id', $vehicle->id)
-            ->where(function ($q) { $q->whereNotNull('next_service_date')->orWhereNotNull('next_service_odometer'); })
+        $lastService = ServiceRecord::where('vehicle_id', $vehicle->id)
+            ->where(function ($q) {
+                $q->whereNotNull('next_service_date')->orWhereNotNull('next_service_odometer');
+            })
             ->orderByDesc('service_date')->orderByDesc('id')->first();
         if ($lastService) {
             $reminderService = app(ServiceReminderService::class);
