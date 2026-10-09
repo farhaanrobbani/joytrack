@@ -1,3 +1,47 @@
+<?php
+
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Support\Facades\Validator;
+use Livewire\Component;
+
+new class extends Component
+{
+    public string $name = '';
+    public string $email = '';
+
+    public function mount(): void
+    {
+        $this->name = auth()->user()->name;
+        $this->email = auth()->user()->email;
+    }
+
+    public function save(): void
+    {
+        $data = ['name' => $this->name, 'email' => $this->email];
+
+        $validator = Validator::make($data, ProfileUpdateRequest::profileRules(auth()->id()));
+        $validator->validate();
+
+        $user = auth()->user();
+        $user->fill($data);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        session()->flash('status', 'profile-updated');
+        $this->redirect(route('profile.edit'));
+    }
+
+    public function render()
+    {
+        return $this->view(['user' => auth()->user()]);
+    }
+};
+?>
+
 <section>
     <header>
         <h2 class="text-lg font-medium text-gray-900">
@@ -13,19 +57,16 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
-        @csrf
-        @method('patch')
-
+    <form wire:submit="save" class="mt-6 space-y-6">
         <div>
             <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
+            <x-text-input id="name" wire:model="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
+            <x-text-input id="email" wire:model="email" type="email" class="mt-1 block w-full" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())

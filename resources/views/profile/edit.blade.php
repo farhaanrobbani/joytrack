@@ -8,19 +8,19 @@
     <div class="space-y-6">
         <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
             <div class="max-w-xl">
-                @include('profile.partials.update-profile-information-form')
+                <livewire:profile-update-information />
             </div>
         </div>
 
         <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
             <div class="max-w-xl">
-                @include('profile.partials.update-password-form')
+                <livewire:profile-update-password />
             </div>
         </div>
 
         <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
             <div class="max-w-xl">
-                @include('profile.partials.delete-user-form')
+                <livewire:profile-delete-user />
             </div>
         </div>
     </div>
