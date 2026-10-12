@@ -175,4 +175,72 @@ class LivewireFuelRecordsTest extends TestCase
             ->assertSee('Motor A')
             ->assertDontSee('Motor B');
     }
+
+    public function test_liters_autofilled_from_total_and_price(): void
+    {
+        $user = User::factory()->create();
+        $vehicle = Vehicle::factory()->create(['user_id' => $user->id, 'current_odometer' => 10000]);
+        $this->actingAs($user);
+
+        Livewire::test('fuel-records-create')
+            ->set('vehicle_id', (string) $vehicle->id)
+            ->set('fuel_date', now()->format('Y-m-d'))
+            ->set('odometer', '15000')
+            ->set('price_per_liter', '10000')
+            ->set('total_cost', '50000')
+            ->assertSet('liters', '5')
+            ->call('save')
+            ->assertRedirect(route('fuel-records.index'));
+
+        $this->assertDatabaseHas('fuel_records', [
+            'vehicle_id' => $vehicle->id,
+            'liters' => 5,
+            'total_cost' => 50000,
+        ]);
+    }
+
+    public function test_manual_liters_not_overwritten_by_autofill(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        Livewire::test('fuel-records-create')
+            ->set('liters', '7')
+            ->set('price_per_liter', '10000')
+            ->set('total_cost', '50000')
+            ->assertSet('liters', '7');
+    }
+
+    public function test_autofilled_liters_recompute_when_total_changes(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        Livewire::test('fuel-records-create')
+            ->set('price_per_liter', '10000')
+            ->set('total_cost', '50000')
+            ->assertSet('liters', '5')
+            ->set('total_cost', '60000')
+            ->assertSet('liters', '6');
+    }
+
+    public function test_edit_existing_liters_kept_and_recomputed_after_clear(): void
+    {
+        $user = User::factory()->create();
+        $vehicle = Vehicle::factory()->create(['user_id' => $user->id]);
+        $fuel = FuelRecord::factory()->create([
+            'user_id' => $user->id,
+            'vehicle_id' => $vehicle->id,
+            'odometer' => 10000,
+            'liters' => 5,
+            'price_per_liter' => 10000,
+            'total_cost' => 50000,
+        ]);
+        $this->actingAs($user);
+
+        Livewire::test('fuel-records-edit', ['fuelRecord' => $fuel])
+            ->set('price_per_liter', '12000')
+            ->assertSet('liters', '5.00')
+            ->set('liters', '')
+            ->set('total_cost', '60000')
+            ->assertSet('liters', '5');
+    }
 }

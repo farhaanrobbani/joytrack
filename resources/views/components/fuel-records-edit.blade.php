@@ -25,6 +25,8 @@ new class extends Component
     public string $station = '';
     public string $account_id = '';
     public string $notes = '';
+    public string $total_hint = '';
+    public bool $liters_autofilled = false;
 
     public function mount(FuelRecord $fuelRecord): void
     {
@@ -41,6 +43,43 @@ new class extends Component
         $this->station = $fuelRecord->station ?? '';
         $this->account_id = $fuelRecord->account_id !== null ? (string) $fuelRecord->account_id : '';
         $this->notes = $fuelRecord->notes ?? '';
+    }
+
+    public function updated(string $property): void
+    {
+        if ($property === 'liters') {
+            $this->liters_autofilled = false;
+        }
+
+        if (in_array($property, ['liters', 'price_per_liter', 'total_cost'], true)) {
+            if ($property !== 'liters') {
+                $this->autofillLiters();
+            }
+
+            $this->refreshTotalHint();
+        }
+    }
+
+    private function autofillLiters(): void
+    {
+        if ($this->liters !== '' && ! $this->liters_autofilled) {
+            return;
+        }
+
+        if (is_numeric($this->total_cost) && is_numeric($this->price_per_liter) && (float) $this->total_cost > 0 && (float) $this->price_per_liter > 0) {
+            $this->liters = (string) round((float) $this->total_cost / (float) $this->price_per_liter, 2);
+            $this->liters_autofilled = true;
+        }
+    }
+
+    private function refreshTotalHint(): void
+    {
+        if (is_numeric($this->liters) && is_numeric($this->price_per_liter) && (float) $this->liters > 0 && (float) $this->price_per_liter > 0) {
+            $total = (float) $this->liters * (float) $this->price_per_liter;
+            $this->total_hint = $this->liters . ' × ' . $this->price_per_liter . ' = ' . number_format($total, 2, '.', '');
+        } else {
+            $this->total_hint = '';
+        }
     }
 
     public function save(): void
@@ -112,17 +151,19 @@ new class extends Component
                 </div>
                 <div>
                     <x-input-label for="liters" :value="__('Liter *')" />
-                    <x-text-input id="liters" wire:model="liters" type="number" step="0.01" class="mt-1 block w-full" required />
+                    <x-text-input id="liters" wire:model.live.debounce.300ms="liters" type="number" step="0.01" class="mt-1 block w-full" required />
+                    <p class="mt-1 text-xs text-gray-500">{{ __('Otomatis dari Total ÷ Harga/Liter bila dikosongkan.') }}</p>
                     <x-input-error :messages="$errors->get('liters')" class="mt-2" />
                 </div>
                 <div>
                     <x-input-label for="price_per_liter" :value="__('Harga/Liter *')" />
-                    <x-text-input id="price_per_liter" wire:model="price_per_liter" type="number" step="0.01" class="mt-1 block w-full" required />
+                    <x-text-input id="price_per_liter" wire:model.live.debounce.300ms="price_per_liter" type="number" step="0.01" class="mt-1 block w-full" required />
                     <x-input-error :messages="$errors->get('price_per_liter')" class="mt-2" />
                 </div>
                 <div>
                     <x-input-label for="total_cost" :value="__('Total Biaya *')" />
-                    <x-text-input id="total_cost" wire:model="total_cost" type="number" step="0.01" class="mt-1 block w-full" required />
+                    <x-text-input id="total_cost" wire:model.live.debounce.300ms="total_cost" type="number" step="0.01" class="mt-1 block w-full" required :placeholder="$total_hint !== '' ? substr($total_hint, strpos($total_hint, '=') + 2) : ''" />
+                    <p class="mt-1 text-xs text-gray-500">{{ $total_hint !== '' ? __('Hitung: :calc', ['calc' => $total_hint]) : '' }}</p>
                     <x-input-error :messages="$errors->get('total_cost')" class="mt-2" />
                 </div>
                 <div>

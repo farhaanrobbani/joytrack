@@ -76,6 +76,12 @@ total_cost = liters × price_per_liter
 
 User boleh mengubah total jika ada perbedaan pembulatan atau kondisi khusus.
 
+- Form BBM (create & edit): bila kolom `liters` kosong dan `total_cost` serta
+  `price_per_liter` terisi, liter dihitung otomatis `total_cost ÷ price_per_liter`
+  (pembulatan 2 desimal). Input manual tidak ditimpa; mengosongkan kolom liter
+  mengaktifkan hitung otomatis kembali. Ini perilaku UX saja — validasi &
+  penyimpanan tetap memakai nilai liter yang tersimpan.
+
 ---
 
 # 7. Fuel Financial Transaction
