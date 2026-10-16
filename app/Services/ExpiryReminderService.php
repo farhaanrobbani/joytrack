@@ -23,7 +23,7 @@ class ExpiryReminderService
         return $this->getDocumentReminders($userId)
             ->merge($this->getSubscriptionReminders($userId))
             ->merge($this->getCreditReminders($userId))
-            ->sortBy(fn ($r) => [$r['status'] === 'overdue' ? 0 : 1, $r['days']])
+            ->sortBy(fn ($r) => [$this->statusRank($r['status']), $r['days']])
             ->values()
             ->toBase();
     }
@@ -31,7 +31,7 @@ class ExpiryReminderService
     /**
      * @return Collection<int, array{source: string, title: string, subtitle: string, date: CarbonInterface, days: int, status: string, messages: array<string>, edit_url: string, model: Document}>
      */
-    public function getDocumentReminders(int $userId): Collection
+    public function getDocumentReminders(int $userId, bool $includeOk = false): Collection
     {
         $now = $this->now();
 
@@ -55,7 +55,8 @@ class ExpiryReminderService
                     'model' => $document,
                 ];
             })
-            ->filter(fn ($item) => $item['status'] !== 'ok')
+            ->when(! $includeOk, fn ($items) => $items->filter(fn ($item) => $item['status'] !== 'ok'))
+            ->sortBy(fn ($r) => [$this->statusRank($r['status']), $r['days']])
             ->values()
             ->toBase();
 
@@ -65,7 +66,7 @@ class ExpiryReminderService
     /**
      * @return Collection<int, array{source: string, title: string, subtitle: string, date: CarbonInterface, days: int, status: string, messages: array<string>, edit_url: string, model: Subscription}>
      */
-    public function getSubscriptionReminders(int $userId): Collection
+    public function getSubscriptionReminders(int $userId, bool $includeOk = false): Collection
     {
         $now = $this->now();
 
@@ -90,7 +91,8 @@ class ExpiryReminderService
                     'model' => $subscription,
                 ];
             })
-            ->filter(fn ($item) => $item['status'] !== 'ok')
+            ->when(! $includeOk, fn ($items) => $items->filter(fn ($item) => $item['status'] !== 'ok'))
+            ->sortBy(fn ($r) => [$this->statusRank($r['status']), $r['days']])
             ->values()
             ->toBase();
 
@@ -100,7 +102,7 @@ class ExpiryReminderService
     /**
      * @return Collection<int, array{source: string, title: string, subtitle: string, date: CarbonInterface, days: int, status: string, messages: array<string>, edit_url: string, model: Account}>
      */
-    public function getCreditReminders(int $userId): Collection
+    public function getCreditReminders(int $userId, bool $includeOk = false): Collection
     {
         $now = $this->now();
 
@@ -127,7 +129,8 @@ class ExpiryReminderService
                     'model' => $account,
                 ];
             })
-            ->filter(fn ($item) => $item['status'] !== 'ok')
+            ->when(! $includeOk, fn ($items) => $items->filter(fn ($item) => $item['status'] !== 'ok'))
+            ->sortBy(fn ($r) => [$this->statusRank($r['status']), $r['days']])
             ->values()
             ->toBase();
     }
@@ -143,6 +146,15 @@ class ExpiryReminderService
         }
 
         return 'ok';
+    }
+
+    public function statusRank(string $status): int
+    {
+        return match ($status) {
+            'overdue' => 0,
+            'due_soon' => 1,
+            default => 2,
+        };
     }
 
     public function daysUntilDate(CarbonInterface $date): int

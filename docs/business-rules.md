@@ -320,8 +320,10 @@ due_soon : 0 <= days <= reminder_days (per baris, default 7)
 ok       : days > reminder_days
 ```
 
-- Item `ok` tidak ditampilkan di dashboard maupun halaman Pengingat.
-- Urutan tampil: `overdue` dulu, lalu `due_soon` dengan sisa hari terkecil.
+- Item `ok` tidak ditampilkan di dashboard; di halaman Pengingat (`/reminders`)
+  tetap tampil dengan status "Aman" — filter `Semua/Terlambat/Segera/Aman`
+  tersedia di halaman tersebut.
+- Urutan tampil: `overdue` dulu, lalu `due_soon`, lalu `ok`, dengan sisa hari terkecil.
 - Threshold mengikuti `reminder_days` per dokumen (1–90 hari), bukan global.
 
 ---
@@ -341,7 +343,8 @@ ok       : days > reminder_days
 - Nominal `amount` hanya informatif — pengingat tidak membuat transaksi otomatis;
   transaksi expense hanya dibuat saat perpanjangan manual (lihat §23).
 - Pengingat servis (tanggal + odometer) tetap memakai `ServiceReminderService`
-  dengan ambang global 7 hari / 500 km, dan digabung di halaman `/reminders`.
+  dengan ambang global 7 hari / 500 km, dan digabung di halaman `/reminders`
+  (servis `ok` ikut tampil di halaman Pengingat dengan status "Aman", tidak di dashboard).
 
 ---
 
@@ -392,6 +395,7 @@ ok       : days > reminder_days
   ```text
   Syarat : akun aktif, type = credit, due_day terisi, current_balance < 0
   days   = due_day bulan berjalan (diklaim ke hari terakhir bulan) - hari ini
-  ok (>7 hari) tidak ditampilkan; threshold global 7 hari
+  ok (>7 hari) tidak ditampilkan di dashboard; di halaman Pengingat tampil
+  dengan status "Aman"; threshold global 7 hari
   overdue : days < 0 (lewat tanggal jatuh tempo bulan ini, masih berutang)
   ```

@@ -30,7 +30,7 @@ new class extends Component
 
     public function setStatus(string $status): void
     {
-        $this->status = in_array($status, ['all', 'overdue', 'due_soon'], true) ? $status : 'all';
+        $this->status = in_array($status, ['all', 'overdue', 'due_soon', 'ok'], true) ? $status : 'all';
     }
 
     public function openRenew(int $subscriptionId): void
@@ -88,14 +88,14 @@ new class extends Component
 
     public function render()
     {
-        if (! in_array($this->status, ['all', 'overdue', 'due_soon'], true)) {
+        if (! in_array($this->status, ['all', 'overdue', 'due_soon', 'ok'], true)) {
             $this->status = 'all';
         }
 
-        $services = app(ServiceReminderService::class)->getReminders(auth()->id());
-        $documents = app(ExpiryReminderService::class)->getDocumentReminders(auth()->id());
-        $subscriptions = app(ExpiryReminderService::class)->getSubscriptionReminders(auth()->id());
-        $credits = app(ExpiryReminderService::class)->getCreditReminders(auth()->id());
+        $services = app(ServiceReminderService::class)->getReminders(auth()->id(), includeOk: true);
+        $documents = app(ExpiryReminderService::class)->getDocumentReminders(auth()->id(), includeOk: true);
+        $subscriptions = app(ExpiryReminderService::class)->getSubscriptionReminders(auth()->id(), includeOk: true);
+        $credits = app(ExpiryReminderService::class)->getCreditReminders(auth()->id(), includeOk: true);
 
         $all = $services->merge($documents)->merge($subscriptions)->merge($credits);
 
@@ -132,7 +132,7 @@ new class extends Component
 <div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl p-4 border border-gray-100 dark:border-gray-700">
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('Total Pengingat Aktif') }}</p>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('Total Pengingat') }}</p>
             <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{{ $totalCount }}</p>
         </div>
         <div class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl p-4 border border-red-100 dark:border-red-900/40">
@@ -146,7 +146,7 @@ new class extends Component
     </div>
 
     <div class="flex gap-2 mb-6">
-        @foreach(['all' => __('Semua'), 'overdue' => __('Terlambat'), 'due_soon' => __('Segera')] as $value => $label)
+        @foreach(['all' => __('Semua'), 'overdue' => __('Terlambat'), 'due_soon' => __('Segera'), 'ok' => __('Aman')] as $value => $label)
             <button type="button" wire:click="setStatus('{{ $value }}')" wire:key="filter-{{ $value }}"
                class="px-4 py-2 rounded-xl text-sm font-medium border {{ $status === $value ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                 {{ $label }}
@@ -154,7 +154,17 @@ new class extends Component
         @endforeach
     </div>
 
-    @php($statusLabel = fn ($s) => $s === 'overdue' ? __('Terlambat') : __('Segera'))
+    @php($statusLabel = fn ($s) => $s === 'overdue' ? __('Terlambat') : ($s === 'ok' ? __('Aman') : __('Segera')))
+    @php($statusBadge = fn ($s) => $s === 'overdue'
+        ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+        : ($s === 'ok'
+            ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+            : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'))
+    @php($cardBorder = fn ($s) => $s === 'overdue'
+        ? 'border-red-200 dark:border-red-800'
+        : ($s === 'ok'
+            ? 'border-gray-200 dark:border-gray-700'
+            : 'border-amber-200 dark:border-amber-800'))
 
     <div class="space-y-6">
         <div>
@@ -168,12 +178,12 @@ new class extends Component
             @else
                 <div class="space-y-3">
                     @foreach($services as $r)
-                        <div wire:key="svc-{{ $r['vehicle']->id }}" class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl border p-4 {{ $r['status']==='overdue' ? 'border-red-200 dark:border-red-800' : 'border-amber-200 dark:border-amber-800' }}">
+                        <div wire:key="svc-{{ $r['vehicle']->id }}" class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl border p-4 {{ $cardBorder($r['status']) }}">
                             <div class="flex items-start justify-between gap-4">
                                 <div>
                                     <p class="font-semibold text-gray-900 dark:text-white">
                                         {{ $r['vehicle']->name }} ({{ $r['vehicle']->license_plate ?? '-' }})
-                                        <span class="ms-2 px-2 py-0.5 text-xs font-medium rounded-full {{ $r['status']==='overdue' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300' }}">{{ $statusLabel($r['status']) }}</span>
+                                        <span class="ms-2 px-2 py-0.5 text-xs font-medium rounded-full {{ $statusBadge($r['status']) }}">{{ $statusLabel($r['status']) }}</span>
                                     </p>
                                     <ul class="mt-1 list-disc list-inside text-sm text-gray-600 dark:text-gray-300">
                                         @foreach($r['messages'] as $msg)<li>{{ $msg }}</li>@endforeach
@@ -198,12 +208,12 @@ new class extends Component
             @else
                 <div class="space-y-3">
                     @foreach($documents as $r)
-                        <div wire:key="doc-{{ $r['model']->id }}" class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl border p-4 {{ $r['status']==='overdue' ? 'border-red-200 dark:border-red-800' : 'border-amber-200 dark:border-amber-800' }}">
+                        <div wire:key="doc-{{ $r['model']->id }}" class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl border p-4 {{ $cardBorder($r['status']) }}">
                             <div class="flex items-start justify-between gap-4">
                                 <div>
                                     <p class="font-semibold text-gray-900 dark:text-white">
                                         {{ $r['title'] }}
-                                        <span class="ms-2 px-2 py-0.5 text-xs font-medium rounded-full {{ $r['status']==='overdue' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300' }}">{{ $statusLabel($r['status']) }}</span>
+                                        <span class="ms-2 px-2 py-0.5 text-xs font-medium rounded-full {{ $statusBadge($r['status']) }}">{{ $statusLabel($r['status']) }}</span>
                                     </p>
                                     <ul class="mt-1 list-disc list-inside text-sm text-gray-600 dark:text-gray-300">
                                         @foreach($r['messages'] as $msg)<li>{{ $msg }}</li>@endforeach
@@ -229,12 +239,12 @@ new class extends Component
             @else
                 <div class="space-y-3">
                     @foreach($subscriptions as $r)
-                        <div wire:key="sub-{{ $r['model']->id }}" class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl border p-4 {{ $r['status']==='overdue' ? 'border-red-200 dark:border-red-800' : 'border-amber-200 dark:border-amber-800' }}">
+                        <div wire:key="sub-{{ $r['model']->id }}" class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl border p-4 {{ $cardBorder($r['status']) }}">
                             <div class="flex items-start justify-between gap-4">
                                 <div>
                                     <p class="font-semibold text-gray-900 dark:text-white">
                                         {{ $r['title'] }}
-                                        <span class="ms-2 px-2 py-0.5 text-xs font-medium rounded-full {{ $r['status']==='overdue' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300' }}">{{ $statusLabel($r['status']) }}</span>
+                                        <span class="ms-2 px-2 py-0.5 text-xs font-medium rounded-full {{ $statusBadge($r['status']) }}">{{ $statusLabel($r['status']) }}</span>
                                     </p>
                                     <ul class="mt-1 list-disc list-inside text-sm text-gray-600 dark:text-gray-300">
                                         @foreach($r['messages'] as $msg)<li>{{ $msg }}</li>@endforeach
@@ -263,12 +273,12 @@ new class extends Component
             @else
                 <div class="space-y-3">
                     @foreach($credits as $r)
-                        <div wire:key="credit-{{ $r['model']->id }}" class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl border p-4 {{ $r['status']==='overdue' ? 'border-red-200 dark:border-red-800' : 'border-amber-200 dark:border-amber-800' }}">
+                        <div wire:key="credit-{{ $r['model']->id }}" class="bg-white dark:bg-gray-800 shadow-soft rounded-2xl border p-4 {{ $cardBorder($r['status']) }}">
                             <div class="flex items-start justify-between gap-4">
                                 <div>
                                     <p class="font-semibold text-gray-900 dark:text-white">
                                         {{ $r['title'] }}
-                                        <span class="ms-2 px-2 py-0.5 text-xs font-medium rounded-full {{ $r['status']==='overdue' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300' }}">{{ $statusLabel($r['status']) }}</span>
+                                        <span class="ms-2 px-2 py-0.5 text-xs font-medium rounded-full {{ $statusBadge($r['status']) }}">{{ $statusLabel($r['status']) }}</span>
                                     </p>
                                     <ul class="mt-1 list-disc list-inside text-sm text-gray-600 dark:text-gray-300">
                                         @foreach($r['messages'] as $msg)<li>{{ $msg }}</li>@endforeach

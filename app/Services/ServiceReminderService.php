@@ -10,12 +10,13 @@ use Illuminate\Support\Collection;
 class ServiceReminderService
 {
     public const DATE_WARNING_DAYS = 7;
+
     public const ODOMETER_WARNING_KM = 500;
 
     /**
      * @return Collection<int, array{vehicle: Vehicle, record: ServiceRecord, status: string, messages: array<string>}>
      */
-    public function getReminders(int $userId): Collection
+    public function getReminders(int $userId, bool $includeOk = false): Collection
     {
         $vehicles = Vehicle::where('user_id', $userId)->where('is_active', true)->get();
         $reminders = collect();
@@ -34,7 +35,7 @@ class ServiceReminderService
             }
 
             $status = $this->getStatus($vehicle, $record);
-            if ($status !== 'ok') {
+            if ($includeOk || $status !== 'ok') {
                 $reminders->push([
                     'vehicle' => $vehicle,
                     'record' => $record,
@@ -44,8 +45,13 @@ class ServiceReminderService
             }
         }
 
-        // overdue first, then due_soon
-        return $reminders->sortBy(fn ($r) => $r['status'] === 'overdue' ? 0 : 1)->values();
+        return $reminders
+            ->sortBy(fn ($r) => match ($r['status']) {
+                'overdue' => 0,
+                'due_soon' => 1,
+                default => 2,
+            })
+            ->values();
     }
 
     public function getStatus(Vehicle $vehicle, ServiceRecord $record): string
@@ -112,6 +118,13 @@ class ServiceReminderService
             $messages[] = __('Servis kendaraan akan segera jatuh tempo.');
         } elseif ($status === 'due_soon' && empty($messages)) {
             $messages[] = __('Servis kendaraan akan segera jatuh tempo.');
+        } elseif ($status === 'ok') {
+            if ($record->next_service_date) {
+                $messages[] = __('Servis berikutnya pada :date', ['date' => $record->next_service_date->format('d M Y')]);
+            }
+            if ($record->next_service_odometer) {
+                $messages[] = __('Target odometer :km km', ['km' => number_format($record->next_service_odometer, 0, ',', '.')]);
+            }
         }
 
         return $messages;
